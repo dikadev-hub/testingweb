@@ -1,38 +1,43 @@
-const Parse = require('parse/node');
-const crypto = require('crypto');
+import { initializeApp, getApps } from "firebase/app";
+import { getDatabase, ref, get } from "firebase/database";
 
-Parse.initialize(
-    "Y0f6hqTsxzNapkFRzIKO6b9pGENY8ewx3HMZu72k", 
-    "Y4R6Q4AwyZBfGppAeaXDfvfW8MNvIwhdHEJ7KoIc",
-    "QKhrsQmDyp2sSEosdc78N8AbJxzbYZFzEyiWc1nl"
-);
-Parse.serverURL = 'https://parseapi.back4app.com/';
+const firebaseConfig = {
+  apiKey: "AIzaSyDGRsCcT-7Bv_nOAybjXyuIT6Ca0IT4YTg",
+  authDomain: "market-d978f.firebaseapp.com",
+  databaseURL: "https://market-d978f-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "market-d978f",
+  storageBucket: "market-d978f.firebasestorage.app",
+  messagingSenderId: "291695486607",
+  appId: "1:291695486607:web:dd860d16639b47c163f2fa",
+  measurementId: "G-2J5YF9BTQJ"
+};
+
+const app = !getApps().length ? initializeApp(firebaseConfig) : getApps()[0];
+const db = getDatabase(app);
 
 export default async function handler(req, res) {
-    if (req.method !== 'POST') return res.status(405).json({ message: 'method not allowed' });
+  if (req.method !== 'POST') return res.status(405).json({ message: 'method not allowed' });
 
-    const { name, email, phone, pass } = req.body;
-    if (!name || !email || !phone || !pass) return res.status(400).json({ message: "data wajib diisi" });
+  const { email, pass } = req.body;
+  if (!email || !pass) return res.status(400).json({ message: "data wajib di isi" });
 
-    const cleanEmail = email.trim().toLowerCase();
-    const apiKey = "sk-" + crypto.randomBytes(16).toString('hex');
+  const cleanEmail = email.trim().toLowerCase().replace(/\./g, ',');
 
-    const user = new Parse.User();
-    // PENTING: username harus sama dengan email buat login
-    user.set("username", cleanEmail); 
-    user.set("email", cleanEmail);
-    user.set("password", pass);
-    user.set("fullname", name);
-    user.set("phone", phone);
-    user.set("apiKey", apiKey);
+  try {
+    const userRef = ref(db, 'users/' + cleanEmail);
+    const snapshot = await get(userRef);
 
-    try {
-        const newUser = await user.signUp(null, { useMasterKey: true });
-        return res.status(200).json({ 
-            success: true, 
-            sessionToken: newUser.getSessionToken() 
-        });
-    } catch (e) {
-        return res.status(400).json({ message: "gagal daftar: " + e.message });
+    if (!snapshot.exists()) {
+      return res.status(401).json({ message: "akun tidak ditemukan" });
     }
+
+    const userData = snapshot.val();
+    if (userData.password !== pass) {
+      return res.status(401).json({ message: "password salah" });
+    }
+
+    return res.status(200).json({ success: true, sessionToken: cleanEmail });
+  } catch (e) {
+    return res.status(500).json({ message: e.message });
+  }
 }
