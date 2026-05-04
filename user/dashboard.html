@@ -1,0 +1,386 @@
+
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title id="page-title">dashboard</title>
+    <script src="../setting.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        @keyframes fadein { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes slideDown { from { transform: translateY(-10px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+        @keyframes loading-bar { 0% { left: -40%; } 100% { left: 100%; } }
+
+        body { 
+            background: #f0f4f8; 
+            background-image: radial-gradient(#d1d9e6 1px, transparent 1px);
+            background-size: 20px 20px;
+            color: #1a1a1a; 
+            font-family: 'inter', sans-serif; 
+            margin: 0; 
+            text-transform: lowercase; 
+            overflow-x: hidden;
+        }
+
+        #loading-line {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 3px;
+            background: #e2e8f0;
+            z-index: 10000;
+            display: none;
+        }
+        #loading-line::after {
+            content: '';
+            position: absolute;
+            height: 100%; width: 40%;
+            background: #007bff;
+            animation: loading-bar 1s infinite linear;
+        }
+
+        .header {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(15px);
+            height: 75px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 20px;
+            position: sticky;
+            top: 0; z-index: 999;
+            border-bottom: 1px solid rgba(0,0,0,0.05);
+        }
+
+        .btn-action {
+            width: 45px; height: 45px;
+            background: #fff;
+            border: 1px solid #e2e8f0;
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            color: #1e293b;
+            transition: 0.3s;
+        }
+
+        .sidebar-box {
+            position: absolute;
+            top: 85px; left: 20px;
+            width: 220px;
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.05);
+            display: none;
+            z-index: 1001;
+            animation: slideDown 0.3s ease;
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            overflow: hidden;
+        }
+
+        .sidebar-title {
+            padding: 15px 20px;
+            font-size: 0.7rem;
+            font-weight: 800;
+            color: #94a3b8;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border-bottom: 1px solid rgba(0,0,0,0.03);
+        }
+
+        .profile-box {
+            position: absolute;
+            top: 85px; right: 20px;
+            width: 280px;
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(15px);
+            border-radius: 25px;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.1);
+            display: none;
+            padding: 25px;
+            z-index: 1001;
+            animation: slideDown 0.3s ease;
+            border: 1px solid rgba(255, 255, 255, 0.6);
+        }
+
+        .menu-item {
+            padding: 12px 20px;
+            display: flex;
+            align-items: center;
+            color: #475569;
+            cursor: pointer;
+            font-weight: 700;
+            transition: 0.2s;
+        }
+        .menu-item:hover { background: rgba(0, 123, 255, 0.05); color: #007bff; }
+        .menu-item i { margin-right: 12px; font-size: 0.9rem; }
+
+        /* --- Tampilan Banner BC Minimalis --- */
+        .bc-banner-style {
+            background: linear-gradient(to right, #007bff, #0056b3);
+            border-radius: 20px; padding: 15px 20px;
+            display: none; align-items: center; justify-content: space-between;
+            box-shadow: 0 10px 20px rgba(0, 123, 255, 0.2);
+            animation: slideDown 0.5s ease;
+            margin-bottom: 25px; color: white;
+        }
+        .btn-read-bc { 
+            background: rgba(255,255,255,0.2); color: white; border: 1px solid rgba(255,255,255,0.4); 
+            padding: 8px 15px; border-radius: 12px; font-weight: 800; font-size: 0.7rem; cursor: pointer; backdrop-filter: blur(5px);
+        }
+
+        /* --- Tampilan Baca Pesan Fullscreen --- */
+        .bc-full-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(240, 244, 248, 0.95); backdrop-filter: blur(10px);
+            z-index: 10000; display: none;
+            flex-direction: column; animation: fadein 0.3s ease;
+        }
+
+        .info-label { font-size: 0.65rem; font-weight: 800; color: #64748b; text-transform: uppercase; margin-top: 15px; display: block; }
+        .info-value { font-size: 0.85rem; font-weight: 600; color: #1e293b; display: block; margin-top: 2px; }
+
+        .pass-container { display: flex; align-items: center; justify-content: space-between; margin-top: 2px; }
+        .pass-value { font-size: 0.85rem; font-weight: 600; color: #1e293b; letter-spacing: 2px; }
+        .btn-toggle-pass { background: none; border: none; color: #94a3b8; cursor: pointer; padding: 5px; }
+
+        .btn-docs {
+            width: 100%; padding: 12px;
+            background: #1a1a1a; color: white;
+            border: none; border-radius: 12px;
+            font-weight: 800; cursor: pointer;
+            margin-top: 20px; font-size: 0.8rem;
+        }
+
+        .overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 1000; display: none; }
+
+        .content { padding: 20px; max-width: 600px; margin: 0 auto; }
+        .search-wrapper { background: white; padding: 5px; border-radius: 20px; display: none; box-shadow: 0 10px 25px rgba(0,0,0,0.04); border: 1px solid #fff; }
+        .search-wrapper input { width: 100%; padding: 15px; border: none; outline: none; background: transparent; font-size: 0.9rem; }
+    </style>
+</head>
+<body>
+
+    <div id="loading-line"></div>
+    <div id="overlay" class="overlay" onclick="closeAll()"></div>
+
+    <div class="header">
+        <div class="btn-action" onclick="toggleSidebar()">
+            <i class="fa-solid fa-bars-staggered"></i>
+        </div>
+        <div class="btn-action" onclick="toggleProfile()">
+            <i class="fa-solid fa-user"></i>
+        </div>
+    </div>
+
+    <div id="sidebar" class="sidebar-box">
+        <div class="sidebar-title">menu utama</div>
+        <div class="menu-item" onclick="openSearch()">
+            <i class="fa-solid fa-magnifying-glass"></i>
+            <span>search produk</span>
+        </div>
+        <div class="menu-item" onclick="logout()">
+            <i class="fa-solid fa-right-from-bracket"></i>
+            <span>keluar</span>
+        </div>
+    </div>
+
+    <div id="profile-card" class="profile-box">
+        <span class="info-label">username :</span>
+        <span id="p-name" class="info-value">memuat...</span>
+
+        <span class="info-label">role :</span>
+        <span class="info-value">user (member)</span>
+
+        <span class="info-label">api key :</span>
+        <span id="p-key" class="info-value">memuat...</span>
+
+        <span class="info-label">no hp :</span>
+        <span id="p-phone" class="info-value">memuat...</span>
+
+        <span class="info-label">password :</span>
+        <div class="pass-container">
+            <span id="p-pass" class="pass-value">••••••••</span>
+            <button class="btn-toggle-pass" onclick="togglePass()"><i id="pass-icon" class="fa-solid fa-eye-slash"></i></button>
+        </div>
+
+        <button class="btn-docs" onclick="window.location.href='docs.html'">docs api</button>
+    </div>
+
+    <div class="content">
+        <div id="bc-banner-area" class="bc-banner-style">
+            <div style="display: flex; align-items: center; gap: 15px;">
+                <div style="width: 40px; height: 40px; background: rgba(255,255,255,0.2); border-radius: 12px; display: flex; align-items: center; justify-content: center;">
+                    <i class="fa-solid fa-envelope-open-text"></i>
+                </div>
+                <div>
+                    <span style="font-size: 0.6rem; font-weight: 800; opacity: 0.8; text-transform: uppercase;">pesan baru</span>
+                    <h4 id="bc-title-preview" style="margin: 0; font-size: 0.85rem; font-weight: 700;">pengumuman</h4>
+                </div>
+            </div>
+            <button class="btn-read-bc" onclick="openFullBC()">baca</button>
+        </div>
+
+        <div id="search-box" class="search-wrapper">
+            <input type="text" id="pencarian" placeholder="cari produk apa kak?">
+        </div>
+
+        <div style="text-align: center; margin-top: 50px; opacity: 0.2;">
+            <i class="fa-solid fa-layer-group" style="font-size: 3rem;"></i>
+            <p style="margin-top: 10px;">silahkan pilih menu</p>
+        </div>
+    </div>
+
+    <div id="bc-full-view" class="bc-full-overlay">
+        <div style="padding: 40px 25px 20px; display: flex; justify-content: space-between; align-items: center;">
+            <div style="font-weight: 900; font-size: 1.2rem; color: #007bff;">pesan.</div>
+            <div style="width: 45px; height: 45px; background: #fff; border-radius: 15px; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 5px 15px rgba(0,0,0,0.05);" onclick="closeFullBC()">
+                <i class="fa-solid fa-xmark"></i>
+            </div>
+        </div>
+        <div style="padding: 20px 30px; overflow-y: auto;">
+            <div style="background: #fff; padding: 30px; border-radius: 30px; box-shadow: 0 20px 40px rgba(0,0,0,0.03); border: 1px solid #fff;">
+                <span id="bc-date" style="font-size: 0.65rem; font-weight: 800; color: #94a3b8; text-transform: uppercase;">pengumuman resmi</span>
+                <h1 id="bc-full-title" style="margin: 10px 0 25px; font-size: 1.6rem; color: #1e293b; line-height: 1.2; letter-spacing: -1px;">judul</h1>
+                <p id="bc-full-msg" style="font-size: 0.95rem; color: #475569; line-height: 1.8; white-space: pre-wrap;"></p>
+                <div style="margin-top: 30px; padding-top: 20px; border-top: 1px dashed #e2e8f0; font-size: 0.75rem; color: #94a3b8; font-weight: 600;">
+                    regards, administrator.
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
+
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyDGRsCcT-7Bv_nOAybjXyuIT6Ca0IT4YTg",
+            authDomain: "market-d978f.firebaseapp.com",
+            databaseURL: "https://market-d978f-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "market-d978f",
+            storageBucket: "market-d978f.firebasestorage.app",
+            messagingSenderId: "291695486607",
+            appId: "1:291695486607:web:dd860d16639b47c163f2fa"
+        };
+
+        if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+
+        let realPass = "********";
+
+        function toggleSidebar() {
+            const sb = document.getElementById('sidebar');
+            const isVisible = sb.style.display === 'block';
+            closeAll();
+            if (!isVisible) {
+                sb.style.display = 'block';
+                document.getElementById('overlay').style.display = 'block';
+            }
+        }
+
+        function toggleProfile() {
+            const pc = document.getElementById('profile-card');
+            const isVisible = pc.style.display === 'block';
+            closeAll();
+            if (!isVisible) {
+                pc.style.display = 'block';
+                document.getElementById('overlay').style.display = 'block';
+            }
+        }
+
+        function closeAll() {
+            document.getElementById('sidebar').style.display = 'none';
+            document.getElementById('profile-card').style.display = 'none';
+            document.getElementById('overlay').style.display = 'none';
+        }
+
+        function openSearch() {
+            closeAll();
+            document.getElementById('search-box').style.display = 'block';
+            document.getElementById('pencarian').focus();
+        }
+
+        function togglePass() {
+            const passElem = document.getElementById('p-pass');
+            const icon = document.getElementById('pass-icon');
+            if (passElem.innerText === '••••••••') {
+                passElem.innerText = realPass;
+                passElem.style.letterSpacing = '0px';
+                icon.className = 'fa-solid fa-eye';
+            } else {
+                passElem.innerText = '••••••••';
+                passElem.style.letterSpacing = '2px';
+                icon.className = 'fa-solid fa-eye-slash';
+            }
+        }
+
+        function openFullBC() {
+            document.getElementById('bc-full-view').style.display = 'flex';
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeFullBC() {
+            document.getElementById('bc-full-view').style.display = 'none';
+            document.body.style.overflow = 'auto';
+        }
+
+        function initBroadcast() {
+            db.ref('broadcast').on('value', (snapshot) => {
+                const data = snapshot.val();
+                const banner = document.getElementById('bc-banner-area');
+                if (data && data.message) {
+                    banner.style.display = 'flex';
+                    document.getElementById('bc-title-preview').innerText = data.title || "pengumuman";
+                    document.getElementById('bc-full-title').innerText = data.title || "pengumuman";
+                    document.getElementById('bc-full-msg').innerText = data.message;
+                } else {
+                    banner.style.display = 'none';
+                }
+            });
+        }
+
+        function logout() {
+            localStorage.clear();
+            location.href = "login.html";
+        }
+
+        async function loadData() {
+            const loader = document.getElementById('loading-line');
+            loader.style.display = 'block';
+            
+            initBroadcast();
+
+            const token = localStorage.getItem('sessionToken');
+            if (!token) { location.href = "login.html"; return; }
+
+            if (token === "admin-super-session") {
+                document.getElementById('p-name').innerText = "Administrator";
+                document.getElementById('p-key').innerText = "Akses Penuh";
+                document.getElementById('p-phone').innerText = "-";
+                realPass = "admin6767";
+                loader.style.display = 'none';
+                return;
+            }
+
+            try {
+                db.ref('users/' + token).once('value', (snap) => {
+                    const data = snap.val();
+                    if (data) {
+                        document.getElementById('p-name').innerText = data.fullname || "user";
+                        document.getElementById('p-key').innerText = data.apiKey || "belum ada";
+                        document.getElementById('p-phone').innerText = data.phone || "-";
+                        realPass = data.password || "********";
+                    }
+                });
+            } catch (e) { console.log("error"); }
+            finally { setTimeout(() => { loader.style.display = 'none'; }, 600); }
+        }
+
+        window.onload = loadData;
+    </script>
+</body>
+</html>
+
