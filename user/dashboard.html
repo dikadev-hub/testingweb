@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title id="page-title">dashboard</title>
+    <script src="../setting.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        body { 
+            background: #f8fafc; 
+            color: #1e293b; 
+            font-family: 'inter', sans-serif; 
+            margin: 0; 
+            text-transform: lowercase; 
+        }
+        .navbar {
+            background: #fff;
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        .brand { font-weight: 900; color: #16a34a; font-size: 1.1rem; }
+        .container { max-width: 500px; margin: auto; padding: 15px; }
+        .header-card {
+            background: linear-gradient(135deg, #16a34a, #15803d);
+            color: white;
+            padding: 30px 25px;
+            border-radius: 25px;
+            margin-bottom: 20px;
+            box-shadow: 0 10px 25px rgba(22, 163, 74, 0.15);
+            animation: fadeIn 0.6s ease-out;
+        }
+        .header-card h1 { margin: 5px 0 0 0; font-size: 1.4rem; font-weight: 900; }
+        .grid-info { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
+        .info-box {
+            background: white;
+            padding: 15px;
+            border-radius: 20px;
+            border: 1px solid #e2e8f0;
+        }
+        .info-box span { font-size: 0.65rem; color: #64748b; font-weight: 800; text-transform: uppercase; display: block; }
+        .info-box b { font-size: 0.9rem; color: #0f172a; }
+        .api-card {
+            background: #ffffff;
+            padding: 15px;
+            border-radius: 20px;
+            border: 1px dashed #16a34a;
+            margin-bottom: 20px;
+        }
+        .api-box { 
+            background: #f1f5f9; 
+            padding: 10px; 
+            border-radius: 10px; 
+            font-family: monospace; 
+            font-size: 0.7rem; 
+            word-break: break-all;
+            display: block;
+            margin-top: 5px;
+        }
+        .menu-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+        .menu-item {
+            background: white;
+            padding: 20px;
+            border-radius: 20px;
+            text-align: center;
+            text-decoration: none;
+            color: inherit;
+            border: 1px solid #e2e8f0;
+        }
+        .menu-item i { 
+            width: 40px; height: 40px; 
+            background: #f0fdf4; color: #16a34a; 
+            display: flex; align-items: center; justify-content: center; 
+            border-radius: 12px; margin: 0 auto 10px;
+        }
+        .menu-item b { font-size: 0.8rem; font-weight: 800; }
+        #loader {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: #f8fafc; display: flex; align-items: center; justify-content: center;
+            z-index: 9999; font-weight: 800; color: #16a34a;
+        }
+    </style>
+</head>
+<body>
+
+<div id="loader">memuat...</div>
+
+<div class="navbar">
+    <div class="brand shop-name">market</div>
+    <div onclick="logout()" style="cursor: pointer;"><i class="fa-solid fa-power-off"></i></div>
+</div>
+
+<div class="container">
+    <div class="header-card">
+        <h1 id="display-name">...</h1>
+    </div>
+
+    <div class="grid-info">
+        <div class="info-box">
+            <span>saldo</span>
+            <b>rp 0</b>
+        </div>
+        <div class="info-box">
+            <span>member</span>
+            <b>reguler</b>
+        </div>
+    </div>
+
+    <div class="api-card">
+        <span style="font-size: 0.65rem; font-weight: 800; color: #64748b; text-transform: uppercase;">api key anda</span>
+        <code class="api-box" id="display-key">...</code>
+    </div>
+
+    <div class="menu-grid">
+        <a href="#" class="menu-item">
+            <i class="fa-solid fa-gamepad"></i>
+            <b>topup</b>
+        </a>
+        <a href="#" class="menu-item">
+            <i class="fa-solid fa-crown"></i>
+            <b>premium</b>
+        </a>
+    </div>
+</div>
+
+<script>
+    async function init() {
+        const token = localStorage.getItem('sessionToken');
+        if (!token) return location.href = "login.html";
+        
+        try {
+            const res = await fetch('/api/user', {
+                headers: { 'Authorization': token }
+            });
+            const data = await res.json();
+            if (res.ok) {
+                document.getElementById('display-name').innerText = data.fullname;
+                document.getElementById('display-key').innerText = data.apiKey;
+                document.getElementById('loader').style.display = 'none';
+            } else {
+                localStorage.clear();
+                location.href = "login.html";
+            }
+        } catch (e) {
+            console.log('error');
+        }
+    }
+
+    function logout() {
+        localStorage.clear();
+        location.href = "login.html";
+    }
+
+    window.onload = function() {
+        init();
+        if (window.settings) {
+            document.querySelectorAll('.shop-name').forEach(el => el.innerText = settings.namatoko);
+        }
+    };
+</script>
+
+</body>
+</html>
