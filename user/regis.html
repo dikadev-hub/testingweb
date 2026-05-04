@@ -128,7 +128,7 @@
             if (response.ok) {
                 localStorage.setItem('sessionToken', result.sessionToken);
                 alert("pendaftaran berhasil!");
-                window.location.href = "user/dashboard.html";
+                window.location.href = "dashboard.html";
             } else {
                 alert(result.message);
                 btn.innerText = "daftar sekarang";
