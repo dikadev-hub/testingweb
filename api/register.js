@@ -1,6 +1,10 @@
 const Parse = require('parse/node');
 
-Parse.initialize("y0f6hqtsxznapkfrziko6b9pgeny8ewx3hmzu72k", "f2bhfcielmpg5fsqhdcmsgxjhc95zdmnr1fcckrt");
+Parse.initialize(
+    "Y0f6hqTsxzNapkFRzIKO6b9pGENY8ewx3HMZu72k", 
+    "Y4R6Q4AwyZBfGppAeaXDfvfW8MNvIwhdHEJ7KoIc",
+    "QKhrsQmDyp2sSEosdc78N8AbJxzbYZFzEyiWc1nl"
+);
 Parse.serverURL = 'https://parseapi.back4app.com/';
 
 export default async function handler(req, res) {
@@ -26,7 +30,7 @@ export default async function handler(req, res) {
     user.set("phone", phone);
 
     try {
-        await user.signUp();
+        await user.signUp(null, { useMasterKey: true });
         return res.status(200).json({ success: true, message: "berhasil buat akun kak, sabar ya otomatis ke halaman dashboard kok" });
     } catch (e) {
         if (e.code === 202 || e.code === 203) {
@@ -35,3 +39,4 @@ export default async function handler(req, res) {
         return res.status(500).json({ message: "error sistem: " + e.message });
     }
 }
+
