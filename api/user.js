@@ -9,18 +9,17 @@ Parse.serverURL = 'https://parseapi.back4app.com/';
 
 export default async function handler(req, res) {
     const token = req.headers['authorization'];
-    if (!token) {
-        return res.status(401).json({ message: 'kamu belum login kak' });
-    }
+    if (!token) return res.status(401).json({ message: 'unauthorized' });
+
     try {
         const user = await Parse.User.become(token);
         return res.status(200).json({
             success: true,
             fullname: user.get('fullname'),
             email: user.get('email'),
-            apiKey: user.get('apiKey') || 'key belum terbuat'
+            apiKey: user.get('apiKey')
         });
     } catch (e) {
-        return res.status(401).json({ message: 'sesi habis' });
+        return res.status(401).json({ message: 'invalid session' });
     }
 }
