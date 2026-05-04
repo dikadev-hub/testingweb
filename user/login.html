@@ -97,35 +97,25 @@
             document.getElementById('custom-popup').style.display = 'none';
         }
 
-        async function handle_login() {
-            const email = document.getElementById('email').value;
-            const pass = document.getElementById('pass').value;
+        async function handleLogin() {
+    const email = document.getElementById('email-input').value;
+    const pass = document.getElementById('pass-input').value;
 
-            if (!email || !pass) {
-                showpopup("kak, email dan password wajib di isi ya");
-                return;
-            }
+    const response = await fetch('/api/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, pass })
+    });
 
-            try {
-                const response = await fetch('/api/login', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ email, pass })
-                });
-                
-                const result = await response.json();
-                
-                if (response.ok) {
-                    localStorage.setItem('sessionToken', result.sessionToken);
-                    showpopup(result.message, true);
-                    setTimeout(() => { location.href = "dashboard.html"; }, 2000);
-                } else {
-                    showpopup(result.message);
-                }
-            } catch (e) {
-                showpopup("yah ada yang error kak");
-            }
-        }
+    const result = await response.json();
+    if (result.success) {
+        localStorage.setItem('sessionToken', result.sessionToken);
+        window.location.href = "user/dashboard.html";
+    } else {
+        alert(result.message);
+    }
+}
+
 
         window.onload = function() {
             if (window.settings) {
