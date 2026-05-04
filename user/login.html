@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title id="page-title">login</title>
+    <script src="../setting.js"></script>
+    <style>
+        @keyframes fadein { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
+        @keyframes pop { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+        
+        body { 
+            background: #f0f4f8; 
+            background-image: radial-gradient(#d1d9e6 1px, transparent 1px);
+            background-size: 20px 20px;
+            color: #1a1a1a; 
+            font-family: 'inter', sans-serif; 
+            margin: 0; 
+            text-transform: lowercase; 
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+        }
+
+        .login-card { 
+            background: rgba(255, 255, 255, 0.9); 
+            backdrop-filter: blur(10px);
+            width: 100%; 
+            max-width: 360px; 
+            padding: 40px 30px; 
+            border-radius: 30px; 
+            box-shadow: 0 20px 50px rgba(0,0,0,0.05); 
+            border: 1px solid rgba(255,255,255,0.5);
+            text-align: center;
+            animation: fadein 0.5s ease-out;
+        }
+
+        .logo-mini { width: 70px; height: 70px; border-radius: 20px; margin-bottom: 20px; border: 2px solid #28a745; object-fit: cover; }
+        h2 { font-size: 1.2rem; margin-bottom: 10px; color: #1e293b; }
+        p { font-size: 0.8rem; color: #64748b; margin-bottom: 30px; }
+
+        .input-group { text-align: left; margin-bottom: 15px; }
+        label { font-size: 0.75rem; font-weight: 700; color: #475569; margin-left: 5px; }
+        input { width: 100%; padding: 15px; margin-top: 5px; border: 1px solid #e2e8f0; border-radius: 14px; box-sizing: border-box; outline: none; background: #f8fafc; transition: 0.3s; }
+        input:focus { border-color: #007bff; background: #fff; box-shadow: 0 0 0 4px rgba(0,123,255,0.05); }
+
+        .btn-login { width: 100%; padding: 16px; background: #007bff; color: white; border: none; border-radius: 14px; font-weight: 800; cursor: pointer; margin-top: 10px; font-size: 0.95rem; box-shadow: 0 8px 20px rgba(0,123,255,0.2); }
+
+        #custom-popup { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.4); backdrop-filter: blur(5px); z-index: 9999; align-items: center; justify-content: center; }
+        .popup-content { background: white; padding: 30px; border-radius: 25px; max-width: 280px; width: 80%; text-align: center; animation: pop 0.3s cubic-bezier(0.17, 0.89, 0.32, 1.28); }
+        .popup-msg { font-size: 0.9rem; font-weight: 600; color: #1e293b; margin-bottom: 20px; }
+        .popup-btn { background: #1a1a1a; color: white; border: none; padding: 10px 25px; border-radius: 10px; font-weight: 800; cursor: pointer; }
+        
+        .footer { margin-top: 25px; font-size: 0.8rem; color: #64748b; }
+        .footer a { color: #28a745; text-decoration: none; font-weight: 800; }
+    </style>
+</head>
+<body>
+
+    <div class="login-card">
+        <img src="../logo/logo.jpg" alt="logo" class="logo-mini">
+        <h2>masuk ke <span class="shop-name"></span></h2>
+        <p>silahkan login untuk mengakses produk digital</p>
+
+        <div class="input-group">
+            <label>email</label>
+            <input type="email" id="email" placeholder="masukkan email anda">
+        </div>
+        <div class="input-group">
+            <label>password</label>
+            <input type="password" id="pass" placeholder="masukkan password">
+        </div>
+
+        <button class="btn-login" onclick="handle_login()">masuk sekarang</button>
+        
+        <div class="footer">
+            belum punya akun? <a href="regis.html">daftar gratis</a>
+        </div>
+    </div>
+
+    <div id="custom-popup">
+        <div class="popup-content">
+            <div class="popup-msg" id="popup-text"></div>
+            <button class="popup-btn" id="btn-close" onclick="closepopup()">oke kak</button>
+        </div>
+    </div>
+
+    <script>
+        function showpopup(msg, success = false) {
+            document.getElementById('popup-text').innerText = msg;
+            document.getElementById('custom-popup').style.display = 'flex';
+            if (success) document.getElementById('btn-close').style.display = 'none';
+        }
+
+        function closepopup() {
+            document.getElementById('custom-popup').style.display = 'none';
+        }
+
+        async function handle_login() {
+            const email = document.getElementById('email').value;
+            const pass = document.getElementById('pass').value;
+
+            if (!email || !pass) {
+                showpopup("kak, email dan password wajib di isi ya");
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, pass })
+                });
+                
+                const result = await response.json();
+                
+                if (response.ok) {
+                    localStorage.setItem('sessionToken', result.sessionToken);
+                    showpopup(result.message, true);
+                    setTimeout(() => { location.href = "dashboard.html"; }, 2000);
+                } else {
+                    showpopup(result.message);
+                }
+            } catch (e) {
+                showpopup("yah ada yang error kak");
+            }
+        }
+
+        window.onload = function() {
+            if (window.settings) {
+                document.title = "login | " + settings.namatoko;
+                var els = document.getElementsByClassName('shop-name');
+                for (var i = 0; i < els.length; i++) {
+                    els[i].innerText = settings.namatoko;
+                }
+            }
+        };
+    </script>
+</body>
+</html>
