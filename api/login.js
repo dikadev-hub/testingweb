@@ -34,7 +34,7 @@ export default async function handler(req, res) {
             sessionToken: user.getSessionToken() 
         });
     } catch (e) {
-        return res.status(400).json({ 
+        return res.status(401).json({ 
             message: "login gagal: " + e.message 
         });
     }
