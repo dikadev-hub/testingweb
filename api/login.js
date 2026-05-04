@@ -1,6 +1,10 @@
 const Parse = require('parse/node');
 
-Parse.initialize("y0f6hqtsxznapkfrziko6b9pgeny8ewx3hmzu72k", "f2bhfcielmpg5fsqhdcmsgxjhc95zdmnr1fcckrt");
+Parse.initialize(
+    "Y0f6hqTsxzNapkFRzIKO6b9pGENY8ewx3HMZu72k", 
+    "Y4R6Q4AwyZBfGppAeaXDfvfW8MNvIwhdHEJ7KoIc",
+    "QKhrsQmDyp2sSEosdc78N8AbJxzbYZFzEyiWc1nl"
+);
 Parse.serverURL = 'https://parseapi.back4app.com/';
 
 export default async function handler(req, res) {
