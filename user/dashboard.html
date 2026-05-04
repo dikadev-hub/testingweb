@@ -116,6 +116,23 @@
         .menu-item:hover { background: rgba(0, 123, 255, 0.05); color: #007bff; }
         .menu-item i { margin-right: 12px; font-size: 0.9rem; }
 
+        /* Style Broadcast Box */
+        .bc-container {
+            background: #007bff;
+            color: white;
+            padding: 18px 25px;
+            border-radius: 20px;
+            margin-bottom: 25px;
+            display: none;
+            position: relative;
+            animation: slideDown 0.4s ease;
+            box-shadow: 0 10px 20px rgba(0, 123, 255, 0.2);
+        }
+        .bc-container h4 { margin: 0 0 5px 0; font-size: 0.85rem; font-weight: 900; text-transform: uppercase; letter-spacing: 1px; }
+        .bc-container p { margin: 0; font-size: 0.9rem; opacity: 0.95; line-height: 1.4; }
+        .bc-close { position: absolute; top: 12px; right: 18px; cursor: pointer; font-size: 1.4rem; font-weight: 300; opacity: 0.7; }
+        .bc-close:hover { opacity: 1; }
+
         .info-label { font-size: 0.65rem; font-weight: 800; color: #64748b; text-transform: uppercase; margin-top: 15px; display: block; }
         .info-value { font-size: 0.85rem; font-weight: 600; color: #1e293b; display: block; margin-top: 2px; }
 
@@ -183,6 +200,12 @@
     </div>
 
     <div class="content">
+        <div id="broadcast-display" class="bc-container">
+            <div class="bc-close" onclick="closeBC()">×</div>
+            <h4 id="bc-display-title"></h4>
+            <p id="bc-display-msg"></p>
+        </div>
+
         <div id="search-box" class="search-wrapper">
             <input type="text" id="pencarian" placeholder="cari produk apa kak?">
         </div>
@@ -237,9 +260,26 @@
             }
         }
 
+        function checkBC() {
+            const saved = localStorage.getItem('broadcastData');
+            if(saved) {
+                const data = JSON.parse(saved);
+                document.getElementById('bc-display-title').innerText = data.title;
+                document.getElementById('bc-display-msg').innerText = data.msg;
+                document.getElementById('broadcast-display').style.display = 'block';
+            }
+        }
+
+        function closeBC() {
+            document.getElementById('broadcast-display').style.display = 'none';
+        }
+
         async function loadData() {
             const loader = document.getElementById('loading-line');
             loader.style.display = 'block';
+            
+            checkBC(); // Cek pesan broadcast saat masuk
+
             const token = localStorage.getItem('sessionToken');
             if (!token) { location.href = "login.html"; return; }
 
