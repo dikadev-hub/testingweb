@@ -20,7 +20,7 @@ export default async function handler(req, res) {
     }
 
     try {
-        const user = await Parse.User.logIn(email, pass);
+        const user = await Parse.User.logIn(email.trim(), pass);
         
         if (!user.get('apiKey')) {
             const newApiKey = "sk-" + crypto.randomBytes(16).toString('hex');
@@ -34,6 +34,8 @@ export default async function handler(req, res) {
             sessionToken: user.getSessionToken() 
         });
     } catch (e) {
-        return res.status(400).json({ message: "yah ada yang error kak, email atau password salah" });
+        return res.status(400).json({ 
+            message: "yah login gagal: " + e.message 
+        });
     }
 }
