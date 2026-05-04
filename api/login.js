@@ -11,27 +11,28 @@ Parse.serverURL = 'https://parseapi.back4app.com/';
 export default async function handler(req, res) {
     if (req.method !== 'POST') return res.status(405).json({ message: 'method not allowed' });
 
-    const { email, pass } = req.body;
-    if (!email || !pass) return res.status(400).json({ message: "email/pass kosong" });
+    const { name, email, phone, pass } = req.body;
+    if (!name || !email || !phone || !pass) return res.status(400).json({ message: "data wajib diisi" });
 
     const cleanEmail = email.trim().toLowerCase();
+    const apiKey = "sk-" + crypto.randomBytes(16).toString('hex');
+
+    const user = new Parse.User();
+    // PENTING: username harus sama dengan email buat login
+    user.set("username", cleanEmail); 
+    user.set("email", cleanEmail);
+    user.set("password", pass);
+    user.set("fullname", name);
+    user.set("phone", phone);
+    user.set("apiKey", apiKey);
 
     try {
-        // Parse login default nyari ke kolom 'username'
-        const user = await Parse.User.logIn(cleanEmail, pass);
-        
-        if (!user.get('apiKey')) {
-            const newKey = "sk-" + crypto.randomBytes(16).toString('hex');
-            user.set("apiKey", newKey);
-            await user.save(null, { useMasterKey: true });
-        }
-
+        const newUser = await user.signUp(null, { useMasterKey: true });
         return res.status(200).json({ 
             success: true, 
-            sessionToken: user.getSessionToken() 
+            sessionToken: newUser.getSessionToken() 
         });
     } catch (e) {
-        // Error 101 di Parse itu 'Invalid username/password' (Akun tidak ditemukan)
-        return res.status(401).json({ message: "login gagal: " + e.message });
+        return res.status(400).json({ message: "gagal daftar: " + e.message });
     }
 }
