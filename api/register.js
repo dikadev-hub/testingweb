@@ -32,6 +32,6 @@ export default async function handler(req, res) {
         if (e.code === 202 || e.code === 203) {
             return res.status(400).json({ message: "yah email nya udah di pake orang lain" });
         }
-        return res.status(500).json({ message: "yah ada yang error kak" });
+        return res.status(500).json({ message: "error sistem: " + e.message });
     }
 }
