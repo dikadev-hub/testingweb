@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
         @keyframes fadein { from { opacity: 0; } to { opacity: 1; } }
-        @keyframes slideMenu { from { transform: translateX(-20px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+        @keyframes slideDown { from { transform: translateY(-10px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
         @keyframes loading-bar { 0% { left: -40%; } 100% { left: 100%; } }
 
         body { 
@@ -41,9 +41,10 @@
         .header {
             background: rgba(255, 255, 255, 0.8);
             backdrop-filter: blur(15px);
-            height: 70px;
+            height: 75px;
             display: flex;
             align-items: center;
+            justify-content: space-between;
             padding: 0 20px;
             position: sticky;
             top: 0; z-index: 999;
@@ -59,133 +60,156 @@
             align-items: center;
             justify-content: center;
             cursor: pointer;
-            transition: 0.3s;
             box-shadow: 0 4px 10px rgba(0,0,0,0.03);
         }
-        .btn-menu:active { transform: scale(0.9); }
 
-        .sidebar {
-            position: fixed;
+        .profile-trigger {
+            width: 45px; height: 45px;
+            background: #007bff;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            border: 2px solid white;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+        .profile-trigger img { width: 100%; height: 100%; object-fit: cover; }
+
+        .sidebar-box {
+            position: absolute;
             top: 85px; left: 20px;
-            width: 220px;
+            width: 200px;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.1);
+            display: none;
+            padding: 10px;
+            z-index: 1001;
+            animation: slideDown 0.3s ease;
+            border: 1px solid #f1f5f9;
+        }
+
+        .profile-box {
+            position: absolute;
+            top: 85px; right: 20px;
+            width: 280px;
             background: white;
             border-radius: 25px;
-            box-shadow: 0 15px 40px rgba(0,0,0,0.08);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.1);
             display: none;
-            flex-direction: column;
-            padding: 10px;
-            z-index: 1000;
-            animation: slideMenu 0.4s cubic-bezier(0.18, 0.89, 0.32, 1.28);
-            border: 1px solid rgba(255,255,255,0.5);
+            padding: 25px;
+            z-index: 1001;
+            animation: slideDown 0.3s ease;
+            border: 1px solid #f1f5f9;
         }
 
         .menu-item {
-            padding: 15px 20px;
+            padding: 12px 15px;
             display: flex;
             align-items: center;
-            border-radius: 18px;
+            border-radius: 12px;
             color: #475569;
             cursor: pointer;
             font-weight: 700;
             transition: 0.2s;
         }
         .menu-item:hover { background: #f0f7ff; color: #007bff; }
-        .menu-item i { margin-right: 12px; font-size: 1rem; }
+        .menu-item i { margin-right: 10px; }
 
-        .overlay {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            z-index: 998;
-            display: none;
+        .info-label { font-size: 0.65rem; font-weight: 800; color: #94a3b8; text-transform: uppercase; margin-top: 15px; display: block; }
+        .info-value { font-size: 0.85rem; font-weight: 600; color: #1e293b; display: block; margin-top: 2px; word-break: break-all; }
+
+        .btn-docs {
+            width: 100%; padding: 12px;
+            background: #1a1a1a; color: white;
+            border: none; border-radius: 12px;
+            font-weight: 800; cursor: pointer;
+            margin-top: 20px; font-size: 0.8rem;
         }
+
+        .overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 1000; display: none; }
 
         .content { padding: 20px; max-width: 600px; margin: 0 auto; }
-
-        .search-wrapper {
-            background: white;
-            padding: 5px;
-            border-radius: 20px;
-            display: none;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.04);
-            border: 1px solid #fff;
-            animation: fadein 0.5s ease;
-        }
-        .search-wrapper input {
-            width: 100%;
-            padding: 15px;
-            border: none;
-            outline: none;
-            background: transparent;
-            font-size: 0.9rem;
-            font-family: 'inter', sans-serif;
-        }
-
-        .welcome-box {
-            text-align: center;
-            margin-top: 80px;
-            color: #94a3b8;
-            animation: fadein 0.8s ease;
-        }
+        .search-wrapper { background: white; padding: 5px; border-radius: 20px; display: none; box-shadow: 0 10px 25px rgba(0,0,0,0.04); border: 1px solid #fff; }
+        .search-wrapper input { width: 100%; padding: 15px; border: none; outline: none; background: transparent; font-size: 0.9rem; }
     </style>
 </head>
 <body>
 
     <div id="loading-line"></div>
-    <div id="overlay" class="overlay" onclick="closeMenu()"></div>
+    <div id="overlay" class="overlay" onclick="closeAll()"></div>
 
     <div class="header">
-        <div class="btn-menu" onclick="toggleMenu()">
-            <i class="fa-solid fa-grid-2" style="font-size: 1.1rem; color: #1e293b;"></i>
+        <div class="btn-menu" onclick="toggleSidebar()">
+            <i class="fa-solid fa-bars-staggered" style="color: #1e293b;"></i>
         </div>
-        <div style="margin-left: 15px;">
-            <div id="user-name" style="font-weight: 800; color: #1e293b; font-size: 0.95rem;">memuat...</div>
+        <div class="profile-trigger" onclick="toggleProfile()">
+            <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Dika" alt="pp">
         </div>
     </div>
 
-    <div id="sidebar" class="sidebar">
+    <div id="sidebar" class="sidebar-box">
         <div class="menu-item" onclick="openSearch()">
             <i class="fa-solid fa-magnifying-glass"></i>
             <span>search produk</span>
         </div>
     </div>
 
+    <div id="profile-card" class="profile-box">
+        <span class="info-label">username :</span>
+        <span id="p-name" class="info-value">memuat...</span>
+
+        <span class="info-label">role :</span>
+        <span class="info-value">user (member)</span>
+
+        <span class="info-label">api key :</span>
+        <span id="p-key" class="info-value">memuat...</span>
+
+        <span class="info-label">no hp :</span>
+        <span id="p-phone" class="info-value">memuat...</span>
+
+        <span class="info-label">password :</span>
+        <span class="info-value">********</span>
+
+        <button class="btn-docs">docs api</button>
+    </div>
+
     <div class="content">
         <div id="search-box" class="search-wrapper">
-            <input type="text" id="pencarian" placeholder="cari sesuatu kak?">
-        </div>
-
-        <div id="main-view" class="welcome-box">
-            <i class="fa-solid fa-ghost" style="font-size: 3rem; margin-bottom: 15px; opacity: 0.2;"></i>
-            <p>klik menu kotak untuk mencari produk</p>
+            <input type="text" id="pencarian" placeholder="cari produk apa kak?">
         </div>
     </div>
 
     <script>
-        function toggleMenu() {
-            const menu = document.getElementById('sidebar');
-            const overlay = document.getElementById('overlay');
-            const isVisible = menu.style.display === 'flex';
-            
-            menu.style.display = isVisible ? 'none' : 'flex';
-            overlay.style.display = isVisible ? 'none' : 'block';
+        function toggleSidebar() {
+            closeAll();
+            document.getElementById('sidebar').style.display = 'block';
+            document.getElementById('overlay').style.display = 'block';
         }
 
-        function closeMenu() {
+        function toggleProfile() {
+            closeAll();
+            document.getElementById('profile-card').style.display = 'block';
+            document.getElementById('overlay').style.display = 'block';
+        }
+
+        function closeAll() {
             document.getElementById('sidebar').style.display = 'none';
+            document.getElementById('profile-card').style.display = 'none';
             document.getElementById('overlay').style.display = 'none';
         }
 
         function openSearch() {
-            closeMenu();
+            closeAll();
             document.getElementById('search-box').style.display = 'block';
-            document.getElementById('main-view').style.display = 'none';
             document.getElementById('pencarian').focus();
         }
 
-        async function loadDashboard() {
+        async function loadData() {
             const loader = document.getElementById('loading-line');
             loader.style.display = 'block';
-
             const token = localStorage.getItem('sessionToken');
             if (!token) { location.href = "login.html"; return; }
 
@@ -193,18 +217,17 @@
                 const res = await fetch('/api/user', { headers: { 'Authorization': token } });
                 const data = await res.json();
                 if (data.success) {
-                    document.getElementById('user-name').innerText = data.fullname;
+                    document.getElementById('p-name').innerText = data.fullname;
+                    document.getElementById('p-key').innerText = data.apiKey;
+                    document.getElementById('p-phone').innerText = data.phone;
                 } else {
                     location.href = "login.html";
                 }
-            } catch (e) {
-                document.getElementById('user-name').innerText = "error";
-            } finally {
-                setTimeout(() => { loader.style.display = 'none'; }, 600);
-            }
+            } catch (e) { console.log("error"); }
+            finally { setTimeout(() => { loader.style.display = 'none'; }, 600); }
         }
 
-        window.onload = loadDashboard;
+        window.onload = loadData;
     </script>
 </body>
 </html>
