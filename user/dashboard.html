@@ -159,6 +159,10 @@
         
         .form-card { background: white; padding: 25px; border-radius: 25px; box-shadow: 0 10px 25px rgba(0,0,0,0.04); border: 1px solid #fff; }
         .input-group textarea { width: 100%; padding: 15px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 15px; outline: none; font-family: inherit; box-sizing: border-box; }
+
+        /* DEPO MODAL STYLE */
+        .depo-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); backdrop-filter: blur(5px); z-index: 2000; display: none; align-items: center; justify-content: center; }
+        .depo-card { background: white; width: 90%; max-width: 380px; padding: 25px; border-radius: 25px; text-align: center; }
     </style>
 </head>
 <body>
@@ -170,6 +174,9 @@
         <div class="btn-action" onclick="toggleSidebar()">
             <i class="fa-solid fa-bars-staggered"></i>
         </div>
+        <div style="font-weight: 900; color: #1e293b; font-size: 1rem;">
+            rp <span id="user-balance-head">0</span>
+        </div>
         <div class="btn-action" onclick="toggleProfile()">
             <i class="fa-solid fa-user"></i>
         </div>
@@ -180,6 +187,10 @@
         <div class="menu-item" onclick="openSearch()">
             <i class="fa-solid fa-magnifying-glass"></i>
             <span>search produk</span>
+        </div>
+        <div class="menu-item" onclick="openDepo()">
+            <i class="fa-solid fa-wallet"></i>
+            <span>deposit saldo</span>
         </div>
         <div class="menu-item" onclick="logout()">
             <i class="fa-solid fa-right-from-bracket"></i>
@@ -197,6 +208,11 @@
         <span class="info-label">username :</span>
         <span id="p-name" class="info-value">memuat...</span>
 
+        <div style="background: #f8fafc; padding: 12px; border-radius: 15px; margin-top: 15px; border: 1px solid #e2e8f0;">
+            <span class="info-label" style="margin-top: 0; color: #007bff;">saldo anda :</span>
+            <span style="font-size: 1.1rem; font-weight: 900; color: #1e293b;">rp <span id="user-balance">0</span></span>
+        </div>
+
         <span class="info-label">role :</span>
         <span id="p-role" class="info-value">user (member)</span>
 
@@ -213,6 +229,24 @@
         </div>
 
         <button class="btn-docs" onclick="window.location.href='docs.html'">docs api</button>
+    </div>
+
+    <div id="depo-modal-area" class="depo-modal">
+        <div class="depo-card">
+            <div id="input-depo-area">
+                <h3 style="margin: 0 0 5px 0;">isi saldo</h3>
+                <p style="font-size: 0.7rem; color: #64748b; margin-bottom: 20px;">min depo 2.000 • biaya admin 300</p>
+                <input type="number" id="depo-amount" placeholder="nominal..." style="width: 100%; padding: 15px; border-radius: 12px; border: 1px solid #ddd; margin-bottom: 15px; box-sizing: border-box;">
+                <button onclick="prosesDeposit()" id="btn-create-depo" style="width: 100%; padding: 15px; border-radius: 15px; border: none; background: #1a1a1a; color: white; font-weight: 800; cursor: pointer;">buat qris</button>
+            </div>
+            <div id="qris-display-area" style="display: none;">
+                <div style="border: 2px solid #007bff; padding: 10px; border-radius: 20px; background: #f8fafc;">
+                    <img id="qris-img" src="" style="width: 100%; border-radius: 12px;">
+                </div>
+                <p style="color: red; font-size: 0.7rem; font-weight: 800; margin-top: 15px;">jangan tutup halaman ini!<br>otomatis masuk setelah bayar.</p>
+            </div>
+            <button onclick="closeDepo()" style="margin-top: 20px; background: none; border: none; color: #94a3b8; font-weight: 700; cursor: pointer;">tutup</button>
+        </div>
     </div>
 
     <div class="content">
@@ -238,7 +272,6 @@
                 <i class="fa-solid fa-file-signature"></i> form request owner
             </div>
             <div class="input-group">
-                <label>jelaskan kenapa kamu ingin menjadi owner :</label>
                 <textarea id="req-desc" rows="5" placeholder="tulis alasan kamu di sini..."></textarea>
             </div>
             <div style="display: flex; gap: 10px; margin-top: 15px;">
@@ -290,6 +323,7 @@
         const db = firebase.database();
 
         let realPass = "********";
+        let checkStatusInterval = null;
 
         function toggleSidebar() {
             const sb = document.getElementById('sidebar');
@@ -315,6 +349,56 @@
             document.getElementById('sidebar').style.display = 'none';
             document.getElementById('profile-card').style.display = 'none';
             document.getElementById('overlay').style.display = 'none';
+        }
+
+        function openDepo() { closeAll(); document.getElementById('depo-modal-area').style.display = 'flex'; }
+        function closeDepo() { document.getElementById('depo-modal-area').style.display = 'none'; clearInterval(checkStatusInterval); }
+
+        async function prosesDeposit() {
+            const amt = document.getElementById('depo-amount').value;
+            const btn = document.getElementById('btn-create-depo');
+            const token = localStorage.getItem('sessionToken');
+            if(amt < 2000) return alert("minimal 2.000");
+            btn.innerText = "proses..."; btn.disabled = true;
+            try {
+                const res = await fetch('/api/depo', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ action: 'create', amount: amt, userToken: token })
+                });
+                const data = await res.json();
+                if(data.success) {
+                    document.getElementById('qris-img').src = data.qrUrl;
+                    document.getElementById('input-depo-area').style.display = 'none';
+                    document.getElementById('qris-display-area').style.display = 'block';
+                    checkStatusInterval = setInterval(async () => {
+                        const check = await fetch('/api/depo', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ action: 'status', orderId: data.orderId || data.order_id })
+                        });
+                        const resStat = await check.json();
+                        if(resStat.status === 'SUCCESS') {
+                            clearInterval(checkStatusInterval);
+                            showSuccessDepo(amt);
+                        }
+                    }, 5000);
+                }
+            } catch(e) { alert("sistem error"); btn.disabled = false; btn.innerText = "buat qris"; }
+        }
+
+        function showSuccessDepo(nominal) {
+            document.getElementById('depo-modal-area').innerHTML = `
+                <div class="depo-card" style="border-top: 6px solid #22c55e;">
+                    <i class="fa-solid fa-circle-check" style="font-size: 3.5rem; color: #22c55e; margin-bottom: 15px;"></i>
+                    <h2 style="margin: 0; color: #1e293b;">DEPOSIT BERHASIL</h2>
+                    <p style="font-size: 0.9rem; color: #64748b; margin: 15px 0;">
+                        saldo anda telah ditambahkan sebesar <br>
+                        <strong style="color: #1e293b; font-size: 1.3rem;">rp ${parseInt(nominal).toLocaleString('id-ID')}</strong>
+                    </p>
+                    <button onclick="location.reload()" style="width: 100%; padding: 15px; border-radius: 15px; border: none; background: #1a1a1a; color: white; font-weight: 800; cursor: pointer;">mantap</button>
+                </div>
+            `;
         }
 
         function openRequestForm() {
@@ -421,6 +505,8 @@
                         document.getElementById('p-key').innerText = data.apiKey || "belum ada";
                         document.getElementById('p-phone').innerText = data.phone || "-";
                         document.getElementById('p-role').innerText = data.role || "user (member)";
+                        document.getElementById('user-balance').innerText = (data.balance || 0).toLocaleString('id-ID');
+                        document.getElementById('user-balance-head').innerText = (data.balance || 0).toLocaleString('id-ID');
                         realPass = data.password || "********";
                     }
                 });
