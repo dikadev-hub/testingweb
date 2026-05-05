@@ -89,10 +89,13 @@
             transition: 0.3s;
         }
 
+        /* --- SIDEBAR SCROLLABLE --- */
         .sidebar-box {
             position: absolute;
             top: 85px; left: 20px;
             width: 220px;
+            max-height: 420px;
+            overflow-y: auto;
             background: rgba(255, 255, 255, 0.9);
             backdrop-filter: blur(10px);
             border-radius: 20px;
@@ -101,8 +104,8 @@
             z-index: 1001;
             animation: slideDown 0.3s ease;
             border: 1px solid rgba(255, 255, 255, 0.5);
-            overflow: hidden;
         }
+        .sidebar-box::-webkit-scrollbar { width: 0; }
 
         .sidebar-title {
             padding: 15px 20px;
@@ -113,6 +116,7 @@
             letter-spacing: 1px;
             border-bottom: 1px solid rgba(0,0,0,0.03);
             background: rgba(0,0,0,0.01);
+            position: sticky; top: 0; background: white; z-index: 10;
         }
 
         .profile-box {
@@ -142,6 +146,26 @@
         .menu-item:hover { background: rgba(0, 123, 255, 0.05); color: #007bff; }
         .menu-item i { margin-right: 12px; font-size: 0.9rem; width: 20px; text-align: center; }
 
+        /* --- OWNER GRID STYLE --- */
+        .grid-owner {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            margin-bottom: 12px;
+            display: none; /* Sembunyi jika bukan owner */
+        }
+        .item-owner {
+            background: white;
+            padding: 15px 5px;
+            border-radius: 20px;
+            text-align: center;
+            border: 1px solid #fff;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.02);
+            cursor: pointer;
+        }
+        .item-owner i { font-size: 1.1rem; color: #007bff; margin-bottom: 8px; display: block; }
+        .item-owner span { font-size: 0.55rem; font-weight: 900; color: #1e293b; text-transform: uppercase; display: block; line-height: 1.2; }
+
         .slider-container {
             width: 100%;
             position: relative;
@@ -154,25 +178,14 @@
             transition: transform 0.5s ease-in-out;
             border-radius: 20px;
         }
-        .slide {
-            min-width: 100%;
-            position: relative;
-        }
-        .slide img {
-            width: 100%;
-            height: 160px; 
-            object-fit: cover;
-            border-radius: 20px;
-            border: 1px solid #fff;
-            box-shadow: 0 8px 20px rgba(0,0,0,0.05);
-        }
+        .slide { min-width: 100%; position: relative; }
+        .slide img { width: 100%; height: 160px; object-fit: cover; border-radius: 20px; }
 
         .bc-banner-style {
             background: linear-gradient(to right, #007bff, #0056b3);
             border-radius: 20px; padding: 15px 20px;
             display: none; align-items: center; justify-content: space-between;
             box-shadow: 0 10px 20px rgba(0, 123, 255, 0.2);
-            animation: slideDown 0.5s ease;
             margin-bottom: 25px; color: white;
         }
         .btn-read-bc { 
@@ -195,10 +208,8 @@
         .btn-toggle-pass { background: none; border: none; color: #94a3b8; cursor: pointer; padding: 5px; }
 
         .btn-docs {
-            width: 100%; padding: 12px;
-            background: #1a1a1a; color: white;
-            border: none; border-radius: 12px;
-            font-weight: 800; cursor: pointer;
+            width: 100%; padding: 12px; background: #1a1a1a; color: white;
+            border: none; border-radius: 12px; font-weight: 800; cursor: pointer;
             margin-top: 20px; font-size: 0.8rem;
         }
 
@@ -214,50 +225,27 @@
     <div id="overlay" class="overlay" onclick="closeAll()"></div>
 
     <div class="header">
-        <div class="btn-action" onclick="toggleSidebar()">
-            <i class="fa-solid fa-bars-staggered"></i>
-        </div>
-
+        <div class="btn-action" onclick="toggleSidebar()"><i class="fa-solid fa-bars-staggered"></i></div>
         <div style="flex: 1; margin: 0 15px; overflow: hidden; white-space: nowrap;">
             <marquee id="running-text" style="font-size: 0.7rem; font-weight: 800; color: #64748b; text-transform: uppercase;">WELCOME...</marquee>
         </div>
-
-        <div class="btn-action" onclick="toggleProfile()">
-            <i class="fa-solid fa-user"></i>
-        </div>
+        <div class="btn-action" onclick="toggleProfile()"><i class="fa-solid fa-user"></i></div>
     </div>
 
     <div id="sidebar" class="sidebar-box">
         <div class="sidebar-title">eksplorasi</div>
-        <div class="menu-item" onclick="openSearch()">
-            <i class="fa-solid fa-magnifying-glass"></i>
-            <span>search produk</span>
-        </div>
-        <div class="menu-item" onclick="window.location.href='deposit.html'">
-            <i class="fa-solid fa-wallet"></i>
-            <span>top up saldo</span>
-        </div>
-        
+        <div class="menu-item" onclick="openSearch()"><i class="fa-solid fa-magnifying-glass"></i><span>search produk</span></div>
+        <div class="menu-item" onclick="window.location.href='deposit.html'"><i class="fa-solid fa-wallet"></i><span>top up saldo</span></div>
         <div class="sidebar-title">akun & sistem</div>
-        <div class="menu-item" onclick="window.location.href='request.html'">
-            <i class="fa-solid fa-crown"></i>
-            <span>request owner</span>
-        </div>
-        <div class="menu-item" onclick="logout()">
-            <i class="fa-solid fa-right-from-bracket"></i>
-            <span>keluar aplikasi</span>
-        </div>
+        <div class="menu-item" onclick="window.location.href='request.html'"><i class="fa-solid fa-crown"></i><span>request owner</span></div>
+        <div class="menu-item" onclick="logout()"><i class="fa-solid fa-right-from-bracket"></i><span>keluar aplikasi</span></div>
     </div>
 
     <div id="profile-card" class="profile-box">
-        <span class="info-label">username :</span>
-        <span id="p-name" class="info-value">memuat...</span>
-        <span class="info-label">role :</span>
-        <span id="p-role" class="info-value">user (member)</span>
-        <span class="info-label">api key :</span>
-        <span id="p-key" class="info-value">memuat...</span>
-        <span class="info-label">no hp :</span>
-        <span id="p-phone" class="info-value">memuat...</span>
+        <span class="info-label">username :</span><span id="p-name" class="info-value">memuat...</span>
+        <span class="info-label">role :</span><span id="p-role" class="info-value">user (member)</span>
+        <span class="info-label">api key :</span><span id="p-key" class="info-value">memuat...</span>
+        <span class="info-label">no hp :</span><span id="p-phone" class="info-value">memuat...</span>
         <span class="info-label">password :</span>
         <div class="pass-container">
             <span id="p-pass" class="pass-value">••••••••</span>
@@ -268,16 +256,11 @@
 
     <div class="content">
         <div class="wallet-card">
-            <div class="wallet-info">
-                <span>saldo aktif</span>
-                <h2 id="p-balance">rp 0</h2>
-            </div>
-            <button class="btn-topup" onclick="window.location.href='deposit.html'">
-                <i class="fa-solid fa-plus"></i> top up
-            </button>
+            <div class="wallet-info"><span>saldo aktif</span><h2 id="p-balance">rp 0</h2></div>
+            <button class="btn-topup" onclick="window.location.href='deposit.html'"><i class="fa-solid fa-plus"></i> top up</button>
         </div>
 
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 25px;">
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px;">
             <div onclick="location.href='produk.html'" style="background: #1a1a1a; color: white; padding: 20px; border-radius: 25px; text-align: center; cursor: pointer;">
                 <i class="fa-solid fa-box-open" style="font-size: 1.2rem; margin-bottom: 8px; display: block;"></i>
                 <span style="font-size: 0.7rem; font-weight: 800; text-transform: uppercase;">produk</span>
@@ -288,20 +271,23 @@
             </div>
         </div>
 
-        <div id="slider-container" class="slider-container">
-            <div id="slider-wrapper" class="slider-wrapper"></div>
-            <div id="slider-dots" class="slider-dots"></div>
+        <div id="owner-grid-1" class="grid-owner">
+            <div class="item-owner" onclick="location.href='edit-produk.html'"><i class="fa-solid fa-pen-to-square"></i><span>edit produk</span></div>
+            <div class="item-owner" onclick="location.href='total-user.html'"><i class="fa-solid fa-users"></i><span>total user</span></div>
+            <div class="item-owner" onclick="location.href='produk-manage.html'"><i class="fa-solid fa-boxes-stacked"></i><span>produk</span></div>
         </div>
+        <div id="owner-grid-2" class="grid-owner">
+            <div class="item-owner" onclick="location.href='add-produk.html'"><i class="fa-solid fa-plus-circle"></i><span>add produk</span></div>
+            <div class="item-owner" onclick="location.href='list-produk.html'"><i class="fa-solid fa-list-check"></i><span>list produk</span></div>
+            <div class="item-owner" onclick="location.href='del-produk.html'"><i class="fa-solid fa-trash-can"></i><span>del produk</span></div>
+        </div>
+
+        <div id="slider-container" class="slider-container"><div id="slider-wrapper" class="slider-wrapper"></div></div>
 
         <div id="bc-banner-area" class="bc-banner-style">
             <div style="display: flex; align-items: center; gap: 15px;">
-                <div style="width: 40px; height: 40px; background: rgba(255,255,255,0.2); border-radius: 12px; display: flex; align-items: center; justify-content: center;">
-                    <i class="fa-solid fa-envelope-open-text"></i>
-                </div>
-                <div>
-                    <span style="font-size: 0.6rem; font-weight: 800; opacity: 0.8; text-transform: uppercase;">pesan baru</span>
-                    <h4 id="bc-title-preview" style="margin: 0; font-size: 0.85rem; font-weight: 700;">pengumuman</h4>
-                </div>
+                <i class="fa-solid fa-envelope-open-text"></i>
+                <h4 id="bc-title-preview" style="margin: 0; font-size: 0.85rem; font-weight: 700;">pengumuman</h4>
             </div>
             <button class="btn-read-bc" onclick="openFullBC()">baca</button>
         </div>
@@ -311,31 +297,16 @@
                 <span style="font-size: 0.7rem; font-weight: 800; color: #94a3b8; text-transform: uppercase; letter-spacing: 1px;">produk baru rilis</span>
                 <span onclick="location.href='produk.html'" style="font-size: 0.6rem; font-weight: 800; color: #007bff; text-transform: uppercase; cursor: pointer;">lihat semua</span>
             </div>
-            
-            <div id="featured-container" style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
-                <div id="empty-product" style="grid-column: span 2; text-align: center; padding: 40px 0; opacity: 0.2;">
-                    <i class="fa-solid fa-box-open" style="font-size: 3rem; margin-bottom: 15px; display: block;"></i>
-                    <p style="font-size: 0.7rem; font-weight: 800; text-transform: uppercase; line-height: 1.5;">ADMIN / OWNER BELUM MENAMBAH KAN<br>PRODUK APAPUN</p>
-                </div>
-            </div>
+            <div id="featured-container" style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;"></div>
         </div>
 
-        <div id="search-box" class="search-wrapper">
-            <input type="text" id="pencarian" placeholder="cari produk apa kak?">
-        </div>
-
-        <div id="main-placeholder" style="text-align: center; margin-top: 50px; opacity: 0.2;">
-            <i class="fa-solid fa-layer-group" style="font-size: 3rem;"></i>
-            <p style="margin-top: 10px;">silahkan pilih menu</p>
-        </div>
+        <div id="search-box" class="search-wrapper"><input type="text" id="pencarian" placeholder="cari produk apa kak?"></div>
     </div>
 
     <div id="bc-full-view" class="bc-full-overlay">
         <div style="padding: 40px 25px 20px; display: flex; justify-content: space-between; align-items: center;">
             <div style="font-weight: 900; font-size: 1.2rem; color: #007bff;">pesan.</div>
-            <div style="width: 45px; height: 45px; background: #fff; border-radius: 15px; display: flex; align-items: center; justify-content: center; cursor: pointer;" onclick="closeFullBC()">
-                <i class="fa-solid fa-xmark"></i>
-            </div>
+            <div class="btn-action" onclick="closeFullBC()"><i class="fa-solid fa-xmark"></i></div>
         </div>
         <div style="padding: 20px 30px; overflow-y: auto;">
             <div style="background: #fff; padding: 30px; border-radius: 30px;">
@@ -352,57 +323,41 @@
     <script>
         const firebaseConfig = {
             apiKey: "AIzaSyDGRsCcT-7Bv_nOAybjXyuIT6Ca0IT4YTg",
-            authDomain: "market-d978f.firebaseapp.com",
             databaseURL: "https://market-d978f-default-rtdb.asia-southeast1.firebasedatabase.app",
             projectId: "market-d978f",
-            storageBucket: "market-d978f.firebasestorage.app",
-            messagingSenderId: "291695486607",
-            appId: "1:291695486607:web:dd860d16639b47c163f2fa"
         };
-
         if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
 
         let realPass = "********";
-        let currentSlide = 0;
-        let slideInterval;
 
-        function toggleSidebar() {
+        function toggleSidebar() { 
             const sb = document.getElementById('sidebar');
             if (sb.style.display === 'block') closeAll();
             else { closeAll(); sb.style.display = 'block'; document.getElementById('overlay').style.display = 'block'; }
         }
 
-        function toggleProfile() {
+        function toggleProfile() { 
             const pc = document.getElementById('profile-card');
             if (pc.style.display === 'block') closeAll();
             else { closeAll(); pc.style.display = 'block'; document.getElementById('overlay').style.display = 'block'; }
         }
 
-        function closeAll() {
+        function closeAll() { 
             document.getElementById('sidebar').style.display = 'none';
             document.getElementById('profile-card').style.display = 'none';
             document.getElementById('overlay').style.display = 'none';
         }
 
-        function openSearch() {
-            closeAll();
-            document.getElementById('main-placeholder').style.display = 'none';
-            document.getElementById('search-box').style.display = 'block';
-            document.getElementById('pencarian').focus();
-        }
+        function openSearch() { closeAll(); document.getElementById('search-box').style.display = 'block'; document.getElementById('pencarian').focus(); }
 
         function togglePass() {
             const passElem = document.getElementById('p-pass');
             const icon = document.getElementById('pass-icon');
             if (passElem.innerText === '••••••••') {
-                passElem.innerText = realPass;
-                passElem.style.letterSpacing = '0px';
-                icon.className = 'fa-solid fa-eye';
+                passElem.innerText = realPass; passElem.style.letterSpacing = '0px'; icon.className = 'fa-solid fa-eye';
             } else {
-                passElem.innerText = '••••••••';
-                passElem.style.letterSpacing = '2px';
-                icon.className = 'fa-solid fa-eye-slash';
+                passElem.innerText = '••••••••'; passElem.style.letterSpacing = '2px'; icon.className = 'fa-solid fa-eye-slash';
             }
         }
 
@@ -410,105 +365,73 @@
         function closeFullBC() { document.getElementById('bc-full-view').style.display = 'none'; document.body.style.overflow = 'auto'; }
 
         function initBroadcast() {
-            db.ref('broadcast').on('value', (snapshot) => {
-                const data = snapshot.val();
-                const banner = document.getElementById('bc-banner-area');
+            db.ref('broadcast').on('value', (snap) => {
+                const data = snap.val(); const banner = document.getElementById('bc-banner-area');
                 if (data && data.message) {
                     banner.style.display = 'flex';
                     document.getElementById('bc-title-preview').innerText = data.title || "pengumuman";
                     document.getElementById('bc-full-title').innerText = data.title || "pengumuman";
                     document.getElementById('bc-full-msg').innerText = data.message;
-                } else { banner.style.display = 'none'; }
+                } else banner.style.display = 'none';
             });
         }
 
         function initBannerSlider() {
-            db.ref('banner_promo').on('value', (snapshot) => {
+            db.ref('banner_promo').on('value', (snap) => {
                 const wrapper = document.getElementById('slider-wrapper');
-                const dotsContainer = document.getElementById('slider-dots');
                 const container = document.getElementById('slider-container');
-                wrapper.innerHTML = ""; dotsContainer.innerHTML = "";
-                if (snapshot.exists()) {
+                wrapper.innerHTML = "";
+                if (snap.exists()) {
                     container.style.display = 'block';
-                    let index = 0;
-                    snapshot.forEach((child) => {
-                        const data = child.val();
-                        wrapper.innerHTML += `<div class="slide"><img src="${data.image_url}"><div class="slide-title" style="position: absolute; bottom: 0; left: 0; right: 0; background: linear-gradient(transparent, rgba(0,0,0,0.7)); color: white; padding: 20px 15px 10px; border-radius: 0 0 20px 20px; font-size: 0.8rem; font-weight: 700;">${data.title || ""}</div></div>`;
-                        dotsContainer.innerHTML += `<div class="dot ${index === 0 ? 'active' : ''}" onclick="goToSlide(${index})"></div>`;
-                        index++;
-                    });
-                    startAutoSlide();
-                } else { container.style.display = 'none'; }
+                    snap.forEach(child => { wrapper.innerHTML += `<div class="slide"><img src="${child.val().image_url}"></div>`; });
+                } else container.style.display = 'none';
             });
         }
 
-        function goToSlide(n) {
-            const wrapper = document.getElementById('slider-wrapper');
-            const dots = document.querySelectorAll('.dot');
-            if (n >= dots.length) n = 0; if (n < 0) n = dots.length - 1;
-            currentSlide = n;
-            wrapper.style.transform = `translateX(-${n * 100}%)`;
-            dots.forEach(d => d.classList.remove('active'));
-            if(dots[n]) dots[n].classList.add('active');
-        }
-
-        function startAutoSlide() { if(slideInterval) clearInterval(slideInterval); slideInterval = setInterval(() => goToSlide(currentSlide + 1), 4000); }
-
-        // --- MENGAMBIL 4 PRODUK TERBARU ---
         function initFeaturedProducts() {
-            const container = document.getElementById('featured-container');
             db.ref('products').limitToFirst(4).on('value', (snap) => {
+                const container = document.getElementById('featured-container');
+                container.innerHTML = "";
                 if (snap.exists()) {
-                    container.innerHTML = "";
                     snap.forEach(child => {
                         const p = child.val();
-                        container.innerHTML += `
-                            <div style="background: white; padding: 12px; border-radius: 20px; border: 1px solid #fff; box-shadow: 0 10px 20px rgba(0,0,0,0.02);" onclick="location.href='produk.html'">
-                                <div style="width: 100%; aspect-ratio: 1/1; background: #f8fafc; border-radius: 15px; margin-bottom: 10px; display: flex; align-items: center; justify-content: center; overflow: hidden;">
-                                    <img src="${p.image || ''}" style="width:100%; height:100%; object-fit:cover;" onerror="this.src='https://via.placeholder.com/150?text=No+Image'">
-                                </div>
-                                <span style="font-size: 0.7rem; font-weight: 800; color: #1e293b; display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${p.name}</span>
-                                <span style="font-size: 0.75rem; font-weight: 900; color: #007bff; display: block; margin-top: 5px;">rp ${(p.price || 0).toLocaleString('id-ID')}</span>
-                            </div>`;
-                    });
-                } else {
-                    container.innerHTML = `
-                        <div id="empty-product" style="grid-column: span 2; text-align: center; padding: 40px 0; opacity: 0.2;">
-                            <i class="fa-solid fa-box-open" style="font-size: 3rem; margin-bottom: 15px; display: block;"></i>
-                            <p style="font-size: 0.7rem; font-weight: 800; text-transform: uppercase; line-height: 1.5;">ADMIN / OWNER BELUM MENAMBAH KAN<br>PRODUK APAPUN</p>
+                        container.innerHTML += `<div style="background: white; padding: 12px; border-radius: 20px; box-shadow: 0 10px 20px rgba(0,0,0,0.02);" onclick="location.href='produk.html'">
+                            <img src="${p.image || ''}" style="width:100%; aspect-ratio:1/1; object-fit:cover; border-radius:15px; margin-bottom:10px;">
+                            <span style="font-size: 0.7rem; font-weight: 800;">${p.name}</span>
+                            <span style="font-size: 0.75rem; font-weight: 900; color: #007bff; display: block; margin-top: 5px;">rp ${(p.price || 0).toLocaleString('id-ID')}</span>
                         </div>`;
+                    });
                 }
             });
         }
 
-        function logout() { localStorage.clear(); location.href = "login.html"; }
-
         async function loadData() {
-            const loader = document.getElementById('loading-line');
-            loader.style.display = 'block';
-            initBroadcast();
-            initBannerSlider();
-            initFeaturedProducts();
+            const loader = document.getElementById('loading-line'); loader.style.display = 'block';
+            initBroadcast(); initBannerSlider(); initFeaturedProducts();
             const token = localStorage.getItem('sessionToken');
             if (!token) { location.href = "login.html"; return; }
-            try {
-                db.ref('users/' + token).on('value', (snap) => {
-                    const data = snap.val();
-                    if (data) {
-                        document.getElementById('p-name').innerText = data.fullname || "user";
-                        document.getElementById('p-key').innerText = data.apiKey || "belum ada";
-                        document.getElementById('p-phone').innerText = data.phone || "-";
-                        document.getElementById('p-role').innerText = data.role || "user (member)";
-                        document.getElementById('p-balance').innerText = "rp " + (data.balance || 0).toLocaleString('id-ID');
-                        realPass = data.password || "********";
-                        const namaTokoDB = typeof namaToko !== 'undefined' ? namaToko : "STORE";
-                        document.getElementById('running-text').innerText = `WELCOME ${data.fullname.toUpperCase()} TO ${namaTokoDB} KETIKA KAMU SUDAH MEMBELI JANGAN LUPA KASIH RATING YAAAA 🤩`;
+            db.ref('users/' + token).on('value', (snap) => {
+                const data = snap.val();
+                if (data) {
+                    document.getElementById('p-name').innerText = data.fullname || "user";
+                    document.getElementById('p-key').innerText = data.apiKey || "-";
+                    document.getElementById('p-phone').innerText = data.phone || "-";
+                    document.getElementById('p-role').innerText = data.role || "user (member)";
+                    document.getElementById('p-balance').innerText = "rp " + (data.balance || 0).toLocaleString('id-ID');
+                    realPass = data.password || "********";
+                    document.getElementById('running-text').innerText = `WELCOME ${data.fullname.toUpperCase()}...`;
+                    
+                    // MENU OWNER LOGIC
+                    if (data.role === 'owner') {
+                        document.getElementById('owner-grid-1').style.display = 'grid';
+                        document.getElementById('owner-grid-2').style.display = 'grid';
                     }
-                });
-            } catch (e) { console.log("error"); }
-            finally { setTimeout(() => { loader.style.display = 'none'; }, 600); }
+                }
+            });
+            setTimeout(() => { loader.style.display = 'none'; }, 600);
         }
 
+        function logout() { localStorage.clear(); location.href = "login.html"; }
         window.onload = loadData;
     </script>
 </body>
