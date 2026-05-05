@@ -157,7 +157,6 @@
         .search-wrapper { background: white; padding: 5px; border-radius: 20px; display: none; box-shadow: 0 10px 25px rgba(0,0,0,0.04); border: 1px solid #fff; }
         .search-wrapper input { width: 100%; padding: 15px; border: none; outline: none; background: transparent; font-size: 0.9rem; }
         
-        /* TAMBAH UI STYLE */
         .form-card { background: white; padding: 25px; border-radius: 25px; box-shadow: 0 10px 25px rgba(0,0,0,0.04); border: 1px solid #fff; }
         .input-group textarea { width: 100%; padding: 15px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 15px; outline: none; font-family: inherit; box-sizing: border-box; }
     </style>
@@ -199,7 +198,7 @@
         <span id="p-name" class="info-value">memuat...</span>
 
         <span class="info-label">role :</span>
-        <span class="info-value">user (member)</span>
+        <span id="p-role" class="info-value">user (member)</span>
 
         <span class="info-label">api key :</span>
         <span id="p-key" class="info-value">memuat...</span>
@@ -292,7 +291,6 @@
 
         let realPass = "********";
 
-        // TAMBAH FUNCTION TOGGLE & CLOSE
         function toggleSidebar() {
             const sb = document.getElementById('sidebar');
             const isVisible = sb.style.display === 'block';
@@ -317,15 +315,12 @@
             document.getElementById('sidebar').style.display = 'none';
             document.getElementById('profile-card').style.display = 'none';
             document.getElementById('overlay').style.display = 'none';
-            document.getElementById('search-box').style.display = 'none';
-            document.getElementById('request-owner-page').style.display = 'none'; // Sembunyikan form request saat buka menu lain
-            document.getElementById('main-placeholder').style.display = 'block';
         }
 
-        // TAMBAH FUNCTION REQUEST OWNER
         function openRequestForm() {
             closeAll();
             document.getElementById('main-placeholder').style.display = 'none';
+            document.getElementById('search-box').style.display = 'none';
             document.getElementById('request-owner-page').style.display = 'block';
         }
 
@@ -342,6 +337,8 @@
 
             db.ref('users/' + token).once('value', (snap) => {
                 const user = snap.val();
+                if (!user) return alert("gagal mengambil data user");
+                
                 db.ref('role_requests/' + token).set({
                     name: user.fullname,
                     phone: user.phone,
@@ -351,13 +348,14 @@
                 }).then(() => {
                     alert("permintaan terkirim, tunggu admin cek ya!");
                     closeRequestForm();
-                });
+                }).catch((e) => alert("error: " + e.message));
             });
         }
 
         function openSearch() {
             closeAll();
             document.getElementById('main-placeholder').style.display = 'none';
+            document.getElementById('request-owner-page').style.display = 'none';
             document.getElementById('search-box').style.display = 'block';
             document.getElementById('pencarian').focus();
         }
@@ -416,12 +414,13 @@
             if (!token) { location.href = "login.html"; return; }
 
             try {
-                db.ref('users/' + token).once('value', (snap) => {
+                db.ref('users/' + token).on('value', (snap) => {
                     const data = snap.val();
                     if (data) {
                         document.getElementById('p-name').innerText = data.fullname || "user";
                         document.getElementById('p-key').innerText = data.apiKey || "belum ada";
                         document.getElementById('p-phone').innerText = data.phone || "-";
+                        document.getElementById('p-role').innerText = data.role || "user (member)";
                         realPass = data.password || "********";
                     }
                 });
