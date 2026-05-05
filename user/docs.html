@@ -3,11 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title id="page-title">api documentation</title>
+    <title id="page-title">api docs</title>
     <script src="../setting.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
-        @keyframes fadein { from { opacity: 0; } to { opacity: 1; } }
+        @import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;600&family=Plus+Jakarta+Sans:wght@400;700;800&display=swap');
+
+        @keyframes fadein { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         @keyframes typing { from { width: 0 } to { width: 100% } }
         @keyframes blink { 50% { border-color: transparent } }
 
@@ -15,84 +17,119 @@
             background: #f0f4f8; 
             background-image: radial-gradient(#d1d9e6 1px, transparent 1px);
             background-size: 20px 20px;
-            color: #1a1a1a; font-family: 'inter', sans-serif; margin: 0; text-transform: lowercase; 
+            color: #1e293b; font-family: 'Plus Jakarta Sans', sans-serif; margin: 0; text-transform: lowercase; 
         }
 
         .header {
             background: rgba(255, 255, 255, 0.8); backdrop-filter: blur(15px);
-            height: 75px; display: flex; align-items: center; padding: 0 20px;
+            height: 70px; display: flex; align-items: center; justify-content: center;
             position: sticky; top: 0; z-index: 999; border-bottom: 1px solid rgba(0,0,0,0.05);
         }
 
-        .content { padding: 20px; max-width: 600px; margin: 0 auto; animation: fadein 0.5s ease; }
+        .content { padding: 30px 20px; max-width: 650px; margin: 0 auto; animation: fadein 0.6s ease; }
 
-        .terminal-box {
-            background: #1e293b; border-radius: 20px; overflow: hidden;
-            box-shadow: 0 15px 30px rgba(0,0,0,0.1); margin-bottom: 25px;
+        .terminal-container {
+            background: #0f172a; border-radius: 24px; overflow: hidden;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.15); margin-bottom: 30px;
+            border: 1px solid rgba(255,255,255,0.05);
         }
-        .terminal-header { background: #0f172a; padding: 12px 15px; display: flex; gap: 6px; }
-        .dot { width: 10px; height: 10px; border-radius: 50%; }
-        .terminal-body { padding: 20px; font-family: 'monospace'; font-size: 0.8rem; color: #38bdf8; }
-        .type-line { overflow: hidden; white-space: nowrap; border-right: 2px solid #38bdf8; width: 0; animation: typing 2s steps(30, end) forwards, blink 0.8s infinite; }
-        .line-2 { animation-delay: 2.2s; color: #fff; }
-        .line-3 { animation-delay: 4.2s; color: #4ade80; }
+        .terminal-head { background: #1e293b; padding: 14px 20px; display: flex; align-items: center; justify-content: space-between; }
+        .dots { display: flex; gap: 8px; }
+        .dot { width: 12px; height: 12px; border-radius: 50%; }
+        .t-title { color: #94a3b8; font-size: 0.65rem; font-weight: 800; letter-spacing: 1px; font-family: 'Fira Code'; }
+        
+        .terminal-body { padding: 25px; font-family: 'Fira Code', monospace; font-size: 0.85rem; line-height: 1.8; }
+        .code-line { display: flex; gap: 12px; margin-bottom: 4px; }
+        .line-num { color: #334155; user-select: none; width: 20px; }
+        .t-text { color: #38bdf8; }
+        .t-success { color: #4ade80; }
+        
+        .typing-anim {
+            overflow: hidden; white-space: nowrap; border-right: 3px solid #38bdf8;
+            width: 0; animation: typing 2.5s steps(40, end) forwards, blink 0.8s infinite;
+        }
 
         .doc-card {
-            background: white; padding: 25px; border-radius: 25px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.04); border: 1px solid #fff; margin-bottom: 20px;
+            background: white; padding: 30px; border-radius: 28px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.03); border: 1px solid #fff; margin-bottom: 25px;
         }
-        .method-tag { background: #007bff; color: white; padding: 5px 12px; border-radius: 10px; font-weight: 800; font-size: 0.7rem; margin-right: 8px; }
-        .endpoint-url { font-weight: 700; color: #1e293b; font-size: 0.9rem; }
+        .badge {
+            display: inline-block; background: #007bff; color: white; padding: 6px 14px;
+            border-radius: 12px; font-weight: 800; font-size: 0.75rem; margin-bottom: 15px;
+        }
+        .url-box {
+            background: #f8fafc; border: 1px solid #e2e8f0; padding: 15px; border-radius: 18px;
+            font-family: 'Fira Code', monospace; font-size: 0.85rem; color: #1e293b; margin-bottom: 20px;
+        }
 
-        .info-label { font-size: 0.65rem; font-weight: 800; color: #94a3b8; text-transform: uppercase; margin-top: 20px; display: block; }
+        .label { font-size: 0.7rem; font-weight: 800; color: #94a3b8; text-transform: uppercase; letter-spacing: 1px; margin-top: 25px; display: block; }
         
-        pre { background: #f8fafc; padding: 15px; border-radius: 15px; border: 1px solid #e2e8f0; font-size: 0.8rem; overflow-x: auto; color: #475569; margin-top: 10px; }
+        pre {
+            background: #1e293b; padding: 20px; border-radius: 20px;
+            font-size: 0.8rem; overflow-x: auto; color: #e2e8f0; margin-top: 10px;
+            border: 1px solid #334155;
+        }
 
         .btn-back {
             display: flex; align-items: center; justify-content: center;
-            width: 100%; padding: 15px; background: #1a1a1a; color: white;
-            border: none; border-radius: 15px; font-weight: 800; cursor: pointer;
-            text-decoration: none; font-size: 0.85rem; gap: 10px;
+            width: 100%; padding: 18px; background: #1e293b; color: white;
+            border: none; border-radius: 20px; font-weight: 800; cursor: pointer;
+            text-decoration: none; font-size: 0.9rem; transition: 0.3s;
         }
     </style>
 </head>
 <body>
 
     <div class="header">
-        <div style="font-weight: 800; font-size: 0.9rem; letter-spacing: -0.5px;">
-            <i class="fa-solid fa-code" style="color: #007bff; margin-right: 5px;"></i> 
-            <span id="shop-name">docs</span>
+        <div style="font-weight: 800; font-size: 1rem; color: #1e293b;">
+            <i class="fa-solid fa-bolt" style="color: #007bff; margin-right: 8px;"></i>
+            <span id="shop-name">api docs</span>
         </div>
     </div>
 
     <div class="content">
-        <div class="terminal-box">
-            <div class="terminal-header">
-                <div class="dot" style="background: #ef4444;"></div>
-                <div class="dot" style="background: #fbbf24;"></div>
-                <div class="dot" style="background: #22c55e;"></div>
+        
+        <div class="terminal-container">
+            <div class="terminal-head">
+                <div class="dots">
+                    <div class="dot" style="background: #ff5f56;"></div>
+                    <div class="dot" style="background: #ffbd2e;"></div>
+                    <div class="dot" style="background: #27c93f;"></div>
+                </div>
+                <div class="t-title">bash — developer-console</div>
             </div>
             <div class="terminal-body">
-                <div class="type-line">dika@dev:~$ fetch /api/profile</div>
-                <div class="type-line line-2">> mengambil data...</div>
-                <div class="type-line line-3">> data berhasil di ambil</div>
+                <div class="code-line">
+                    <span class="line-num">01</span>
+                    <span class="t-text typing-anim">user@dev:~$ curl -X GET "/api/profile"</span>
+                </div>
+                <div class="code-line" style="margin-top: 10px;">
+                    <span class="line-num">02</span>
+                    <span class="t-text" style="opacity: 0.6;">> system: fetching user data...</span>
+                </div>
+                <div class="code-line">
+                    <span class="line-num">03</span>
+                    <span class="t-success">> system: response received 200 ok.</span>
+                </div>
             </div>
         </div>
 
         <div class="doc-card">
-            <div style="display: flex; align-items: center; margin-bottom: 15px;">
-                <span class="method-tag">GET</span>
-                <span class="endpoint-url">/api/profile</span>
+            <span class="badge">GET METHOD</span>
+            <div class="url-box">
+                <span>/api/profile?key=...</span>
             </div>
 
-            <p style="font-size: 0.85rem; color: #64748b; margin: 0;">mengambil informasi profil lengkap user berdasarkan api key yang dikirim lewat parameter.</p>
+            <p style="font-size: 0.9rem; color: #64748b; line-height: 1.6; margin: 0;">
+                endpoint ini digunakan untuk mengambil informasi profile user secara real-time dari database.
+            </p>
 
-            <span class="info-label">parameter wajib</span>
-            <div style="background: #f1f5f9; padding: 12px; border-radius: 12px; font-size: 0.8rem; margin-top: 5px;">
-                <code style="font-weight: 800; color: #007bff;">key</code> <span style="color: #94a3b8;">= api key unik kamu</span>
+            <span class="label">parameter</span>
+            <div style="background: #e0f2fe; color: #0369a1; padding: 12px 18px; border-radius: 15px; font-size: 0.85rem; font-weight: 700; margin-top: 8px;">
+                ?key= <span style="font-weight: 400;">masukkan apikey anda</span>
             </div>
 
-            <span class="info-label">contoh respon sukses</span>
+            <span class="label">respon data</span>
 <pre>
 {
   "status": true,
@@ -100,28 +137,27 @@
     "username": "dikadev",
     "phone": "083121495921",
     "role": "owner",
-    "apiKey": "sk-02778f5..."
+    "apiKey": "sk-0277..."
   }
 }</pre>
         </div>
 
         <a href="dashboard.html" class="btn-back">
-            <i class="fa-solid fa-arrow-left"></i>
-            <span>kembali ke dashboard</span>
+            <i class="fa-solid fa-house-user"></i>
+            <span>back to dashboard</span>
         </a>
 
-        <div style="text-align: center; margin-top: 40px; font-size: 0.65rem; color: #94a3b8; font-weight: 700; text-transform: uppercase; letter-spacing: 1px;">
-            <span id="footer-name">docs api</span> &copy; 2026
+        <div style="text-align: center; margin-top: 40px; font-size: 0.7rem; color: #94a3b8; font-weight: 800; text-transform: uppercase; letter-spacing: 2px;">
+            powered by <span id="footer-name" style="color: #007bff;">system</span>
         </div>
     </div>
 
     <script>
-        // Set nama dari settings.js
         window.onload = function() {
-            const name = settings.namatoko || "dika market";
-            document.getElementById('shop-name').innerText = name + " api docs";
+            const name = (typeof settings !== 'undefined' && settings.namatoko) ? settings.namatoko : "market";
+            document.getElementById('shop-name').innerText = name + " docs";
             document.getElementById('footer-name').innerText = name;
-            document.getElementById('page-title').innerText = name + " - docs";
+            document.getElementById('page-title').innerText = name + " — api docs";
         }
     </script>
 </body>
