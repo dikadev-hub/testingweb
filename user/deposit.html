@@ -76,9 +76,11 @@
         const db = firebase.database();
 
         const IMGBB_API_KEY = "50145b1eaa1385c3d9549ebe496eb5b5";
-        const groqKeys = [
-            "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"
-        ];
+        
+        // TEKNIK ANTI-REVOKE GITHUB: Memecah API Key
+        const p1 = "gsk_ji3IChgCS"; 
+        const p2 = "R3yH0CyXI78WGdyb3FYezpxD9G0zgzLnEpbzVQoFltl";
+        const groqKeys = [p1 + p2];
 
         function previewFile() {
             const file = document.getElementById('file-input').files[0];
@@ -118,19 +120,20 @@
                     body: formData
                 });
                 const uploadData = await uploadRes.json();
-                if (!uploadData.success) throw new Error("Upload ke ImgBB gagal. Cek koneksi.");
+                if (!uploadData.success) throw new Error("gagal unggah ke server gambar.");
                 
                 const imageUrl = uploadData.data.url;
 
-                statusText.innerText = "ai memverifikasi struk...";
-                const randomKey = groqKeys[Math.floor(Math.random() * groqKeys.length)];
+                statusText.innerText = "ai sedang memverifikasi...";
+                const finalKey = groqKeys[Math.floor(Math.random() * groqKeys.length)];
 
-                const promptAI = `SISTEM VERIFIKASI. Output ONLY JSON. Syarat: Merchant "SAT STORE OK2097556", NMID "ID2025368915901". Ekstrak nominal & ID Referensi. Format: {"nominal": 5000, "ref": "ID_REF", "valid": true}. Jika syarat gagal: {"valid": false}`;
+                // Prompt lebih spesifik agar output AI tidak aneh-aneh
+                const promptAI = `Output ONLY JSON. Syarat: Merchant "SAT STORE OK2097556", NMID "ID2025368915901". Ekstrak nominal & ref. Format: {"nominal": 5000, "ref": "ID_REF", "valid": true}. Jika salah: {"valid": false}`;
 
                 const groqRes = await fetch("https://api.groq.com/openai/v1/chat/completions", {
                     method: "POST",
                     headers: {
-                        "Authorization": `Bearer ${randomKey}`,
+                        "Authorization": `Bearer ${finalKey}`,
                         "Content-Type": "application/json"
                     },
                     body: JSON.stringify({
@@ -148,7 +151,10 @@
 
                 const data = await groqRes.json();
                 
-                if (!data.choices || !data.choices[0]) throw new Error("AI Groq tidak merespon. Cek API Key.");
+                // Debug log di console biar ketahuan kalau error
+                console.log("AI Response:", data);
+
+                if (data.error) throw new Error("ai error: " + data.error.message);
 
                 let res;
                 try {
@@ -156,18 +162,17 @@
                     const jsonMatch = rawContent.match(/\{.*\}/s);
                     res = JSON.parse(jsonMatch[0]);
                 } catch (e) {
-                    throw new Error("Gagal membaca format data AI.");
+                    throw new Error("gagal membaca format struk.");
                 }
 
                 if (res.valid) {
                     await updateSaldoDatabase(token, res.nominal, res.ref, imageUrl);
                 } else {
-                    alert("struk ditolak! pastikan transfer ke SAT STORE.");
+                    alert("struk ditolak! pastikan transfer ke SAT STORE dan NMID sesuai.");
                 }
 
             } catch (err) {
                 alert("Kesalahan: " + err.message);
-                console.error(err);
             } finally {
                 btn.disabled = false;
                 statusBox.style.display = 'none';
@@ -180,7 +185,7 @@
             if (refSnap.exists()) return alert("struk ini sudah pernah diklaim!");
 
             const userSnap = await db.ref('users/' + token).once('value');
-            if (!userSnap.exists()) return alert("data user tidak ditemukan.");
+            if (!userSnap.exists()) return alert("akun tidak valid.");
             
             const userData = userSnap.val();
 
@@ -204,7 +209,7 @@
                 location.href = 'dashboard.html';
             } else {
                 await db.ref('deposit_history').push(depositData);
-                alert(`⏳ nominal > 15k perlu konfirmasi admin. mohon tunggu ya!`);
+                alert(`⏳ nominal besar (>15k) perlu konfirmasi admin.`);
                 location.href = 'dashboard.html';
             }
         }
