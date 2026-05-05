@@ -137,6 +137,7 @@
         }
 
         .info-label { font-size: 0.65rem; font-weight: 800; color: #64748b; text-transform: uppercase; margin-top: 15px; display: block; }
+        .info-label { font-size: 0.65rem; font-weight: 800; color: #64748b; text-transform: uppercase; margin-top: 15px; display: block; }
         .info-value { font-size: 0.85rem; font-weight: 600; color: #1e293b; display: block; margin-top: 2px; }
 
         .pass-container { display: flex; align-items: center; justify-content: space-between; margin-top: 2px; }
@@ -406,13 +407,17 @@
         }
 
         function initBannerPromo() {
-            db.ref('banner_promo').on('value', (snapshot) => {
-                const data = snapshot.val();
+            // Kita ambil data iklan terbaru (limit ke 1 data terakhir)
+            db.ref('banner_promo').limitToLast(1).on('value', (snapshot) => {
                 const bannerDisplay = document.getElementById('display-banner');
-                if (data && data.image_url) {
+                if (snapshot.exists()) {
                     bannerDisplay.style.display = 'block';
-                    document.getElementById('img-promo').src = data.image_url;
-                    document.getElementById('txt-promo').innerText = data.title || "";
+                    // Karena datanya berbentuk list ID unik, kita loop sekali
+                    snapshot.forEach((child) => {
+                        const data = child.val();
+                        document.getElementById('img-promo').src = data.image_url;
+                        document.getElementById('txt-promo').innerText = data.title || "";
+                    });
                 } else {
                     bannerDisplay.style.display = 'none';
                 }
