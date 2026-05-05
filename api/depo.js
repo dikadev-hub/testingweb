@@ -17,18 +17,27 @@ export default async function handler(req, res) {
             const response = await fetch('https://cashi.id/api/create-order', {
                 method: 'POST',
                 headers: { 'x-api-key': apiKeyCashi, 'Content-Type': 'application/json' },
-                body: JSON.stringify({ amount: finalAmount, order_id: customOrderId, QRIS_CUSTOM: true })
+                body: JSON.stringify({ 
+                    amount: finalAmount, 
+                    order_id: customOrderId, 
+                    QRIS_CUSTOM: true 
+                })
             });
             const data = await response.json();
 
             await fetch(`${dbUrl}/deposits/${customOrderId}.json`, {
                 method: 'PUT',
-                body: JSON.stringify({ userToken, amount: nominal, status: 'pending', expiry: Date.now() + (15 * 60 * 1000) })
+                body: JSON.stringify({ 
+                    userToken, 
+                    amount: nominal, 
+                    status: 'pending', 
+                    createdAt: Date.now() 
+                })
             });
 
             return res.status(200).json(data);
         } catch (e) {
-            return res.status(500).json({ error: "error" });
+            return res.status(500).json({ error: "error create order" });
         }
     }
 
@@ -54,6 +63,7 @@ export default async function handler(req, res) {
                         method: 'PUT', 
                         body: JSON.stringify(newBalance)
                     });
+                    
                     await fetch(`${dbUrl}/deposits/${orderId}/status.json`, {
                         method: 'PUT', 
                         body: JSON.stringify('success')
@@ -64,7 +74,7 @@ export default async function handler(req, res) {
             }
             return res.status(200).json(resCashi);
         } catch (e) {
-            return res.status(500).json({ error: "error" });
+            return res.status(500).json({ error: "error check status" });
         }
     }
 }
