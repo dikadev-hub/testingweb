@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ADMIN CONTROL</title>
+    <title>admin panel</title>
     <script src="../setting.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
@@ -135,15 +135,19 @@
             </div>
         </div>
 
-        <div id="admin-request-page" style="display: none; animation: fadein 0.5s ease;">
+        <div id="admin-request-page" class="form-card" style="margin-top: 0;">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
                 <div class="sidebar-title" style="padding: 0; border: none;">antrian request owner</div>
-                <button onclick="closeAll()" style="background: none; border: none; color: #94a3b8; cursor: pointer;"><i class="fa-solid fa-xmark"></i></button>
+                <button onclick="hideRequestPage()" style="background: #f1f5f9; border: none; width: 30px; height: 30px; border-radius: 8px; cursor: pointer;"><i class="fa-solid fa-xmark"></i></button>
             </div>
             <div id="list-request-container"></div>
         </div>
 
         <div id="bc-form" class="form-card">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                <div class="sidebar-title" style="padding: 0; border: none;">buat broadcast</div>
+                <button onclick="hideBC()" style="background: #f1f5f9; border: none; width: 30px; height: 30px; border-radius: 8px; cursor: pointer;"><i class="fa-solid fa-xmark"></i></button>
+            </div>
             <div class="input-group">
                 <label>nama info :</label>
                 <input type="text" id="bc-title" placeholder="contoh: info maintenance">
@@ -180,31 +184,49 @@
             document.getElementById('sidebar').style.display = 'none';
             document.getElementById('profile-card').style.display = 'none';
             document.getElementById('overlay').style.display = 'none';
-            document.getElementById('bc-form').style.display = 'none';
-            document.getElementById('admin-request-page').style.display = 'none';
         }
 
         function toggleSidebar() { 
-            closeAll(); 
-            document.getElementById('sidebar').style.display = 'block'; 
-            document.getElementById('overlay').style.display = 'block'; 
+            const sb = document.getElementById('sidebar');
+            if(sb.style.display === 'block') {
+                closeAll();
+            } else {
+                closeAll();
+                sb.style.display = 'block';
+                document.getElementById('overlay').style.display = 'block';
+            }
         }
 
         function toggleProfile() { 
-            closeAll(); 
-            document.getElementById('profile-card').style.display = 'block'; 
-            document.getElementById('overlay').style.display = 'block'; 
+            const pc = document.getElementById('profile-card');
+            if(pc.style.display === 'block') {
+                closeAll();
+            } else {
+                closeAll();
+                pc.style.display = 'block';
+                document.getElementById('overlay').style.display = 'block';
+            }
         }
         
         function showBC() { 
-            closeAll(); 
+            document.getElementById('admin-request-page').style.display = 'none';
             document.getElementById('bc-form').style.display = 'block'; 
+            closeAll(); 
+        }
+
+        function hideBC() {
+            document.getElementById('bc-form').style.display = 'none';
         }
 
         function openPendingRequest() {
-            closeAll();
+            document.getElementById('bc-form').style.display = 'none';
             document.getElementById('admin-request-page').style.display = 'block';
             loadRequests();
+            closeAll();
+        }
+
+        function hideRequestPage() {
+            document.getElementById('admin-request-page').style.display = 'none';
         }
 
         function loadRequests() {
@@ -219,17 +241,17 @@
                     const data = child.val();
                     const key = child.key;
                     container.innerHTML += `
-                        <div class="form-card" style="display: block; margin-bottom: 15px; border: 1px solid #e2e8f0;">
-                            <span style="font-size: 0.6rem; font-weight: 800; color: #007bff; text-transform: uppercase;">REQUEST MENJADI OWNER DI WEBSITE INI</span>
+                        <div style="background:#f8fafc; padding:20px; border-radius:20px; border:1px solid #e2e8f0; margin-bottom:15px;">
+                            <span style="font-size: 0.6rem; font-weight: 800; color: #007bff; text-transform: uppercase;">REQUEST OWNER</span>
                             <div style="margin-top: 10px;">
                                 <span class="info-label">NAMA :</span> <span class="info-value">${data.name}</span>
                                 <span class="info-label">NOMOR :</span> <span class="info-value">${data.phone}</span>
                                 <span class="info-label">EMAIL :</span> <span class="info-value">${data.email}</span>
-                                <span class="info-label">DESKRIPSI :</span> <span class="info-value" style="white-space: pre-wrap; background:#f8fafc; padding:10px; border-radius:10px; margin-top:5px;">${data.desc}</span>
+                                <span class="info-label">ALASAN :</span> <span class="info-value" style="white-space: pre-wrap; background:#fff; padding:10px; border-radius:10px; border:1px solid #e2e8f0; margin-top:5px;">${data.desc}</span>
                             </div>
-                            <div class="btn-flex" style="display: flex; gap: 10px; margin-top: 15px;">
-                                <button onclick="processRole('${key}', 'tolak')" style="flex: 1; padding: 12px; border-radius: 12px; border: none; background: #fee2e2; color: #ef4444; font-weight: 800; cursor: pointer;">tolak</button>
-                                <button onclick="processRole('${key}', 'terima')" style="flex: 1; padding: 12px; border-radius: 12px; border: none; background: #dcfce7; color: #22c55e; font-weight: 800; cursor: pointer;">terima</button>
+                            <div class="btn-flex" style="margin-top:15px;">
+                                <button onclick="processRole('${key}', 'tolak')" style="flex:1; padding:12px; border-radius:12px; border:none; background:#fee2e2; color:#ef4444; font-weight:800; cursor:pointer;">tolak</button>
+                                <button onclick="processRole('${key}', 'terima')" style="flex:1; padding:12px; border-radius:12px; border:none; background:#dcfce7; color:#22c55e; font-weight:800; cursor:pointer;">terima</button>
                             </div>
                         </div>
                     `;
