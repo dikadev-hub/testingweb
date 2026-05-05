@@ -156,6 +156,10 @@
         .content { padding: 20px; max-width: 600px; margin: 0 auto; }
         .search-wrapper { background: white; padding: 5px; border-radius: 20px; display: none; box-shadow: 0 10px 25px rgba(0,0,0,0.04); border: 1px solid #fff; }
         .search-wrapper input { width: 100%; padding: 15px; border: none; outline: none; background: transparent; font-size: 0.9rem; }
+        
+        /* TAMBAH UI STYLE */
+        .form-card { background: white; padding: 25px; border-radius: 25px; box-shadow: 0 10px 25px rgba(0,0,0,0.04); border: 1px solid #fff; }
+        .input-group textarea { width: 100%; padding: 15px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 15px; outline: none; font-family: inherit; box-sizing: border-box; }
     </style>
 </head>
 <body>
@@ -182,12 +186,13 @@
             <i class="fa-solid fa-right-from-bracket"></i>
             <span>keluar</span>
         </div>
+        
+        <div class="sidebar-title">pusat akses</div>
+        <div class="menu-item" onclick="openRequestForm()">
+            <i class="fa-solid fa-crown"></i>
+            <span>request role owner</span>
+        </div>    
     </div>
-        <div class="sidebar-title">pusat Akses</div>
-    <div class="menu-item" onclick="openRequestForm()">
-        <i class="fa-solid fa-crown"></i>
-        <span>request role owner</span>
-    </div>    
 
     <div id="profile-card" class="profile-box">
         <span class="info-label">username :</span>
@@ -229,7 +234,21 @@
             <input type="text" id="pencarian" placeholder="cari produk apa kak?">
         </div>
 
-        <div style="text-align: center; margin-top: 50px; opacity: 0.2;">
+        <div id="request-owner-page" class="form-card" style="display: none; animation: fadein 0.5s ease;">
+            <div style="font-weight: 800; font-size: 0.75rem; color: #1a1a1a; margin-bottom: 15px; text-transform: uppercase;">
+                <i class="fa-solid fa-file-signature"></i> form request owner
+            </div>
+            <div class="input-group">
+                <label>jelaskan kenapa kamu ingin menjadi owner :</label>
+                <textarea id="req-desc" rows="5" placeholder="tulis alasan kamu di sini..."></textarea>
+            </div>
+            <div style="display: flex; gap: 10px; margin-top: 15px;">
+                <button onclick="closeRequestForm()" style="flex: 1; padding: 15px; border-radius: 15px; border: none; background: #fee2e2; color: #ef4444; font-weight: 800; cursor: pointer;">batal</button>
+                <button onclick="submitRequest()" style="flex: 1; padding: 15px; border-radius: 15px; border: none; background: #dcfce7; color: #22c55e; font-weight: 800; cursor: pointer;">kirim</button>
+            </div>
+        </div>
+
+        <div id="main-placeholder" style="text-align: center; margin-top: 50px; opacity: 0.2;">
             <i class="fa-solid fa-layer-group" style="font-size: 3rem;"></i>
             <p style="margin-top: 10px;">silahkan pilih menu</p>
         </div>
@@ -254,20 +273,6 @@
         </div>
     </div>
 
-        <div id="request-owner-page" class="form-card" style="display: none; animation: fadein 0.5s ease;">
-        <div class="box-title" style="font-weight: 800; font-size: 0.75rem; color: #1a1a1a; margin-bottom: 15px;">
-            <i class="fa-solid fa-file-signature"></i> FORM REQUEST OWNER
-        </div>
-        <div class="input-group">
-            <label>jelaskan kenapa kamu ingin menjadi owner :</label>
-            <textarea id="req-desc" rows="5" placeholder="tulis alasan kamu di sini..."></textarea>
-        </div>
-        <div class="btn-flex" style="display: flex; gap: 10px;">
-            <button onclick="closeRequestForm()" style="flex: 1; padding: 15px; border-radius: 15px; border: none; background: #fee2e2; color: #ef4444; font-weight: 800; cursor: pointer;">batal</button>
-            <button onclick="submitRequest()" style="flex: 1; padding: 15px; border-radius: 15px; border: none; background: #dcfce7; color: #22c55e; font-weight: 800; cursor: pointer;">kirim</button>
-        </div>
-        </div>
-
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
 
@@ -287,6 +292,7 @@
 
         let realPass = "********";
 
+        // TAMBAH FUNCTION TOGGLE & CLOSE
         function toggleSidebar() {
             const sb = document.getElementById('sidebar');
             const isVisible = sb.style.display === 'block';
@@ -296,36 +302,6 @@
                 document.getElementById('overlay').style.display = 'block';
             }
         }
-
-            function openRequestForm() {
-        closeAll();
-        document.getElementById('request-owner-page').style.display = 'block';
-    }
-
-    function closeRequestForm() {
-        document.getElementById('request-owner-page').style.display = 'none';
-        document.getElementById('req-desc').value = "";
-    }
-
-    async function submitRequest() {
-        const desc = document.getElementById('req-desc').value.trim();
-        const token = localStorage.getItem('sessionToken');
-        if (!desc) return alert("tulis alasannya dulu kak");
-
-        db.ref('users/' + token).once('value', (snap) => {
-            const user = snap.val();
-            db.ref('role_requests/' + token).set({
-                name: user.fullname,
-                phone: user.phone,
-                email: token.replace(/,/g, '.'),
-                desc: desc,
-                status: 'pending'
-            }).then(() => {
-                alert("permintaan terkirim, tunggu admin cek ya!");
-                closeRequestForm();
-            });
-        });
-    }        
 
         function toggleProfile() {
             const pc = document.getElementById('profile-card');
@@ -341,10 +317,47 @@
             document.getElementById('sidebar').style.display = 'none';
             document.getElementById('profile-card').style.display = 'none';
             document.getElementById('overlay').style.display = 'none';
+            document.getElementById('search-box').style.display = 'none';
+            document.getElementById('request-owner-page').style.display = 'none'; // Sembunyikan form request saat buka menu lain
+            document.getElementById('main-placeholder').style.display = 'block';
+        }
+
+        // TAMBAH FUNCTION REQUEST OWNER
+        function openRequestForm() {
+            closeAll();
+            document.getElementById('main-placeholder').style.display = 'none';
+            document.getElementById('request-owner-page').style.display = 'block';
+        }
+
+        function closeRequestForm() {
+            document.getElementById('request-owner-page').style.display = 'none';
+            document.getElementById('main-placeholder').style.display = 'block';
+            document.getElementById('req-desc').value = "";
+        }
+
+        async function submitRequest() {
+            const desc = document.getElementById('req-desc').value.trim();
+            const token = localStorage.getItem('sessionToken');
+            if (!desc) return alert("tulis alasannya dulu kak");
+
+            db.ref('users/' + token).once('value', (snap) => {
+                const user = snap.val();
+                db.ref('role_requests/' + token).set({
+                    name: user.fullname,
+                    phone: user.phone,
+                    email: token.replace(/,/g, '.'),
+                    desc: desc,
+                    status: 'pending'
+                }).then(() => {
+                    alert("permintaan terkirim, tunggu admin cek ya!");
+                    closeRequestForm();
+                });
+            });
         }
 
         function openSearch() {
             closeAll();
+            document.getElementById('main-placeholder').style.display = 'none';
             document.getElementById('search-box').style.display = 'block';
             document.getElementById('pencarian').focus();
         }
