@@ -90,17 +90,16 @@
             <i class="fa-solid fa-bullhorn"></i>
             <span>kirim broadcast</span>
         </div>
-        <div class="menu-item" onclick="location.href='../user/dashboard.html'">
-            <i class="fa-solid fa-eye"></i>
-            <span>login user</span>
-        </div>
-    </div>
         <div class="sidebar-title">manajemen User</div>
     <div class="menu-item" onclick="openPendingRequest()">
         <i class="fa-solid fa-clock-rotate-left"></i>
         <span>request masuk</span>
     </div>
-    
+        <div class="menu-item" onclick="location.href='../user/dashboard.html'">
+            <i class="fa-solid fa-eye"></i>
+            <span>login user</span>
+        </div>
+    </div>
 
     <div id="profile-card" class="profile-box">
         <span class="info-label">nama admin :</span>
@@ -138,6 +137,15 @@
                 <p>total penjualan</p>
             </div>
         </div>
+
+            <div id="admin-request-page" style="display: none; animation: fadein 0.5s ease;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+            <div class="sidebar-title" style="padding: 0; border: none;">antrian request owner</div>
+            <button onclick="hideRequestPage()" style="background: none; border: none; color: #94a3b8; cursor: pointer;"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+        <div id="list-request-container"></div>
+            </div>
+        
 
         <div id="bc-form" class="form-card">
             <div class="input-group">
@@ -201,6 +209,54 @@
                 alert("broadcast dihapus 🗑️");
             }
         }
+
+            function openPendingRequest() {
+        closeAll();
+        document.getElementById('admin-request-page').style.display = 'block';
+        loadRequests();
+    }
+
+    function hideRequestPage() {
+        document.getElementById('admin-request-page').style.display = 'none';
+    }
+
+    function loadRequests() {
+        const container = document.getElementById('list-request-container');
+        db.ref('role_requests').on('value', (snap) => {
+            container.innerHTML = "";
+            snap.forEach((child) => {
+                const data = child.val();
+                const key = child.key;
+                container.innerHTML += `
+                    <div class="form-card" style="display: block; margin-bottom: 15px; border: 1px solid #e2e8f0;">
+                        <span style="font-size: 0.6rem; font-weight: 800; color: #007bff; text-transform: uppercase;">REQUEST MENJADI OWNER DI WEBSITE INI</span>
+                        <div style="margin-top: 10px;">
+                            <span class="info-label">NAMA :</span> <span class="info-value">${data.name}</span>
+                            <span class="info-label">NOMOR :</span> <span class="info-value">${data.phone}</span>
+                            <span class="info-label">EMAIL :</span> <span class="info-value">${data.email}</span>
+                            <span class="info-label">DESKRIPSI :</span> <span class="info-value" style="white-space: pre-wrap;">${data.desc}</span>
+                        </div>
+                        <div class="btn-flex" style="display: flex; gap: 10px; margin-top: 15px;">
+                            <button onclick="processRole('${key}', 'tolak')" style="flex: 1; padding: 10px; border-radius: 10px; border: none; background: #fee2e2; color: #ef4444; font-weight: 800; cursor: pointer;">tolak</button>
+                            <button onclick="processRole('${key}', 'terima')" style="flex: 1; padding: 10px; border-radius: 10px; border: none; background: #dcfce7; color: #22c55e; font-weight: 800; cursor: pointer;">terima</button>
+                        </div>
+                    </div>
+                `;
+            });
+            if (!snap.exists()) container.innerHTML = "<p style='text-align:center; color:#94a3b8;'>tidak ada request masuk</p>";
+        });
+    }
+
+    async function processRole(userKey, action) {
+        if (action === 'terima') {
+            await db.ref('users/' + userKey).update({ role: 'owner' });
+            alert("user berhasil menjadi owner");
+        } else {
+            alert("request ditolak");
+        }
+        await db.ref('role_requests/' + userKey).remove();
+        }
+                    
 
         function logout() {
             localStorage.clear();
