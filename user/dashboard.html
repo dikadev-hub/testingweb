@@ -113,7 +113,6 @@
         .form-card { background: white; padding: 25px; border-radius: 25px; box-shadow: 0 10px 25px rgba(0,0,0,0.04); border: 1px solid #fff; }
         .input-group textarea { width: 100%; padding: 15px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 15px; outline: none; font-family: inherit; box-sizing: border-box; }
 
-        /* DEPO MODAL STYLE */
         .depo-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); backdrop-filter: blur(5px); z-index: 2000; display: none; align-items: center; justify-content: center; }
         .depo-card { background: white; width: 90%; max-width: 380px; padding: 25px; border-radius: 25px; text-align: center; }
     </style>
@@ -257,13 +256,13 @@
                         const check = await fetch('/api/depo', {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({ action: 'status', orderId: data.orderId || data.order_id })
+                            body: JSON.stringify({ action: 'status', orderId: data.order_id || data.orderId })
                         });
                         const s = await check.json();
                         if(s.status === 'SUCCESS') { clearInterval(checkInterval); alert("DEPO SUKSES!"); location.reload(); }
                     }, 5000);
-                } else { btn.innerText = "buat qris"; btn.disabled = false; alert("Cashi error"); }
-            } catch(e) { btn.innerText = "buat qris"; btn.disabled = false; alert("koneksi error"); }
+                } else { btn.innerText = "buat qris"; btn.disabled = false; alert("gagal membuat qris"); }
+            } catch(e) { btn.innerText = "buat qris"; btn.disabled = false; alert("kesalahan jaringan"); }
         }
 
         function togglePass() {
@@ -283,13 +282,9 @@
             const loader = document.getElementById('loading-line'); loader.style.display = 'block';
             const token = localStorage.getItem('sessionToken');
             if(!token) { location.href="login.html"; return; }
-
-            // Init Broadcast
             db.ref('broadcast').on('value', s => {
                 const d = s.val(); if(d && d.message) { document.getElementById('bc-banner-area').style.display='flex'; document.getElementById('bc-title-preview').innerText=d.title; document.getElementById('bc-full-title').innerText=d.title; document.getElementById('bc-full-msg').innerText=d.message; }
             });
-
-            // Init User Data
             db.ref('users/' + token).on('value', snap => {
                 const d = snap.val();
                 if(d) {
