@@ -64,6 +64,32 @@
             transition: 0.3s;
         }
 
+        /* --- SALDO CARD STYLE --- */
+        .wallet-card {
+            background: #1a1a1a;
+            border-radius: 25px;
+            padding: 20px;
+            margin-bottom: 25px;
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 15px 30px rgba(0,0,0,0.15);
+        }
+        .wallet-info span { font-size: 0.65rem; font-weight: 800; color: #94a3b8; text-transform: uppercase; letter-spacing: 1px; }
+        .wallet-info h2 { margin: 5px 0 0; font-size: 1.5rem; font-weight: 900; }
+        .btn-topup {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 18px;
+            border-radius: 15px;
+            font-size: 0.75rem;
+            font-weight: 800;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
         .sidebar-box {
             position: absolute;
             top: 85px; left: 20px;
@@ -87,6 +113,7 @@
             text-transform: uppercase;
             letter-spacing: 1px;
             border-bottom: 1px solid rgba(0,0,0,0.03);
+            background: rgba(0,0,0,0.01);
         }
 
         .profile-box {
@@ -114,9 +141,8 @@
             transition: 0.2s;
         }
         .menu-item:hover { background: rgba(0, 123, 255, 0.05); color: #007bff; }
-        .menu-item i { margin-right: 12px; font-size: 0.9rem; }
+        .menu-item i { margin-right: 12px; font-size: 0.9rem; width: 20px; text-align: center; }
 
-        /* --- BANNER SLIDER STYLE --- */
         .slider-container {
             width: 100%;
             position: relative;
@@ -221,46 +247,55 @@
     </div>
 
     <div id="sidebar" class="sidebar-box">
-        <div class="sidebar-title">menu utama</div>
+        <div class="sidebar-title">eksplorasi</div>
         <div class="menu-item" onclick="openSearch()">
             <i class="fa-solid fa-magnifying-glass"></i>
             <span>search produk</span>
         </div>
-        <div class="menu-item" onclick="logout()">
-            <i class="fa-solid fa-right-from-bracket"></i>
-            <span>keluar</span>
+        <div class="menu-item" onclick="window.location.href='deposit.html'">
+            <i class="fa-solid fa-wallet"></i>
+            <span>top up saldo</span>
         </div>
         
-        <div class="sidebar-title">pusat akses</div>
+        <div class="sidebar-title">akun & sistem</div>
         <div class="menu-item" onclick="window.location.href='request.html'">
             <i class="fa-solid fa-crown"></i>
-            <span>request role owner</span>
-        </div>    
+            <span>request owner</span>
+        </div>
+        <div class="menu-item" onclick="logout()">
+            <i class="fa-solid fa-right-from-bracket"></i>
+            <span>keluar aplikasi</span>
+        </div>
     </div>
 
     <div id="profile-card" class="profile-box">
         <span class="info-label">username :</span>
         <span id="p-name" class="info-value">memuat...</span>
-
         <span class="info-label">role :</span>
         <span id="p-role" class="info-value">user (member)</span>
-
         <span class="info-label">api key :</span>
         <span id="p-key" class="info-value">memuat...</span>
-
         <span class="info-label">no hp :</span>
         <span id="p-phone" class="info-value">memuat...</span>
-
         <span class="info-label">password :</span>
         <div class="pass-container">
             <span id="p-pass" class="pass-value">••••••••</span>
             <button class="btn-toggle-pass" onclick="togglePass()"><i id="pass-icon" class="fa-solid fa-eye-slash"></i></button>
         </div>
-
         <button class="btn-docs" onclick="window.location.href='docs.html'">docs api</button>
     </div>
 
     <div class="content">
+        <div class="wallet-card">
+            <div class="wallet-info">
+                <span>saldo aktif</span>
+                <h2 id="p-balance">rp 0</h2>
+            </div>
+            <button class="btn-topup" onclick="window.location.href='deposit.html'">
+                <i class="fa-solid fa-plus"></i> top up
+            </button>
+        </div>
+
         <div id="slider-container" class="slider-container">
             <div id="slider-wrapper" class="slider-wrapper"></div>
             <div id="slider-dots" class="slider-dots"></div>
@@ -457,6 +492,11 @@
                         document.getElementById('p-key').innerText = data.apiKey || "belum ada";
                         document.getElementById('p-phone').innerText = data.phone || "-";
                         document.getElementById('p-role').innerText = data.role || "user (member)";
+                        
+                        // UPDATE SALDO DENGAN FORMAT RUPIAH
+                        const balance = data.balance || 0;
+                        document.getElementById('p-balance').innerText = "rp " + balance.toLocaleString('id-ID');
+                        
                         realPass = data.password || "********";
                     }
                 });
