@@ -216,6 +216,12 @@
     </div>
 
     <div class="content">
+        <div id="display-banner" style="display:none; margin-bottom: 25px;">
+            <div style="width: 100%; aspect-ratio: 16 / 9; overflow: hidden; border-radius: 25px; border: 1px solid #fff; box-shadow: 0 10px 25px rgba(0,0,0,0.04);">
+                <img id="img-promo" src="" style="width: 100%; height: 100%; object-fit: cover;">
+            </div>
+            <h3 id="txt-promo" style="font-weight: 900; margin: 15px 0 0 5px; font-size: 0.95rem; color: #1e293b; letter-spacing: -0.5px;"></h3>
+        </div>
         <div id="bc-banner-area" class="bc-banner-style">
             <div style="display: flex; align-items: center; gap: 15px;">
                 <div style="width: 40px; height: 40px; background: rgba(255,255,255,0.2); border-radius: 12px; display: flex; align-items: center; justify-content: center;">
@@ -399,6 +405,20 @@
             });
         }
 
+        function initBannerPromo() {
+            db.ref('banner_promo').on('value', (snapshot) => {
+                const data = snapshot.val();
+                const bannerDisplay = document.getElementById('display-banner');
+                if (data && data.image_url) {
+                    bannerDisplay.style.display = 'block';
+                    document.getElementById('img-promo').src = data.image_url;
+                    document.getElementById('txt-promo').innerText = data.title || "";
+                } else {
+                    bannerDisplay.style.display = 'none';
+                }
+            });
+        }
+
         function logout() {
             localStorage.clear();
             location.href = "login.html";
@@ -409,6 +429,7 @@
             loader.style.display = 'block';
             
             initBroadcast();
+            initBannerPromo();
 
             const token = localStorage.getItem('sessionToken');
             if (!token) { location.href = "login.html"; return; }
