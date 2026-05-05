@@ -3,235 +3,220 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title id="page-title">API Docs</title>
+    <title id="page-title">API Documentation</title>
     <script src="../setting.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500&family=Inter:wght@400;600;700;800&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500&family=Inter:wght@300;400;600;700;800&display=swap');
 
         :root {
-            --primary: #007bff;
-            --bg: #f8fafc;
-            --card: #ffffff;
-            --text-dark: #1e293b;
-            --text-light: #64748b;
-            --terminal-bg: #0f172a;
+            --primary: #3b82f6;
+            --primary-light: #eff6ff;
+            --bg: #ffffff;
+            --card-bg: #f8fafc;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --code-bg: #0f172a;
+            --border: #e2e8f0;
         }
-
-        @keyframes typing { from { width: 0 } to { width: 100% } }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
         body { 
             background: var(--bg); 
-            color: var(--text-dark); 
+            color: var(--text-main); 
             font-family: 'Inter', sans-serif; 
             margin: 0; 
-            padding: 0;
             line-height: 1.6;
-            text-transform: lowercase;
         }
 
         .container {
-            max-width: 700px;
+            max-width: 900px;
             margin: 0 auto;
-            padding: 40px 20px;
-            animation: fadeIn 0.8s ease;
+            padding: 60px 24px;
         }
 
-        /* HEADER */
+        /* --- HEADER --- */
         .header {
-            text-align: center;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 30px;
             margin-bottom: 40px;
         }
         .header h1 {
             font-weight: 800;
-            font-size: 1.5rem;
+            font-size: 1.8rem;
             margin: 0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-        }
-        .header p {
-            color: var(--text-light);
-            font-size: 0.9rem;
-            margin-top: 5px;
-        }
-
-        /* TERMINAL - CLEAN STYLE */
-        .terminal {
-            background: var(--terminal-bg);
-            border-radius: 16px;
-            overflow: hidden;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
-            margin-bottom: 30px;
-            border: 1px solid rgba(255,255,255,0.05);
-        }
-        .t-head {
-            background: #1e293b;
-            padding: 12px 20px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        .dot { width: 10px; height: 10px; border-radius: 50%; }
-        .t-body {
-            padding: 25px;
-            font-family: 'Fira Code', monospace;
-            font-size: 0.85rem;
-            color: #38bdf8;
-        }
-        .t-row { display: block; margin-bottom: 8px; overflow: hidden; white-space: nowrap; width: 0; }
-        .fetch { color: #f472b6; font-weight: bold; margin-bottom: 12px; display: block; }
-        
-        /* Animasi masuk satu-satu */
-        .r1 { animation: typing 0.8s steps(30) forwards; animation-delay: 0.2s; }
-        .r2 { animation: typing 0.8s steps(30) forwards; animation-delay: 1s; }
-        .r3 { animation: typing 0.8s steps(30) forwards; animation-delay: 1.8s; }
-        .r4 { animation: typing 0.8s steps(30) forwards; animation-delay: 2.6s; }
-
-        /* CARD DOCUMENTATION */
-        .card {
-            background: var(--card);
-            border-radius: 20px;
-            padding: 30px;
-            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.02), 0 2px 4px -1px rgba(0,0,0,0.02);
-            border: 1px solid #edf2f7;
-        }
-        .method-box {
             display: flex;
             align-items: center;
             gap: 12px;
-            margin-bottom: 20px;
+            color: var(--text-main);
+            text-transform: lowercase;
         }
-        .get-tag {
-            background: #e0f2fe;
-            color: var(--primary);
-            padding: 4px 12px;
-            border-radius: 8px;
-            font-weight: 700;
-            font-size: 0.75rem;
-        }
-        .endpoint {
-            font-family: 'Fira Code', monospace;
-            font-weight: 600;
-            font-size: 0.9rem;
-            color: var(--text-dark);
+        .header p {
+            color: var(--text-muted);
+            margin-top: 10px;
+            font-size: 1rem;
         }
 
-        .label {
-            font-size: 0.65rem;
-            font-weight: 800;
-            color: var(--text-light);
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            margin-bottom: 8px;
-            display: block;
+        /* --- API CARD SECTION --- */
+        .api-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 32px;
+            margin-bottom: 30px;
         }
 
-        .params {
-            background: #f1f5f9;
-            padding: 15px;
-            border-radius: 12px;
-            font-size: 0.85rem;
+        .method-bar {
+            display: flex;
+            align-items: center;
+            gap: 12px;
             margin-bottom: 25px;
         }
 
-        pre {
-            background: #1e293b;
-            color: #e2e8f0;
-            padding: 20px;
-            border-radius: 15px;
-            font-size: 0.8rem;
-            overflow-x: auto;
-            margin: 0;
-            border: 1px solid #334155;
+        .tag-get {
+            background: var(--primary);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 6px;
+            font-weight: 800;
+            font-size: 0.75rem;
         }
 
-        /* BUTTON */
-        .btn-return {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-            width: 100%;
-            padding: 16px;
+        .url-path {
+            font-family: 'Fira Code', monospace;
+            font-weight: 600;
+            color: var(--text-main);
+            font-size: 0.95rem;
+        }
+
+        /* --- DETAILS TABLE --- */
+        h3 {
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--text-muted);
+            margin-bottom: 15px;
             margin-top: 30px;
-            background: var(--text-dark);
-            color: white;
-            border: none;
-            border-radius: 16px;
-            font-weight: 700;
-            text-decoration: none;
-            transition: 0.2s;
+        }
+
+        .param-grid {
+            display: grid;
+            grid-template-columns: 120px 1fr;
+            gap: 15px;
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            border: 1px solid var(--border);
             font-size: 0.9rem;
         }
-        .btn-return:hover { background: #000; transform: translateY(-2px); }
 
-        .footer {
-            text-align: center;
-            margin-top: 40px;
-            font-size: 0.7rem;
-            color: var(--text-light);
+        .param-name {
+            font-family: 'Fira Code', monospace;
             font-weight: 600;
+            color: #d946ef;
+        }
+
+        .param-desc { color: var(--text-muted); }
+
+        /* --- CODE BLOCK --- */
+        .response-block {
+            background: var(--code-bg);
+            border-radius: 12px;
+            padding: 20px;
+            margin-top: 15px;
+            position: relative;
+            overflow-x: auto;
+        }
+
+        pre {
+            margin: 0;
+            font-family: 'Fira Code', monospace;
+            font-size: 0.85rem;
+            color: #e2e8f0;
+        }
+
+        .json-key { color: #7dd3fc; }
+        .json-string { color: #a5b4fc; }
+        .json-num { color: #f472b6; }
+
+        /* --- BUTTONS --- */
+        .btn-back {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+            color: var(--text-main);
+            font-weight: 600;
+            font-size: 0.9rem;
+            margin-top: 40px;
+            padding: 12px 20px;
+            border-radius: 10px;
+            transition: 0.2s;
+            border: 1px solid var(--border);
+        }
+        .btn-back:hover { background: #f1f5f9; }
+
+        footer {
+            text-align: center;
+            margin-top: 60px;
+            font-size: 0.75rem;
+            color: var(--text-muted);
         }
     </style>
 </head>
 <body>
 
     <div class="container">
-        <div class="header">
-            <h1><i class="fa-solid fa-layer-group" style="color: var(--primary);"></i> <span id="shop-name">market</span></h1>
-            <p>dokumentasi integrasi api system</p>
-        </div>
+        <header class="header">
+            <h1><i class="fa-solid fa-bolt" style="color: var(--primary);"></i> <span id="shop-name">market</span> api</h1>
+            <p>Dokumentasi teknis untuk integrasi pihak ketiga.</p>
+        </header>
 
-        <div class="terminal">
-            <div class="t-head">
-                <div class="dot" style="background: #ff5f56;"></div>
-                <div class="dot" style="background: #ffbd2e;"></div>
-                <div class="dot" style="background: #27c93f;"></div>
-            </div>
-            <div class="t-body">
-                <span class="fetch">STARTING_FETCH_PROCESS...</span>
-                <span class="t-row r1">/profile</span>
-                <span class="t-row r2">/login</span>
-                <span class="t-row r3">/broadcast</span>
-                <span class="t-row r4" style="color: #4ade80;">[success] routes_loaded_successfully</span>
-            </div>
-        </div>
+        <section style="margin-bottom: 40px;">
+            <h2 style="font-size: 1.2rem;">Otentikasi</h2>
+            <p style="color: var(--text-muted); font-size: 0.95rem;">
+                Semua permintaan API memerlukan <code>apiKey</code>. API Key ini bersifat rahasia. Jangan membagikannya kepada siapapun atau menyertakannya dalam kode client-side yang dapat diakses publik.
+            </p>
+        </section>
 
-        <div class="card">
-            <div class="method-box">
-                <span class="get-tag">GET</span>
-                <span class="endpoint">/api/profile</span>
+        <div class="api-card">
+            <div class="method-bar">
+                <span class="tag-get">GET</span>
+                <span class="url-path">/api/profile</span>
             </div>
 
-            <span class="label">parameter</span>
-            <div class="params">
-                <code>key</code> : <span style="color: var(--text-light);">api key unik anda</span>
+            <p style="margin-top: 0; color: var(--text-main); font-weight: 500;">Mengambil detail informasi akun.</p>
+
+            <h3>Parameter Query</h3>
+            <div class="param-grid">
+                <div class="param-name">key</div>
+                <div class="param-desc">
+                    <strong>String (Required)</strong><br>
+                    API Key unik Anda yang digunakan untuk memverifikasi identitas permintaan.
+                </div>
             </div>
 
-            <span class="label">response contoh</span>
+            <h3>Respon Berhasil (200 OK)</h3>
+            <div class="response-block">
 <pre>
 {
-  "status": true,
-  "data": {
-    "username": "dikadev",
-    "phone": "083121495921",
-    "role": "owner",
-    "apiKey": "sk-0277..."
+  "<span class="json-key">status</span>": true,
+  "<span class="json-key">data</span>": {
+    "<span class="json-key">username</span>": <span class="json-string">"dikadev"</span>,
+    "<span class="json-key">phone</span>": <span class="json-string">"083121495921"</span>,
+    "<span class="json-key">role</span>": <span class="json-string">"owner"</span>,
+    "<span class="json-key">apiKey</span>": <span class="json-string">"sk-0277..."</span>
   }
 }</pre>
+            </div>
         </div>
 
-        <a href="dashboard.html" class="btn-return">
-            <i class="fa-solid fa-arrow-left-long"></i>
-            <span>kembali ke dashboard</span>
+        <a href="dashboard.html" class="btn-back">
+            <i class="fa-solid fa-chevron-left"></i> Kembali ke Dashboard
         </a>
 
-        <div class="footer">
-            <span id="footer-name">system</span> &copy; 2026 • api documentation v1.0
-        </div>
+        <footer>
+            &copy; 2026 <span id="footer-name">system</span> &bull; API Documentation v1.0.0
+        </footer>
     </div>
 
     <script>
