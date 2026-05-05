@@ -1,4 +1,4 @@
-const apiKeyCashi = "CASHI-B4DCKNJASIU";
+const apiKeyCashi = "CASHI-UMGIHO845T";
 const dbUrl = "https://market-d978f-default-rtdb.asia-southeast1.firebasedatabase.app";
 
 export default async function handler(req, res) {
