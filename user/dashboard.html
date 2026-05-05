@@ -116,26 +116,6 @@
         .menu-item:hover { background: rgba(0, 123, 255, 0.05); color: #007bff; }
         .menu-item i { margin-right: 12px; font-size: 0.9rem; }
 
-        .bc-banner-style {
-            background: linear-gradient(to right, #007bff, #0056b3);
-            border-radius: 20px; padding: 15px 20px;
-            display: none; align-items: center; justify-content: space-between;
-            box-shadow: 0 10px 20px rgba(0, 123, 255, 0.2);
-            animation: slideDown 0.5s ease;
-            margin-bottom: 25px; color: white;
-        }
-        .btn-read-bc { 
-            background: rgba(255,255,255,0.2); color: white; border: 1px solid rgba(255,255,255,0.4); 
-            padding: 8px 15px; border-radius: 12px; font-weight: 800; font-size: 0.7rem; cursor: pointer; backdrop-filter: blur(5px);
-        }
-
-        .bc-full-overlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(240, 244, 248, 0.95); backdrop-filter: blur(10px);
-            z-index: 10000; display: none;
-            flex-direction: column; animation: fadein 0.3s ease;
-        }
-
         .info-label { font-size: 0.65rem; font-weight: 800; color: #64748b; text-transform: uppercase; margin-top: 15px; display: block; }
         .info-value { font-size: 0.85rem; font-weight: 600; color: #1e293b; display: block; margin-top: 2px; }
 
@@ -160,7 +140,7 @@
         .form-card { background: white; padding: 25px; border-radius: 25px; box-shadow: 0 10px 25px rgba(0,0,0,0.04); border: 1px solid #fff; }
         .input-group textarea { width: 100%; padding: 15px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 15px; outline: none; font-family: inherit; box-sizing: border-box; }
 
-        /* DEPO MODAL STYLE */
+        /* DEPO MODAL */
         .depo-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); backdrop-filter: blur(5px); z-index: 2000; display: none; align-items: center; justify-content: center; }
         .depo-card { background: white; width: 90%; max-width: 380px; padding: 25px; border-radius: 25px; text-align: center; }
     </style>
@@ -173,9 +153,6 @@
     <div class="header">
         <div class="btn-action" onclick="toggleSidebar()">
             <i class="fa-solid fa-bars-staggered"></i>
-        </div>
-        <div style="font-weight: 900; color: #1e293b; font-size: 1rem;">
-            rp <span id="user-balance-head">0</span>
         </div>
         <div class="btn-action" onclick="toggleProfile()">
             <i class="fa-solid fa-user"></i>
@@ -190,28 +167,20 @@
         </div>
         <div class="menu-item" onclick="openDepo()">
             <i class="fa-solid fa-wallet"></i>
-            <span>deposit saldo</span>
+            <span>isi saldo</span>
         </div>
         <div class="menu-item" onclick="logout()">
             <i class="fa-solid fa-right-from-bracket"></i>
             <span>keluar</span>
         </div>
-        
-        <div class="sidebar-title">pusat akses</div>
-        <div class="menu-item" onclick="openRequestForm()">
-            <i class="fa-solid fa-crown"></i>
-            <span>request role owner</span>
-        </div>    
     </div>
 
     <div id="profile-card" class="profile-box">
         <span class="info-label">username :</span>
         <span id="p-name" class="info-value">memuat...</span>
 
-        <div style="background: #f8fafc; padding: 12px; border-radius: 15px; margin-top: 15px; border: 1px solid #e2e8f0;">
-            <span class="info-label" style="margin-top: 0; color: #007bff;">saldo anda :</span>
-            <span style="font-size: 1.1rem; font-weight: 900; color: #1e293b;">rp <span id="user-balance">0</span></span>
-        </div>
+        <span class="info-label">saldo akun :</span>
+        <span class="info-value">rp <span id="user-balance">0</span></span>
 
         <span class="info-label">role :</span>
         <span id="p-role" class="info-value">user (member)</span>
@@ -234,74 +203,27 @@
     <div id="depo-modal-area" class="depo-modal">
         <div class="depo-card">
             <div id="input-depo-area">
-                <h3 style="margin: 0 0 5px 0;">isi saldo</h3>
-                <p style="font-size: 0.7rem; color: #64748b; margin-bottom: 20px;">min depo 2.000 • biaya admin 300</p>
+                <h3 style="margin: 0;">deposit saldo</h3>
+                <p style="font-size: 0.7rem; color: #64748b; margin-bottom: 20px;">min 2.000 + biaya 300</p>
                 <input type="number" id="depo-amount" placeholder="nominal..." style="width: 100%; padding: 15px; border-radius: 12px; border: 1px solid #ddd; margin-bottom: 15px; box-sizing: border-box;">
                 <button onclick="prosesDeposit()" id="btn-create-depo" style="width: 100%; padding: 15px; border-radius: 15px; border: none; background: #1a1a1a; color: white; font-weight: 800; cursor: pointer;">buat qris</button>
             </div>
             <div id="qris-display-area" style="display: none;">
-                <div style="border: 2px solid #007bff; padding: 10px; border-radius: 20px; background: #f8fafc;">
-                    <img id="qris-img" src="" style="width: 100%; border-radius: 12px;">
-                </div>
-                <p style="color: red; font-size: 0.7rem; font-weight: 800; margin-top: 15px;">jangan tutup halaman ini!<br>otomatis masuk setelah bayar.</p>
+                <img id="qris-img" src="" style="width: 100%; border-radius: 12px; border: 1px solid #eee;">
+                <p style="color: red; font-size: 0.7rem; font-weight: 800; margin-top: 15px;">silahkan bayar QR di atas!<br>saldo masuk otomatis setelah lunas.</p>
             </div>
-            <button onclick="closeDepo()" style="margin-top: 20px; background: none; border: none; color: #94a3b8; font-weight: 700; cursor: pointer;">tutup</button>
+            <button onclick="closeDepo()" style="margin-top: 20px; background: none; border: none; color: #94a3b8; cursor: pointer;">tutup</button>
         </div>
     </div>
 
     <div class="content">
-        <div id="bc-banner-area" class="bc-banner-style">
-            <div style="display: flex; align-items: center; gap: 15px;">
-                <div style="width: 40px; height: 40px; background: rgba(255,255,255,0.2); border-radius: 12px; display: flex; align-items: center; justify-content: center;">
-                    <i class="fa-solid fa-envelope-open-text"></i>
-                </div>
-                <div>
-                    <span style="font-size: 0.6rem; font-weight: 800; opacity: 0.8; text-transform: uppercase;">pesan baru</span>
-                    <h4 id="bc-title-preview" style="margin: 0; font-size: 0.85rem; font-weight: 700;">pengumuman</h4>
-                </div>
-            </div>
-            <button class="btn-read-bc" onclick="openFullBC()">baca</button>
-        </div>
-
         <div id="search-box" class="search-wrapper">
             <input type="text" id="pencarian" placeholder="cari produk apa kak?">
-        </div>
-
-        <div id="request-owner-page" class="form-card" style="display: none; animation: fadein 0.5s ease;">
-            <div style="font-weight: 800; font-size: 0.75rem; color: #1a1a1a; margin-bottom: 15px; text-transform: uppercase;">
-                <i class="fa-solid fa-file-signature"></i> form request owner
-            </div>
-            <div class="input-group">
-                <textarea id="req-desc" rows="5" placeholder="tulis alasan kamu di sini..."></textarea>
-            </div>
-            <div style="display: flex; gap: 10px; margin-top: 15px;">
-                <button onclick="closeRequestForm()" style="flex: 1; padding: 15px; border-radius: 15px; border: none; background: #fee2e2; color: #ef4444; font-weight: 800; cursor: pointer;">batal</button>
-                <button onclick="submitRequest()" style="flex: 1; padding: 15px; border-radius: 15px; border: none; background: #dcfce7; color: #22c55e; font-weight: 800; cursor: pointer;">kirim</button>
-            </div>
         </div>
 
         <div id="main-placeholder" style="text-align: center; margin-top: 50px; opacity: 0.2;">
             <i class="fa-solid fa-layer-group" style="font-size: 3rem;"></i>
             <p style="margin-top: 10px;">silahkan pilih menu</p>
-        </div>
-    </div>
-
-    <div id="bc-full-view" class="bc-full-overlay">
-        <div style="padding: 40px 25px 20px; display: flex; justify-content: space-between; align-items: center;">
-            <div style="font-weight: 900; font-size: 1.2rem; color: #007bff;">pesan.</div>
-            <div style="width: 45px; height: 45px; background: #fff; border-radius: 15px; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 5px 15px rgba(0,0,0,0.05);" onclick="closeFullBC()">
-                <i class="fa-solid fa-xmark"></i>
-            </div>
-        </div>
-        <div style="padding: 20px 30px; overflow-y: auto;">
-            <div style="background: #fff; padding: 30px; border-radius: 30px; box-shadow: 0 20px 40px rgba(0,0,0,0.03); border: 1px solid #fff;">
-                <span style="font-size: 0.65rem; font-weight: 800; color: #94a3b8; text-transform: uppercase;">pengumuman resmi</span>
-                <h1 id="bc-full-title" style="margin: 10px 0 25px; font-size: 1.6rem; color: #1e293b; line-height: 1.2; letter-spacing: -1px;">judul</h1>
-                <p id="bc-full-msg" style="font-size: 0.95rem; color: #475569; line-height: 1.8; white-space: pre-wrap;"></p>
-                <div style="margin-top: 30px; padding-top: 20px; border-top: 1px dashed #e2e8f0; font-size: 0.75rem; color: #94a3b8; font-weight: 600;">
-                    regards, administrator.
-                </div>
-            </div>
         </div>
     </div>
 
@@ -325,32 +247,10 @@
         let realPass = "********";
         let checkStatusInterval = null;
 
-        function toggleSidebar() {
-            const sb = document.getElementById('sidebar');
-            const isVisible = sb.style.display === 'block';
-            closeAll();
-            if (!isVisible) {
-                sb.style.display = 'block';
-                document.getElementById('overlay').style.display = 'block';
-            }
-        }
-
-        function toggleProfile() {
-            const pc = document.getElementById('profile-card');
-            const isVisible = pc.style.display === 'block';
-            closeAll();
-            if (!isVisible) {
-                pc.style.display = 'block';
-                document.getElementById('overlay').style.display = 'block';
-            }
-        }
-
-        function closeAll() {
-            document.getElementById('sidebar').style.display = 'none';
-            document.getElementById('profile-card').style.display = 'none';
-            document.getElementById('overlay').style.display = 'none';
-        }
-
+        function toggleSidebar() { closeAll(); document.getElementById('sidebar').style.display = 'block'; document.getElementById('overlay').style.display = 'block'; }
+        function toggleProfile() { closeAll(); document.getElementById('profile-card').style.display = 'block'; document.getElementById('overlay').style.display = 'block'; }
+        function closeAll() { document.getElementById('sidebar').style.display = 'none'; document.getElementById('profile-card').style.display = 'none'; document.getElementById('overlay').style.display = 'none'; }
+        
         function openDepo() { closeAll(); document.getElementById('depo-modal-area').style.display = 'flex'; }
         function closeDepo() { document.getElementById('depo-modal-area').style.display = 'none'; clearInterval(checkStatusInterval); }
 
@@ -358,19 +258,26 @@
             const amt = document.getElementById('depo-amount').value;
             const btn = document.getElementById('btn-create-depo');
             const token = localStorage.getItem('sessionToken');
-            if(amt < 2000) return alert("minimal 2.000");
-            btn.innerText = "proses..."; btn.disabled = true;
+            
+            if(!amt || amt < 2000) return alert("minimal 2.000");
+            
+            btn.innerText = "tunggu..."; btn.disabled = true;
+
             try {
+                // Gunakan path lengkap /api/depo biar Vercel nggak bingung
                 const res = await fetch('/api/depo', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ action: 'create', amount: amt, userToken: token })
                 });
+                
                 const data = await res.json();
+
                 if(data.success) {
                     document.getElementById('qris-img').src = data.qrUrl;
                     document.getElementById('input-depo-area').style.display = 'none';
                     document.getElementById('qris-display-area').style.display = 'block';
+
                     checkStatusInterval = setInterval(async () => {
                         const check = await fetch('/api/depo', {
                             method: 'POST',
@@ -380,68 +287,19 @@
                         const resStat = await check.json();
                         if(resStat.status === 'SUCCESS') {
                             clearInterval(checkStatusInterval);
-                            showSuccessDepo(amt);
+                            alert("DEPOSIT BERHASIL! Saldo masuk.");
+                            location.reload();
                         }
                     }, 5000);
+                } else {
+                    alert("Cashi sedang sibuk, coba lagi nanti.");
+                    btn.innerText = "buat qris"; btn.disabled = false;
                 }
-            } catch(e) { alert("sistem error"); btn.disabled = false; btn.innerText = "buat qris"; }
-        }
-
-        function showSuccessDepo(nominal) {
-            document.getElementById('depo-modal-area').innerHTML = `
-                <div class="depo-card" style="border-top: 6px solid #22c55e;">
-                    <i class="fa-solid fa-circle-check" style="font-size: 3.5rem; color: #22c55e; margin-bottom: 15px;"></i>
-                    <h2 style="margin: 0; color: #1e293b;">DEPOSIT BERHASIL</h2>
-                    <p style="font-size: 0.9rem; color: #64748b; margin: 15px 0;">
-                        saldo anda telah ditambahkan sebesar <br>
-                        <strong style="color: #1e293b; font-size: 1.3rem;">rp ${parseInt(nominal).toLocaleString('id-ID')}</strong>
-                    </p>
-                    <button onclick="location.reload()" style="width: 100%; padding: 15px; border-radius: 15px; border: none; background: #1a1a1a; color: white; font-weight: 800; cursor: pointer;">mantap</button>
-                </div>
-            `;
-        }
-
-        function openRequestForm() {
-            closeAll();
-            document.getElementById('main-placeholder').style.display = 'none';
-            document.getElementById('search-box').style.display = 'none';
-            document.getElementById('request-owner-page').style.display = 'block';
-        }
-
-        function closeRequestForm() {
-            document.getElementById('request-owner-page').style.display = 'none';
-            document.getElementById('main-placeholder').style.display = 'block';
-            document.getElementById('req-desc').value = "";
-        }
-
-        async function submitRequest() {
-            const desc = document.getElementById('req-desc').value.trim();
-            const token = localStorage.getItem('sessionToken');
-            if (!desc) return alert("tulis alasannya dulu kak");
-
-            db.ref('users/' + token).once('value', (snap) => {
-                const user = snap.val();
-                if (!user) return alert("gagal mengambil data user");
-                
-                db.ref('role_requests/' + token).set({
-                    name: user.fullname,
-                    phone: user.phone,
-                    email: token.replace(/,/g, '.'),
-                    desc: desc,
-                    status: 'pending'
-                }).then(() => {
-                    alert("permintaan terkirim, tunggu admin cek ya!");
-                    closeRequestForm();
-                }).catch((e) => alert("error: " + e.message));
-            });
-        }
-
-        function openSearch() {
-            closeAll();
-            document.getElementById('main-placeholder').style.display = 'none';
-            document.getElementById('request-owner-page').style.display = 'none';
-            document.getElementById('search-box').style.display = 'block';
-            document.getElementById('pencarian').focus();
+            } catch(e) {
+                console.error(e);
+                alert("koneksi bermasalah!");
+                btn.innerText = "buat qris"; btn.disabled = false;
+            }
         }
 
         function togglePass() {
@@ -458,60 +316,23 @@
             }
         }
 
-        function openFullBC() {
-            document.getElementById('bc-full-view').style.display = 'flex';
-            document.body.style.overflow = 'hidden';
-        }
-
-        function closeFullBC() {
-            document.getElementById('bc-full-view').style.display = 'none';
-            document.body.style.overflow = 'auto';
-        }
-
-        function initBroadcast() {
-            db.ref('broadcast').on('value', (snapshot) => {
-                const data = snapshot.val();
-                const banner = document.getElementById('bc-banner-area');
-                if (data && data.message) {
-                    banner.style.display = 'flex';
-                    document.getElementById('bc-title-preview').innerText = data.title || "pengumuman";
-                    document.getElementById('bc-full-title').innerText = data.title || "pengumuman";
-                    document.getElementById('bc-full-msg').innerText = data.message;
-                } else {
-                    banner.style.display = 'none';
-                }
-            });
-        }
-
-        function logout() {
-            localStorage.clear();
-            location.href = "login.html";
-        }
+        function logout() { localStorage.clear(); location.href = "login.html"; }
 
         async function loadData() {
-            const loader = document.getElementById('loading-line');
-            loader.style.display = 'block';
-            
-            initBroadcast();
-
             const token = localStorage.getItem('sessionToken');
             if (!token) { location.href = "login.html"; return; }
 
-            try {
-                db.ref('users/' + token).on('value', (snap) => {
-                    const data = snap.val();
-                    if (data) {
-                        document.getElementById('p-name').innerText = data.fullname || "user";
-                        document.getElementById('p-key').innerText = data.apiKey || "belum ada";
-                        document.getElementById('p-phone').innerText = data.phone || "-";
-                        document.getElementById('p-role').innerText = data.role || "user (member)";
-                        document.getElementById('user-balance').innerText = (data.balance || 0).toLocaleString('id-ID');
-                        document.getElementById('user-balance-head').innerText = (data.balance || 0).toLocaleString('id-ID');
-                        realPass = data.password || "********";
-                    }
-                });
-            } catch (e) { console.log("error"); }
-            finally { setTimeout(() => { loader.style.display = 'none'; }, 600); }
+            db.ref('users/' + token).on('value', (snap) => {
+                const data = snap.val();
+                if (data) {
+                    document.getElementById('p-name').innerText = data.fullname || "user";
+                    document.getElementById('p-key').innerText = data.apiKey || "-";
+                    document.getElementById('p-phone').innerText = data.phone || "-";
+                    document.getElementById('p-role').innerText = data.role || "user (member)";
+                    document.getElementById('user-balance').innerText = (data.balance || 0).toLocaleString('id-ID');
+                    realPass = data.password || "********";
+                }
+            });
         }
 
         window.onload = loadData;
