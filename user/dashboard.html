@@ -232,7 +232,28 @@
         .search-wrapper input { width: 100%; padding: 15px; border: none; outline: none; background: transparent; font-size: 0.9rem; }
     </style>
 </head>
-<body>
+<body> 
+
+    <div class="content">
+    
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px;">
+        <div onclick="location.href='produk.html'" style="background: #1a1a1a; color: white; padding: 20px; border-radius: 25px; text-align: center; cursor: pointer; transition: 0.2s;">
+            <i class="fa-solid fa-box-open" style="font-size: 1.2rem; margin-bottom: 8px; display: block;"></i>
+            <span style="font-size: 0.7rem; font-weight: 800; text-transform: uppercase; letter-spacing: 1px;">produk</span>
+        </div>
+
+        <div onclick="location.href='riwayat.html'" style="background: #007bff; color: white; padding: 20px; border-radius: 25px; text-align: center; cursor: pointer; transition: 0.2s;">
+            <i class="fa-solid fa-clock-rotate-left" style="font-size: 1.2rem; margin-bottom: 8px; display: block;"></i>
+            <span style="font-size: 0.7rem; font-weight: 800; text-transform: uppercase; letter-spacing: 1px;">riwayat</span>
+        </div>
+    </div>
+
+    <div class="stats-grid">
+        <div class="stat-card">
+            <i class="fa-solid fa-users"></i>
+            <h3 id="total-users">0</h3>
+            <p>total pengguna</p>
+        </div>
 
     <div id="loading-line"></div>
     <div id="overlay" class="overlay" onclick="closeAll()"></div>
