@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API Documentation - DikaDev</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;600&family=Inter:wght@400;700;800&display=swap');
+
+        :root {
+            --bg: #0d1117;
+            --card-bg: #161b22;
+            --accent: #238636;
+            --text-main: #e6edf3;
+            --text-dim: #8b949e;
+            --terminal-head: #21262d;
+        }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text-main);
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            padding: 20px;
+            line-height: 1.6;
+            text-transform: lowercase;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        /* Animasi Terminal */
+        .terminal {
+            background: var(--card-bg);
+            border: 1px solid #30363d;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            margin-bottom: 40px;
+        }
+
+        .terminal-header {
+            background: var(--terminal-head);
+            padding: 12px 15px;
+            display: flex;
+            gap: 8px;
+        }
+
+        .dot { width: 12px; height: 12px; border-radius: 50%; }
+        .red { background: #ff5f56; }
+        .yellow { background: #ffbd2e; }
+        .green { background: #27c93f; }
+
+        .terminal-body {
+            padding: 20px;
+            font-family: 'Fira Code', monospace;
+            font-size: 0.9rem;
+            color: #7ee787;
+        }
+
+        .typing {
+            overflow: hidden;
+            white-space: nowrap;
+            border-right: 2px solid var(--accent);
+            width: 0;
+            animation: typing 3s steps(40, end) forwards, blink 0.8s infinite;
+            margin-bottom: 5px;
+        }
+
+        @keyframes typing {
+            from { width: 0 }
+            to { width: 100% }
+        }
+        @keyframes blink {
+            50% { border-color: transparent }
+        }
+
+        .line-2 { animation-delay: 3.5s; }
+        .line-3 { animation-delay: 6s; color: var(--text-main); }
+
+        /* Content Style */
+        h1 {
+            font-size: 1.8rem;
+            font-weight: 800;
+            border-left: 5px solid var(--accent);
+            padding-left: 15px;
+            margin-bottom: 30px;
+        }
+
+        .endpoint-card {
+            background: var(--card-bg);
+            border: 1px solid #30363d;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 20px;
+        }
+
+        .method {
+            background: var(--accent);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 6px;
+            font-weight: 800;
+            font-size: 0.8rem;
+            margin-right: 10px;
+        }
+
+        .url {
+            font-family: 'Fira Code', monospace;
+            color: #79c0ff;
+            font-size: 0.9rem;
+        }
+
+        .section-title {
+            font-size: 0.75rem;
+            font-weight: 800;
+            color: var(--text-dim);
+            text-transform: uppercase;
+            margin: 20px 0 10px;
+            display: block;
+        }
+
+        pre {
+            background: #010409;
+            padding: 20px;
+            border-radius: 10px;
+            overflow-x: auto;
+            border: 1px solid #30363d;
+            color: #d2a8ff;
+            font-size: 0.85rem;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+
+        th {
+            text-align: left;
+            color: var(--text-dim);
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            padding: 10px;
+            border-bottom: 1px solid #30363d;
+        }
+
+        td {
+            padding: 12px 10px;
+            font-size: 0.85rem;
+            border-bottom: 1px solid #21262d;
+        }
+
+        .back-btn {
+            display: inline-block;
+            margin-top: 20px;
+            color: var(--accent);
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="terminal">
+        <div class="terminal-header">
+            <div class="dot red"></div>
+            <div class="dot yellow"></div>
+            <div class="dot green"></div>
+        </div>
+        <div class="terminal-body">
+            <div class="typing">dika@dev:~$ curl get /api/profile</div>
+            <div class="typing line-2">> mengambil data...</div>
+            <div class="typing line-3">> data berhasil di ambil!</div>
+        </div>
+    </div>
+
+    <h1>api documentation</h1>
+
+    <div class="endpoint-card">
+        <div style="margin-bottom: 20px;">
+            <span class="method">GET</span>
+            <span class="url">/api/profile</span>
+        </div>
+
+        <span class="section-title">deskripsi</span>
+        <p style="margin: 0; color: var(--text-dim); font-size: 0.9rem;">
+            digunakan untuk mengambil data profil user berdasarkan api key yang valid.
+        </p>
+
+        <span class="section-title">query parameters</span>
+        <table>
+            <thead>
+                <tr>
+                    <th>parameter</th>
+                    <th>wajib</th>
+                    <th>deskripsi</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td style="color: #79c0ff;">key</td>
+                    <td style="color: #ff7b72;">ya</td>
+                    <td>api key unik user (contoh: sk-02778f...)</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <span class="section-title">contoh respon sukses</span>
+<pre>
+{
+  "status": true,
+  "data": {
+    "username": "dikadev",
+    "phone": "083121495921",
+    "role": "owner",
+    "apiKey": "*sk-***************"
+  }
+}</pre>
+
+        <span class="section-title">contoh respon gagal</span>
+<pre style="color: #ff7b72;">
+{
+  "status": false,
+  "message": "api key tidak ditemukan"
+}</pre>
+    </div>
+
+    <a href="dashboard.html" class="back-btn"><i class="fa-solid fa-arrow-left"></i> kembali ke dashboard</a>
+    
+    <div style="text-align: center; margin-top: 50px; color: var(--text-dim); font-size: 0.7rem;">
+        &copy; 2026 dika project - documentation v1.0
+    </div>
+</div>
+
+</body>
+</html>
