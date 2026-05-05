@@ -135,7 +135,7 @@
         }
         .slide img {
             width: 100%;
-            height: 160px; /* Ukuran lebih kecil sesuai request */
+            height: 160px; 
             object-fit: cover;
             border-radius: 20px;
             border: 1px solid #fff;
@@ -164,8 +164,6 @@
             transition: 0.3s;
         }
         .dot.active { background: #007bff; width: 15px; border-radius: 10px; }
-
-        /* --- END BANNER STYLE --- */
 
         .bc-banner-style {
             background: linear-gradient(to right, #007bff, #0056b3);
@@ -206,9 +204,6 @@
         .content { padding: 20px; max-width: 600px; margin: 0 auto; }
         .search-wrapper { background: white; padding: 5px; border-radius: 20px; display: none; box-shadow: 0 10px 25px rgba(0,0,0,0.04); border: 1px solid #fff; }
         .search-wrapper input { width: 100%; padding: 15px; border: none; outline: none; background: transparent; font-size: 0.9rem; }
-        
-        .form-card { background: white; padding: 25px; border-radius: 25px; box-shadow: 0 10px 25px rgba(0,0,0,0.04); border: 1px solid #fff; }
-        .input-group textarea { width: 100%; padding: 15px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 15px; outline: none; font-family: inherit; box-sizing: border-box; }
     </style>
 </head>
 <body>
@@ -237,7 +232,7 @@
         </div>
         
         <div class="sidebar-title">pusat akses</div>
-        <div class="menu-item" onclick="openRequestForm()">
+        <div class="menu-item" onclick="window.location.href='request.html'">
             <i class="fa-solid fa-crown"></i>
             <span>request role owner</span>
         </div>    
@@ -288,20 +283,6 @@
             <input type="text" id="pencarian" placeholder="cari produk apa kak?">
         </div>
 
-        <div id="request-owner-page" class="form-card" style="display: none; animation: fadein 0.5s ease;">
-            <div style="font-weight: 800; font-size: 0.75rem; color: #1a1a1a; margin-bottom: 15px; text-transform: uppercase;">
-                <i class="fa-solid fa-file-signature"></i> form request owner
-            </div>
-            <div class="input-group">
-                <label>jelaskan kenapa kamu ingin menjadi owner :</label>
-                <textarea id="req-desc" rows="5" placeholder="tulis alasan kamu di sini..."></textarea>
-            </div>
-            <div style="display: flex; gap: 10px; margin-top: 15px;">
-                <button onclick="closeRequestForm()" style="flex: 1; padding: 15px; border-radius: 15px; border: none; background: #fee2e2; color: #ef4444; font-weight: 800; cursor: pointer;">batal</button>
-                <button onclick="submitRequest()" style="flex: 1; padding: 15px; border-radius: 15px; border: none; background: #dcfce7; color: #22c55e; font-weight: 800; cursor: pointer;">kirim</button>
-            </div>
-        </div>
-
         <div id="main-placeholder" style="text-align: center; margin-top: 50px; opacity: 0.2;">
             <i class="fa-solid fa-layer-group" style="font-size: 3rem;"></i>
             <p style="margin-top: 10px;">silahkan pilih menu</p>
@@ -311,18 +292,15 @@
     <div id="bc-full-view" class="bc-full-overlay">
         <div style="padding: 40px 25px 20px; display: flex; justify-content: space-between; align-items: center;">
             <div style="font-weight: 900; font-size: 1.2rem; color: #007bff;">pesan.</div>
-            <div style="width: 45px; height: 45px; background: #fff; border-radius: 15px; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 5px 15px rgba(0,0,0,0.05);" onclick="closeFullBC()">
+            <div style="width: 45px; height: 45px; background: #fff; border-radius: 15px; display: flex; align-items: center; justify-content: center; cursor: pointer;" onclick="closeFullBC()">
                 <i class="fa-solid fa-xmark"></i>
             </div>
         </div>
         <div style="padding: 20px 30px; overflow-y: auto;">
-            <div style="background: #fff; padding: 30px; border-radius: 30px; box-shadow: 0 20px 40px rgba(0,0,0,0.03); border: 1px solid #fff;">
+            <div style="background: #fff; padding: 30px; border-radius: 30px;">
                 <span style="font-size: 0.65rem; font-weight: 800; color: #94a3b8; text-transform: uppercase;">pengumuman resmi</span>
-                <h1 id="bc-full-title" style="margin: 10px 0 25px; font-size: 1.6rem; color: #1e293b; line-height: 1.2; letter-spacing: -1px;">judul</h1>
+                <h1 id="bc-full-title" style="margin: 10px 0 25px; font-size: 1.6rem; color: #1e293b; line-height: 1.2;">judul</h1>
                 <p id="bc-full-msg" style="font-size: 0.95rem; color: #475569; line-height: 1.8; white-space: pre-wrap;"></p>
-                <div style="margin-top: 30px; padding-top: 20px; border-top: 1px dashed #e2e8f0; font-size: 0.75rem; color: #94a3b8; font-weight: 600;">
-                    regards, administrator.
-                </div>
             </div>
         </div>
     </div>
@@ -374,45 +352,9 @@
             document.getElementById('overlay').style.display = 'none';
         }
 
-        function openRequestForm() {
-            closeAll();
-            document.getElementById('main-placeholder').style.display = 'none';
-            document.getElementById('search-box').style.display = 'none';
-            document.getElementById('request-owner-page').style.display = 'block';
-        }
-
-        function closeRequestForm() {
-            document.getElementById('request-owner-page').style.display = 'none';
-            document.getElementById('main-placeholder').style.display = 'block';
-            document.getElementById('req-desc').value = "";
-        }
-
-        async function submitRequest() {
-            const desc = document.getElementById('req-desc').value.trim();
-            const token = localStorage.getItem('sessionToken');
-            if (!desc) return alert("tulis alasannya dulu kak");
-
-            db.ref('users/' + token).once('value', (snap) => {
-                const user = snap.val();
-                if (!user) return alert("gagal mengambil data user");
-                
-                db.ref('role_requests/' + token).set({
-                    name: user.fullname,
-                    phone: user.phone,
-                    email: token.replace(/,/g, '.'),
-                    desc: desc,
-                    status: 'pending'
-                }).then(() => {
-                    alert("permintaan terkirim, tunggu admin cek ya!");
-                    closeRequestForm();
-                }).catch((e) => alert("error: " + e.message));
-            });
-        }
-
         function openSearch() {
             closeAll();
             document.getElementById('main-placeholder').style.display = 'none';
-            document.getElementById('request-owner-page').style.display = 'none';
             document.getElementById('search-box').style.display = 'block';
             document.getElementById('pencarian').focus();
         }
@@ -456,33 +398,23 @@
             });
         }
 
-        // --- BANNER SLIDER LOGIC ---
         function initBannerSlider() {
             db.ref('banner_promo').on('value', (snapshot) => {
                 const wrapper = document.getElementById('slider-wrapper');
                 const dotsContainer = document.getElementById('slider-dots');
                 const container = document.getElementById('slider-container');
-                
                 wrapper.innerHTML = "";
                 dotsContainer.innerHTML = "";
-                
                 if (snapshot.exists()) {
                     container.style.display = 'block';
                     let index = 0;
                     snapshot.forEach((child) => {
                         const data = child.val();
-                        // Create Slide
-                        wrapper.innerHTML += `
-                            <div class="slide">
-                                <img src="${data.image_url}">
-                                <div class="slide-title">${data.title || ""}</div>
-                            </div>
-                        `;
-                        // Create Dot
+                        wrapper.innerHTML += `<div class="slide"><img src="${data.image_url}"><div class="slide-title">${data.title || ""}</div></div>`;
                         dotsContainer.innerHTML += `<div class="dot ${index === 0 ? 'active' : ''}" onclick="goToSlide(${index})"></div>`;
                         index++;
                     });
-                    startAutoSlide(index);
+                    startAutoSlide();
                 } else {
                     container.style.display = 'none';
                 }
@@ -492,25 +424,18 @@
         function goToSlide(n) {
             const wrapper = document.getElementById('slider-wrapper');
             const dots = document.querySelectorAll('.dot');
-            const totalSlides = dots.length;
-            
-            if (n >= totalSlides) n = 0;
-            if (n < 0) n = totalSlides - 1;
-            
+            if (n >= dots.length) n = 0;
+            if (n < 0) n = dots.length - 1;
             currentSlide = n;
             wrapper.style.transform = `translateX(-${n * 100}%)`;
-            
             dots.forEach(d => d.classList.remove('active'));
-            dots[n].classList.add('active');
+            if(dots[n]) dots[n].classList.add('active');
         }
 
-        function startAutoSlide(total) {
+        function startAutoSlide() {
             if(slideInterval) clearInterval(slideInterval);
-            slideInterval = setInterval(() => {
-                goToSlide(currentSlide + 1);
-            }, 4000);
+            slideInterval = setInterval(() => goToSlide(currentSlide + 1), 4000);
         }
-        // --- END SLIDER LOGIC ---
 
         function logout() {
             localStorage.clear();
@@ -520,13 +445,10 @@
         async function loadData() {
             const loader = document.getElementById('loading-line');
             loader.style.display = 'block';
-            
             initBroadcast();
             initBannerSlider();
-
             const token = localStorage.getItem('sessionToken');
             if (!token) { location.href = "login.html"; return; }
-
             try {
                 db.ref('users/' + token).on('value', (snap) => {
                     const data = snap.val();
