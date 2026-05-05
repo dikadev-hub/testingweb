@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>admin panel</title>
+    <title>ADMIN CONTROL</title>
     <script src="../setting.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
@@ -57,7 +57,7 @@
         .stat-card h3 { margin: 5px 0; font-size: 1.2rem; color: #1e293b; }
         .stat-card p { margin: 0; font-size: 0.6rem; font-weight: 800; color: #94a3b8; text-transform: uppercase; }
 
-        .form-card { background: white; padding: 25px; border-radius: 25px; box-shadow: 0 10px 25px rgba(0,0,0,0.04); margin-top: 10px; display: block; }
+        .form-card { background: white; padding: 25px; border-radius: 25px; box-shadow: 0 10px 25px rgba(0,0,0,0.04); margin-top: 10px; display: none; }
         .input-group { margin-bottom: 15px; }
         .input-group label { display: block; font-size: 0.7rem; font-weight: 800; color: #64748b; text-transform: uppercase; margin-bottom: 8px; }
         .input-group input, .input-group textarea { width: 100%; padding: 15px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 15px; outline: none; font-family: inherit; box-sizing: border-box; }
@@ -91,10 +91,10 @@
             <span>kirim broadcast</span>
         </div>
         <div class="sidebar-title">manajemen User</div>
-    <div class="menu-item" onclick="openPendingRequest()">
-        <i class="fa-solid fa-clock-rotate-left"></i>
-        <span>request masuk</span>
-    </div>
+        <div class="menu-item" onclick="openPendingRequest()">
+            <i class="fa-solid fa-clock-rotate-left"></i>
+            <span>request masuk</span>
+        </div>
         <div class="menu-item" onclick="location.href='../user/dashboard.html'">
             <i class="fa-solid fa-eye"></i>
             <span>login user</span>
@@ -104,13 +104,10 @@
     <div id="profile-card" class="profile-box">
         <span class="info-label">nama admin :</span>
         <span class="info-value">admin</span>
-
         <span class="info-label">role akses :</span>
         <span class="info-value" style="color: #007bff;">Super Administrator</span>
-
         <span class="info-label">status :</span>
         <span class="info-value">online / active</span>
-
         <button class="btn-main" style="margin-top: 20px; background: #ef4444;" onclick="logout()">logout</button>
     </div>
 
@@ -138,14 +135,13 @@
             </div>
         </div>
 
-            <div id="admin-request-page" style="display: none; animation: fadein 0.5s ease;">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
-            <div class="sidebar-title" style="padding: 0; border: none;">antrian request owner</div>
-            <button onclick="hideRequestPage()" style="background: none; border: none; color: #94a3b8; cursor: pointer;"><i class="fa-solid fa-xmark"></i></button>
-        </div>
-        <div id="list-request-container"></div>
+        <div id="admin-request-page" style="display: none; animation: fadein 0.5s ease;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                <div class="sidebar-title" style="padding: 0; border: none;">antrian request owner</div>
+                <button onclick="closeAll()" style="background: none; border: none; color: #94a3b8; cursor: pointer;"><i class="fa-solid fa-xmark"></i></button>
             </div>
-        
+            <div id="list-request-container"></div>
+        </div>
 
         <div id="bc-form" class="form-card">
             <div class="input-group">
@@ -177,14 +173,81 @@
             appId: "1:291695486607:web:dd860d16639b47c163f2fa"
         };
 
-        firebase.initializeApp(firebaseConfig);
+        if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
 
-        function toggleSidebar() { closeAll(); document.getElementById('sidebar').style.display = 'block'; document.getElementById('overlay').style.display = 'block'; }
-        function toggleProfile() { closeAll(); document.getElementById('profile-card').style.display = 'block'; document.getElementById('overlay').style.display = 'block'; }
-        function closeAll() { document.getElementById('sidebar').style.display = 'none'; document.getElementById('profile-card').style.display = 'none'; document.getElementById('overlay').style.display = 'none'; }
+        function closeAll() {
+            document.getElementById('sidebar').style.display = 'none';
+            document.getElementById('profile-card').style.display = 'none';
+            document.getElementById('overlay').style.display = 'none';
+            document.getElementById('bc-form').style.display = 'none';
+            document.getElementById('admin-request-page').style.display = 'none';
+        }
+
+        function toggleSidebar() { 
+            closeAll(); 
+            document.getElementById('sidebar').style.display = 'block'; 
+            document.getElementById('overlay').style.display = 'block'; 
+        }
+
+        function toggleProfile() { 
+            closeAll(); 
+            document.getElementById('profile-card').style.display = 'block'; 
+            document.getElementById('overlay').style.display = 'block'; 
+        }
         
-        function showBC() { closeAll(); document.getElementById('bc-form').style.display = 'block'; }
+        function showBC() { 
+            closeAll(); 
+            document.getElementById('bc-form').style.display = 'block'; 
+        }
+
+        function openPendingRequest() {
+            closeAll();
+            document.getElementById('admin-request-page').style.display = 'block';
+            loadRequests();
+        }
+
+        function loadRequests() {
+            const container = document.getElementById('list-request-container');
+            db.ref('role_requests').on('value', (snap) => {
+                container.innerHTML = "";
+                if (!snap.exists()) {
+                    container.innerHTML = "<p style='text-align:center; color:#94a3b8; margin-top:20px;'>tidak ada request masuk</p>";
+                    return;
+                }
+                snap.forEach((child) => {
+                    const data = child.val();
+                    const key = child.key;
+                    container.innerHTML += `
+                        <div class="form-card" style="display: block; margin-bottom: 15px; border: 1px solid #e2e8f0;">
+                            <span style="font-size: 0.6rem; font-weight: 800; color: #007bff; text-transform: uppercase;">REQUEST MENJADI OWNER DI WEBSITE INI</span>
+                            <div style="margin-top: 10px;">
+                                <span class="info-label">NAMA :</span> <span class="info-value">${data.name}</span>
+                                <span class="info-label">NOMOR :</span> <span class="info-value">${data.phone}</span>
+                                <span class="info-label">EMAIL :</span> <span class="info-value">${data.email}</span>
+                                <span class="info-label">DESKRIPSI :</span> <span class="info-value" style="white-space: pre-wrap; background:#f8fafc; padding:10px; border-radius:10px; margin-top:5px;">${data.desc}</span>
+                            </div>
+                            <div class="btn-flex" style="display: flex; gap: 10px; margin-top: 15px;">
+                                <button onclick="processRole('${key}', 'tolak')" style="flex: 1; padding: 12px; border-radius: 12px; border: none; background: #fee2e2; color: #ef4444; font-weight: 800; cursor: pointer;">tolak</button>
+                                <button onclick="processRole('${key}', 'terima')" style="flex: 1; padding: 12px; border-radius: 12px; border: none; background: #dcfce7; color: #22c55e; font-weight: 800; cursor: pointer;">terima</button>
+                            </div>
+                        </div>
+                    `;
+                });
+            });
+        }
+
+        async function processRole(userKey, action) {
+            try {
+                if (action === 'terima') {
+                    await db.ref('users/' + userKey).update({ role: 'owner' });
+                    alert("user berhasil menjadi owner! ✅");
+                } else {
+                    alert("request ditolak ❌");
+                }
+                await db.ref('role_requests/' + userKey).remove();
+            } catch (e) { alert("gagal memproses"); }
+        }
 
         function listenStats() {
             db.ref('users').on('value', (snap) => {
@@ -196,7 +259,6 @@
             const title = document.getElementById('bc-title').value;
             const message = document.getElementById('bc-msg').value;
             if(!title || !message) return alert("lengkapi data");
-
             await db.ref('broadcast').set({ title, message });
             alert("broadcast terkirim secara real-time! 🚀");
             document.getElementById('bc-title').value = "";
@@ -209,54 +271,6 @@
                 alert("broadcast dihapus 🗑️");
             }
         }
-
-            function openPendingRequest() {
-        closeAll();
-        document.getElementById('admin-request-page').style.display = 'block';
-        loadRequests();
-    }
-
-    function hideRequestPage() {
-        document.getElementById('admin-request-page').style.display = 'none';
-    }
-
-    function loadRequests() {
-        const container = document.getElementById('list-request-container');
-        db.ref('role_requests').on('value', (snap) => {
-            container.innerHTML = "";
-            snap.forEach((child) => {
-                const data = child.val();
-                const key = child.key;
-                container.innerHTML += `
-                    <div class="form-card" style="display: block; margin-bottom: 15px; border: 1px solid #e2e8f0;">
-                        <span style="font-size: 0.6rem; font-weight: 800; color: #007bff; text-transform: uppercase;">REQUEST MENJADI OWNER DI WEBSITE INI</span>
-                        <div style="margin-top: 10px;">
-                            <span class="info-label">NAMA :</span> <span class="info-value">${data.name}</span>
-                            <span class="info-label">NOMOR :</span> <span class="info-value">${data.phone}</span>
-                            <span class="info-label">EMAIL :</span> <span class="info-value">${data.email}</span>
-                            <span class="info-label">DESKRIPSI :</span> <span class="info-value" style="white-space: pre-wrap;">${data.desc}</span>
-                        </div>
-                        <div class="btn-flex" style="display: flex; gap: 10px; margin-top: 15px;">
-                            <button onclick="processRole('${key}', 'tolak')" style="flex: 1; padding: 10px; border-radius: 10px; border: none; background: #fee2e2; color: #ef4444; font-weight: 800; cursor: pointer;">tolak</button>
-                            <button onclick="processRole('${key}', 'terima')" style="flex: 1; padding: 10px; border-radius: 10px; border: none; background: #dcfce7; color: #22c55e; font-weight: 800; cursor: pointer;">terima</button>
-                        </div>
-                    </div>
-                `;
-            });
-            if (!snap.exists()) container.innerHTML = "<p style='text-align:center; color:#94a3b8;'>tidak ada request masuk</p>";
-        });
-    }
-
-    async function processRole(userKey, action) {
-        if (action === 'terima') {
-            await db.ref('users/' + userKey).update({ role: 'owner' });
-            alert("user berhasil menjadi owner");
-        } else {
-            alert("request ditolak");
-        }
-        await db.ref('role_requests/' + userKey).remove();
-        }
-                    
 
         function logout() {
             localStorage.clear();
