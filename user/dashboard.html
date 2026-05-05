@@ -234,27 +234,6 @@
 </head>
 <body> 
 
-    <div class="content">
-    
-    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px;">
-        <div onclick="location.href='produk.html'" style="background: #1a1a1a; color: white; padding: 20px; border-radius: 25px; text-align: center; cursor: pointer; transition: 0.2s;">
-            <i class="fa-solid fa-box-open" style="font-size: 1.2rem; margin-bottom: 8px; display: block;"></i>
-            <span style="font-size: 0.7rem; font-weight: 800; text-transform: uppercase; letter-spacing: 1px;">produk</span>
-        </div>
-
-        <div onclick="location.href='riwayat.html'" style="background: #007bff; color: white; padding: 20px; border-radius: 25px; text-align: center; cursor: pointer; transition: 0.2s;">
-            <i class="fa-solid fa-clock-rotate-left" style="font-size: 1.2rem; margin-bottom: 8px; display: block;"></i>
-            <span style="font-size: 0.7rem; font-weight: 800; text-transform: uppercase; letter-spacing: 1px;">riwayat</span>
-        </div>
-    </div>
-
-    <div class="stats-grid">
-        <div class="stat-card">
-            <i class="fa-solid fa-users"></i>
-            <h3 id="total-users">0</h3>
-            <p>total pengguna</p>
-        </div>
-
     <div id="loading-line"></div>
     <div id="overlay" class="overlay" onclick="closeAll()"></div>
 
@@ -262,6 +241,11 @@
         <div class="btn-action" onclick="toggleSidebar()">
             <i class="fa-solid fa-bars-staggered"></i>
         </div>
+        
+        <div style="flex: 1; margin: 0 15px; overflow: hidden; white-space: nowrap;">
+            <marquee id="running-text" style="font-size: 0.7rem; font-weight: 800; color: #64748b; text-transform: uppercase;">WELCOME...</marquee>
+        </div>
+
         <div class="btn-action" onclick="toggleProfile()">
             <i class="fa-solid fa-user"></i>
         </div>
@@ -315,6 +299,17 @@
             <button class="btn-topup" onclick="window.location.href='deposit.html'">
                 <i class="fa-solid fa-plus"></i> top up
             </button>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px;">
+            <div onclick="location.href='produk.html'" style="background: #1a1a1a; color: white; padding: 20px; border-radius: 25px; text-align: center; cursor: pointer; transition: 0.2s;">
+                <i class="fa-solid fa-box-open" style="font-size: 1.2rem; margin-bottom: 8px; display: block;"></i>
+                <span style="font-size: 0.7rem; font-weight: 800; text-transform: uppercase; letter-spacing: 1px;">produk</span>
+            </div>
+            <div onclick="location.href='riwayat.html'" style="background: #007bff; color: white; padding: 20px; border-radius: 25px; text-align: center; cursor: pointer; transition: 0.2s;">
+                <i class="fa-solid fa-clock-rotate-left" style="font-size: 1.2rem; margin-bottom: 8px; display: block;"></i>
+                <span style="font-size: 0.7rem; font-weight: 800; text-transform: uppercase; letter-spacing: 1px;">riwayat</span>
+            </div>
         </div>
 
         <div id="slider-container" class="slider-container">
@@ -513,12 +508,12 @@
                         document.getElementById('p-key').innerText = data.apiKey || "belum ada";
                         document.getElementById('p-phone').innerText = data.phone || "-";
                         document.getElementById('p-role').innerText = data.role || "user (member)";
-                        
-                        // UPDATE SALDO DENGAN FORMAT RUPIAH
-                        const balance = data.balance || 0;
-                        document.getElementById('p-balance').innerText = "rp " + balance.toLocaleString('id-ID');
-                        
+                        document.getElementById('p-balance').innerText = "rp " + (data.balance || 0).toLocaleString('id-ID');
                         realPass = data.password || "********";
+
+                        // UPDATE TEKS BERJALAN
+                        const namaTokoDB = typeof namaToko !== 'undefined' ? namaToko : "STORE";
+                        document.getElementById('running-text').innerText = `WELCOME ${data.fullname.toUpperCase()} TO ${namaTokoDB} KETIKA KAMU SUDAH MEMBELI JANGAN LUPA KASIH RATING YAAAA 🤩`;
                     }
                 });
             } catch (e) { console.log("error"); }
