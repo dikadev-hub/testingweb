@@ -64,7 +64,6 @@
             transition: 0.3s;
         }
 
-        /* --- SALDO CARD STYLE --- */
         .wallet-card {
             background: #1a1a1a;
             border-radius: 25px;
@@ -167,29 +166,17 @@
             border: 1px solid #fff;
             box-shadow: 0 8px 20px rgba(0,0,0,0.05);
         }
-        .slide-title {
-            position: absolute;
-            bottom: 0; left: 0; right: 0;
-            background: linear-gradient(transparent, rgba(0,0,0,0.7));
-            color: white;
-            padding: 20px 15px 10px;
-            border-radius: 0 0 20px 20px;
-            font-size: 0.8rem;
-            font-weight: 700;
+        
+        /* --- STYLE PRODUK UNGGULAN --- */
+        .featured-card {
+            background: white; padding: 12px; border-radius: 20px; border: 1px solid #fff;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.02); transition: 0.2s;
         }
-        .slider-dots {
-            display: flex;
-            justify-content: center;
-            gap: 5px;
-            margin-top: 10px;
+        .featured-card:active { transform: scale(0.95); }
+        .img-placeholder {
+            width: 100%; aspect-ratio: 1/1; background: #f8fafc; border-radius: 15px; 
+            margin-bottom: 10px; display: flex; align-items: center; justify-content: center;
         }
-        .dot {
-            width: 6px; height: 6px;
-            background: #cbd5e1;
-            border-radius: 50%;
-            transition: 0.3s;
-        }
-        .dot.active { background: #007bff; width: 15px; border-radius: 10px; }
 
         .bc-banner-style {
             background: linear-gradient(to right, #007bff, #0056b3);
@@ -301,14 +288,28 @@
             </button>
         </div>
 
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px;">
-            <div onclick="location.href='produk.html'" style="background: #1a1a1a; color: white; padding: 20px; border-radius: 25px; text-align: center; cursor: pointer; transition: 0.2s;">
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 25px;">
+            <div onclick="location.href='produk.html'" style="background: #1a1a1a; color: white; padding: 20px; border-radius: 25px; text-align: center; cursor: pointer;">
                 <i class="fa-solid fa-box-open" style="font-size: 1.2rem; margin-bottom: 8px; display: block;"></i>
-                <span style="font-size: 0.7rem; font-weight: 800; text-transform: uppercase; letter-spacing: 1px;">produk</span>
+                <span style="font-size: 0.7rem; font-weight: 800; text-transform: uppercase;">produk</span>
             </div>
-            <div onclick="location.href='riwayat.html'" style="background: #007bff; color: white; padding: 20px; border-radius: 25px; text-align: center; cursor: pointer; transition: 0.2s;">
+            <div onclick="location.href='riwayat.html'" style="background: #007bff; color: white; padding: 20px; border-radius: 25px; text-align: center; cursor: pointer;">
                 <i class="fa-solid fa-clock-rotate-left" style="font-size: 1.2rem; margin-bottom: 8px; display: block;"></i>
-                <span style="font-size: 0.7rem; font-weight: 800; text-transform: uppercase; letter-spacing: 1px;">riwayat</span>
+                <span style="font-size: 0.7rem; font-weight: 800; text-transform: uppercase;">riwayat</span>
+            </div>
+        </div>
+
+        <div id="featured-section" style="margin-bottom: 30px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                <span style="font-size: 0.7rem; font-weight: 800; color: #94a3b8; text-transform: uppercase;">produk unggulan</span>
+                <span onclick="location.href='produk.html'" style="font-size: 0.6rem; font-weight: 800; color: #007bff; text-transform: uppercase; cursor: pointer;">semua</span>
+            </div>
+            
+            <div id="featured-container" style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                <div id="empty-product" style="grid-column: span 2; text-align: center; padding: 40px 0; opacity: 0.3;">
+                    <i class="fa-solid fa-box-open" style="font-size: 3rem; margin-bottom: 15px; display: block;"></i>
+                    <p style="font-size: 0.7rem; font-weight: 800; text-transform: uppercase; line-height: 1.5;">ADMIN / OWNER BELUM MENAMBAH KAN<br>PRODUK APAPUN</p>
+                </div>
             </div>
         </div>
 
@@ -362,12 +363,8 @@
     <script>
         const firebaseConfig = {
             apiKey: "AIzaSyDGRsCcT-7Bv_nOAybjXyuIT6Ca0IT4YTg",
-            authDomain: "market-d978f.firebaseapp.com",
             databaseURL: "https://market-d978f-default-rtdb.asia-southeast1.firebasedatabase.app",
             projectId: "market-d978f",
-            storageBucket: "market-d978f.firebasestorage.app",
-            messagingSenderId: "291695486607",
-            appId: "1:291695486607:web:dd860d16639b47c163f2fa"
         };
 
         if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
@@ -379,22 +376,14 @@
 
         function toggleSidebar() {
             const sb = document.getElementById('sidebar');
-            const isVisible = sb.style.display === 'block';
-            closeAll();
-            if (!isVisible) {
-                sb.style.display = 'block';
-                document.getElementById('overlay').style.display = 'block';
-            }
+            if (sb.style.display === 'block') closeAll();
+            else { closeAll(); sb.style.display = 'block'; document.getElementById('overlay').style.display = 'block'; }
         }
 
         function toggleProfile() {
             const pc = document.getElementById('profile-card');
-            const isVisible = pc.style.display === 'block';
-            closeAll();
-            if (!isVisible) {
-                pc.style.display = 'block';
-                document.getElementById('overlay').style.display = 'block';
-            }
+            if (pc.style.display === 'block') closeAll();
+            else { closeAll(); pc.style.display = 'block'; document.getElementById('overlay').style.display = 'block'; }
         }
 
         function closeAll() {
@@ -424,15 +413,8 @@
             }
         }
 
-        function openFullBC() {
-            document.getElementById('bc-full-view').style.display = 'flex';
-            document.body.style.overflow = 'hidden';
-        }
-
-        function closeFullBC() {
-            document.getElementById('bc-full-view').style.display = 'none';
-            document.body.style.overflow = 'auto';
-        }
+        function openFullBC() { document.getElementById('bc-full-view').style.display = 'flex'; document.body.style.overflow = 'hidden'; }
+        function closeFullBC() { document.getElementById('bc-full-view').style.display = 'none'; document.body.style.overflow = 'auto'; }
 
         function initBroadcast() {
             db.ref('broadcast').on('value', (snapshot) => {
@@ -443,9 +425,7 @@
                     document.getElementById('bc-title-preview').innerText = data.title || "pengumuman";
                     document.getElementById('bc-full-title').innerText = data.title || "pengumuman";
                     document.getElementById('bc-full-msg').innerText = data.message;
-                } else {
-                    banner.style.display = 'none';
-                }
+                } else { banner.style.display = 'none'; }
             });
         }
 
@@ -454,50 +434,68 @@
                 const wrapper = document.getElementById('slider-wrapper');
                 const dotsContainer = document.getElementById('slider-dots');
                 const container = document.getElementById('slider-container');
-                wrapper.innerHTML = "";
-                dotsContainer.innerHTML = "";
+                wrapper.innerHTML = ""; dotsContainer.innerHTML = "";
                 if (snapshot.exists()) {
                     container.style.display = 'block';
                     let index = 0;
                     snapshot.forEach((child) => {
                         const data = child.val();
-                        wrapper.innerHTML += `<div class="slide"><img src="${data.image_url}"><div class="slide-title">${data.title || ""}</div></div>`;
+                        wrapper.innerHTML += `<div class="slide"><img src="${data.image_url}"><div class="slide-title" style="position: absolute; bottom: 0; left: 0; right: 0; background: linear-gradient(transparent, rgba(0,0,0,0.7)); color: white; padding: 20px 15px 10px; border-radius: 0 0 20px 20px; font-size: 0.8rem; font-weight: 700;">${data.title || ""}</div></div>`;
                         dotsContainer.innerHTML += `<div class="dot ${index === 0 ? 'active' : ''}" onclick="goToSlide(${index})"></div>`;
                         index++;
                     });
                     startAutoSlide();
-                } else {
-                    container.style.display = 'none';
-                }
+                } else { container.style.display = 'none'; }
             });
         }
 
         function goToSlide(n) {
             const wrapper = document.getElementById('slider-wrapper');
             const dots = document.querySelectorAll('.dot');
-            if (n >= dots.length) n = 0;
-            if (n < 0) n = dots.length - 1;
+            if (n >= dots.length) n = 0; if (n < 0) n = dots.length - 1;
             currentSlide = n;
             wrapper.style.transform = `translateX(-${n * 100}%)`;
             dots.forEach(d => d.classList.remove('active'));
             if(dots[n]) dots[n].classList.add('active');
         }
 
-        function startAutoSlide() {
-            if(slideInterval) clearInterval(slideInterval);
-            slideInterval = setInterval(() => goToSlide(currentSlide + 1), 4000);
+        function startAutoSlide() { if(slideInterval) clearInterval(slideInterval); slideInterval = setInterval(() => goToSlide(currentSlide + 1), 4000); }
+
+        // --- LOGIKA MENGAMBIL 4 PRODUK UNGGULAN ---
+        function initFeaturedProducts() {
+            const container = document.getElementById('featured-container');
+            db.ref('products').limitToFirst(4).on('value', (snap) => {
+                if (snap.exists()) {
+                    container.innerHTML = "";
+                    snap.forEach(child => {
+                        const p = child.val();
+                        container.innerHTML += `
+                            <div class="featured-card" onclick="location.href='produk.html'">
+                                <div class="img-placeholder">
+                                    <img src="${p.image || ''}" style="width:100%; height:100%; object-fit:cover; border-radius:15px;" onerror="this.src='https://via.placeholder.com/150?text=No+Image'">
+                                </div>
+                                <span style="font-size: 0.7rem; font-weight: 800; color: #1e293b; display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${p.name}</span>
+                                <span style="font-size: 0.75rem; font-weight: 900; color: #007bff; display: block; margin-top: 5px;">rp ${p.price.toLocaleString('id-ID')}</span>
+                            </div>`;
+                    });
+                } else {
+                    container.innerHTML = `
+                        <div id="empty-product" style="grid-column: span 2; text-align: center; padding: 40px 0; opacity: 0.3;">
+                            <i class="fa-solid fa-box-open" style="font-size: 3rem; margin-bottom: 15px; display: block;"></i>
+                            <p style="font-size: 0.7rem; font-weight: 800; text-transform: uppercase; line-height: 1.5;">ADMIN / OWNER BELUM MENAMBAH KAN<br>PRODUK APAPUN</p>
+                        </div>`;
+                }
+            });
         }
 
-        function logout() {
-            localStorage.clear();
-            location.href = "login.html";
-        }
+        function logout() { localStorage.clear(); location.href = "login.html"; }
 
         async function loadData() {
             const loader = document.getElementById('loading-line');
             loader.style.display = 'block';
             initBroadcast();
             initBannerSlider();
+            initFeaturedProducts();
             const token = localStorage.getItem('sessionToken');
             if (!token) { location.href = "login.html"; return; }
             try {
@@ -510,8 +508,6 @@
                         document.getElementById('p-role').innerText = data.role || "user (member)";
                         document.getElementById('p-balance').innerText = "rp " + (data.balance || 0).toLocaleString('id-ID');
                         realPass = data.password || "********";
-
-                        // UPDATE TEKS BERJALAN
                         const namaTokoDB = typeof namaToko !== 'undefined' ? namaToko : "STORE";
                         document.getElementById('running-text').innerText = `WELCOME ${data.fullname.toUpperCase()} TO ${namaTokoDB} KETIKA KAMU SUDAH MEMBELI JANGAN LUPA KASIH RATING YAAAA 🤩`;
                     }
