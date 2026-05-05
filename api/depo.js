@@ -11,33 +11,40 @@ export default async function handler(req, res) {
         if (nominal < 2000) return res.status(400).json({ error: 'minimal 2.000' });
 
         const finalAmount = nominal + 300;
-        const customOrderId = "DIKA-" + Date.now();
+        const customId = "DIKA-" + Date.now();
 
         try {
             const response = await fetch('https://cashi.id/api/create-order', {
                 method: 'POST',
-                headers: { 'x-api-key': apiKeyCashi, 'Content-Type': 'application/json' },
+                headers: { 
+                    'x-api-key': apiKeyCashi, 
+                    'Content-Type': 'application/json' 
+                },
                 body: JSON.stringify({ 
                     amount: finalAmount, 
-                    order_id: customOrderId, 
+                    order_id: customId, 
                     QRIS_CUSTOM: true 
                 })
             });
+            
             const data = await response.json();
 
-            await fetch(`${dbUrl}/deposits/${customOrderId}.json`, {
-                method: 'PUT',
-                body: JSON.stringify({ 
-                    userToken, 
-                    amount: nominal, 
-                    status: 'pending', 
-                    createdAt: Date.now() 
-                })
-            });
-
-            return res.status(200).json(data);
+            if (data.success) {
+                await fetch(`${dbUrl}/deposits/${customId}.json`, {
+                    method: 'PUT',
+                    body: JSON.stringify({ 
+                        userToken, 
+                        amount: nominal, 
+                        status: 'pending', 
+                        createdAt: Date.now() 
+                    })
+                });
+                return res.status(200).json(data);
+            } else {
+                return res.status(400).json({ error: "Cashi menolak" });
+            }
         } catch (e) {
-            return res.status(500).json({ error: "error create order" });
+            return res.status(500).json({ error: "error server" });
         }
     }
 
@@ -48,7 +55,9 @@ export default async function handler(req, res) {
             });
             const resCashi = await check.json();
 
-            if (resCashi.status === 'PAID' || resCashi.data?.status === 'PAID') {
+            const isSuccess = resCashi.status === 'SETTLED' || resCashi.status === 'PAID';
+
+            if (isSuccess) {
                 const depRes = await fetch(`${dbUrl}/deposits/${orderId}.json`);
                 const depData = await depRes.json();
 
@@ -74,7 +83,7 @@ export default async function handler(req, res) {
             }
             return res.status(200).json(resCashi);
         } catch (e) {
-            return res.status(500).json({ error: "error check status" });
+            return res.status(500).json({ error: "gagal cek status" });
         }
     }
 }
