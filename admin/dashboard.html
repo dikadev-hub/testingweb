@@ -68,6 +68,10 @@
         
         .overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 1000; display: none; }
         .content { padding: 20px; max-width: 600px; margin: 0 auto; }
+
+        /* Banner List Style */
+        .banner-item { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 20px; padding: 15px; margin-bottom: 15px; }
+        .banner-preview { width: 100%; aspect-ratio: 16/9; object-fit: cover; border-radius: 12px; margin-bottom: 10px; }
     </style>
 </head>
 <body>
@@ -89,6 +93,10 @@
         <div class="menu-item" onclick="showBC()">
             <i class="fa-solid fa-bullhorn"></i>
             <span>kirim broadcast</span>
+        </div>
+        <div class="menu-item" onclick="showIklanPage()">
+            <i class="fa-solid fa-image"></i>
+            <span>manajemen iklan</span>
         </div>
         <div class="sidebar-title">manajemen User</div>
         <div class="menu-item" onclick="openPendingRequest()">
@@ -161,6 +169,28 @@
                 <button class="btn-del" onclick="deleteBC()">🗑️</button>
             </div>
         </div>
+
+        <div id="iklan-page" class="form-card">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                <div class="sidebar-title" style="padding: 0; border: none;">manajemen iklan banner</div>
+                <button onclick="hideIklanPage()" style="background: #f1f5f9; border: none; width: 30px; height: 30px; border-radius: 8px; cursor: pointer;"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            
+            <div style="background: #f8fafc; padding: 15px; border-radius: 20px; border: 1px dashed #cbd5e1; margin-bottom: 20px;">
+                <div class="input-group">
+                    <label>pilih foto (16:9) :</label>
+                    <input type="file" id="foto-banner" accept="image/*">
+                </div>
+                <div class="input-group">
+                    <label>judul promo :</label>
+                    <input type="text" id="judul-banner" placeholder="masukkan judul iklan...">
+                </div>
+                <button id="btn-upload-iklan" class="btn-main" onclick="uploadIklan()">tambah iklan ✅</button>
+            </div>
+
+            <div class="sidebar-title" style="padding: 10px 0; border: none; font-size: 0.6rem;">list iklan aktif</div>
+            <div id="list-iklan-container"></div>
+        </div>
     </div>
 
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
@@ -209,26 +239,105 @@
         }
         
         function showBC() { 
-            document.getElementById('admin-request-page').style.display = 'none';
+            hideAllPages();
             document.getElementById('bc-form').style.display = 'block'; 
             closeAll(); 
         }
 
-        function hideBC() {
+        function hideBC() { document.getElementById('bc-form').style.display = 'none'; }
+
+        function showIklanPage() {
+            hideAllPages();
+            document.getElementById('iklan-page').style.display = 'block';
+            loadIklanList();
+            closeAll();
+        }
+
+        function hideIklanPage() { document.getElementById('iklan-page').style.display = 'none'; }
+
+        function hideAllPages() {
+            document.getElementById('admin-request-page').style.display = 'none';
             document.getElementById('bc-form').style.display = 'none';
+            document.getElementById('iklan-page').style.display = 'none';
         }
 
         function openPendingRequest() {
-            document.getElementById('bc-form').style.display = 'none';
+            hideAllPages();
             document.getElementById('admin-request-page').style.display = 'block';
             loadRequests();
             closeAll();
         }
 
-        function hideRequestPage() {
-            document.getElementById('admin-request-page').style.display = 'none';
+        function hideRequestPage() { document.getElementById('admin-request-page').style.display = 'none'; }
+
+        // --- MANAJEMEN IKLAN LOGIC ---
+        async function uploadIklan() {
+            const fileInput = document.getElementById('foto-banner');
+            const judul = document.getElementById('judul-banner').value;
+            const btn = document.getElementById('btn-upload-iklan');
+            const imgApiKey = "50145b1eaa1385c3d9549ebe496eb5b5";
+
+            if (!fileInput.files[0] || !judul) return alert("lengkapi foto dan judul!");
+
+            btn.innerText = "mengupload...";
+            btn.disabled = true;
+
+            try {
+                const formData = new FormData();
+                formData.append("image", fileInput.files[0]);
+
+                const upload = await fetch(`https://api.imgbb.com/1/upload?key=${imgApiKey}`, {
+                    method: "POST",
+                    body: formData
+                });
+                const res = await upload.json();
+
+                if (res.success) {
+                    await db.ref('banner_promo').push({
+                        image_url: res.data.url,
+                        title: judul,
+                        timestamp: Date.now()
+                    });
+                    alert("iklan berhasil ditambahkan!");
+                    document.getElementById('judul-banner').value = "";
+                    fileInput.value = "";
+                }
+            } catch (e) { alert("gagal upload"); }
+            finally { 
+                btn.innerText = "tambah iklan ✅"; 
+                btn.disabled = false; 
+            }
         }
 
+        function loadIklanList() {
+            const container = document.getElementById('list-iklan-container');
+            db.ref('banner_promo').on('value', (snap) => {
+                container.innerHTML = "";
+                if (!snap.exists()) {
+                    container.innerHTML = "<p style='text-align:center; color:#94a3b8;'>belum ada iklan</p>";
+                    return;
+                }
+                snap.forEach((child) => {
+                    const data = child.val();
+                    container.innerHTML += `
+                        <div class="banner-item">
+                            <img src="${data.image_url}" class="banner-preview">
+                            <div style="font-weight:800; font-size:0.8rem; margin-bottom:10px;">${data.title}</div>
+                            <button onclick="deleteIklan('${child.key}')" style="width:100%; padding:10px; border-radius:12px; border:none; background:#fee2e2; color:#ef4444; font-weight:800; cursor:pointer;">hapus iklan 🗑️</button>
+                        </div>
+                    `;
+                });
+            });
+        }
+
+        async function deleteIklan(key) {
+            if(confirm("hapus iklan ini?")) {
+                await db.ref('banner_promo/' + key).remove();
+                alert("iklan terhapus!");
+            }
+        }
+
+        // --- REQUEST LOGIC ---
         function loadRequests() {
             const container = document.getElementById('list-request-container');
             db.ref('role_requests').on('value', (snap) => {
@@ -274,14 +383,10 @@
         function listenStats() {
             db.ref('users').on('value', (snap) => {
                 document.getElementById('total-users').innerText = snap.numChildren();
-                
                 let countOwner = 0;
                 snap.forEach((child) => {
-                    if (child.val().role === 'owner') {
-                        countOwner++;
-                    }
+                    if (child.val().role === 'owner') countOwner++;
                 });
-                
                 const ownerElem = document.getElementById('total-owner');
                 if(ownerElem) ownerElem.innerText = countOwner;
             });
@@ -309,9 +414,7 @@
             location.href = "../login.html";
         }
 
-        window.onload = () => {
-            listenStats();
-        };
+        window.onload = () => { listenStats(); };
     </script>
 </body>
 </html>
