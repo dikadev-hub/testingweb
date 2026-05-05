@@ -116,6 +116,57 @@
         .menu-item:hover { background: rgba(0, 123, 255, 0.05); color: #007bff; }
         .menu-item i { margin-right: 12px; font-size: 0.9rem; }
 
+        /* --- BANNER SLIDER STYLE --- */
+        .slider-container {
+            width: 100%;
+            position: relative;
+            margin-bottom: 25px;
+            display: none;
+            overflow: hidden;
+        }
+        .slider-wrapper {
+            display: flex;
+            transition: transform 0.5s ease-in-out;
+            border-radius: 20px;
+        }
+        .slide {
+            min-width: 100%;
+            position: relative;
+        }
+        .slide img {
+            width: 100%;
+            height: 160px; /* Ukuran lebih kecil sesuai request */
+            object-fit: cover;
+            border-radius: 20px;
+            border: 1px solid #fff;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.05);
+        }
+        .slide-title {
+            position: absolute;
+            bottom: 0; left: 0; right: 0;
+            background: linear-gradient(transparent, rgba(0,0,0,0.7));
+            color: white;
+            padding: 20px 15px 10px;
+            border-radius: 0 0 20px 20px;
+            font-size: 0.8rem;
+            font-weight: 700;
+        }
+        .slider-dots {
+            display: flex;
+            justify-content: center;
+            gap: 5px;
+            margin-top: 10px;
+        }
+        .dot {
+            width: 6px; height: 6px;
+            background: #cbd5e1;
+            border-radius: 50%;
+            transition: 0.3s;
+        }
+        .dot.active { background: #007bff; width: 15px; border-radius: 10px; }
+
+        /* --- END BANNER STYLE --- */
+
         .bc-banner-style {
             background: linear-gradient(to right, #007bff, #0056b3);
             border-radius: 20px; padding: 15px 20px;
@@ -137,7 +188,6 @@
         }
 
         .info-label { font-size: 0.65rem; font-weight: 800; color: #64748b; text-transform: uppercase; margin-top: 15px; display: block; }
-        .info-label { font-size: 0.65rem; font-weight: 800; color: #64748b; text-transform: uppercase; margin-top: 15px; display: block; }
         .info-value { font-size: 0.85rem; font-weight: 600; color: #1e293b; display: block; margin-top: 2px; }
 
         .pass-container { display: flex; align-items: center; justify-content: space-between; margin-top: 2px; }
@@ -153,7 +203,6 @@
         }
 
         .overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 1000; display: none; }
-
         .content { padding: 20px; max-width: 600px; margin: 0 auto; }
         .search-wrapper { background: white; padding: 5px; border-radius: 20px; display: none; box-shadow: 0 10px 25px rgba(0,0,0,0.04); border: 1px solid #fff; }
         .search-wrapper input { width: 100%; padding: 15px; border: none; outline: none; background: transparent; font-size: 0.9rem; }
@@ -217,12 +266,11 @@
     </div>
 
     <div class="content">
-        <div id="display-banner" style="display:none; margin-bottom: 25px;">
-            <div style="width: 100%; aspect-ratio: 16 / 9; overflow: hidden; border-radius: 25px; border: 1px solid #fff; box-shadow: 0 10px 25px rgba(0,0,0,0.04);">
-                <img id="img-promo" src="" style="width: 100%; height: 100%; object-fit: cover;">
-            </div>
-            <h3 id="txt-promo" style="font-weight: 900; margin: 15px 0 0 5px; font-size: 0.95rem; color: #1e293b; letter-spacing: -0.5px;"></h3>
+        <div id="slider-container" class="slider-container">
+            <div id="slider-wrapper" class="slider-wrapper"></div>
+            <div id="slider-dots" class="slider-dots"></div>
         </div>
+
         <div id="bc-banner-area" class="bc-banner-style">
             <div style="display: flex; align-items: center; gap: 15px;">
                 <div style="width: 40px; height: 40px; background: rgba(255,255,255,0.2); border-radius: 12px; display: flex; align-items: center; justify-content: center;">
@@ -297,6 +345,8 @@
         const db = firebase.database();
 
         let realPass = "********";
+        let currentSlide = 0;
+        let slideInterval;
 
         function toggleSidebar() {
             const sb = document.getElementById('sidebar');
@@ -406,23 +456,61 @@
             });
         }
 
-        function initBannerPromo() {
-            // Kita ambil data iklan terbaru (limit ke 1 data terakhir)
-            db.ref('banner_promo').limitToLast(1).on('value', (snapshot) => {
-                const bannerDisplay = document.getElementById('display-banner');
+        // --- BANNER SLIDER LOGIC ---
+        function initBannerSlider() {
+            db.ref('banner_promo').on('value', (snapshot) => {
+                const wrapper = document.getElementById('slider-wrapper');
+                const dotsContainer = document.getElementById('slider-dots');
+                const container = document.getElementById('slider-container');
+                
+                wrapper.innerHTML = "";
+                dotsContainer.innerHTML = "";
+                
                 if (snapshot.exists()) {
-                    bannerDisplay.style.display = 'block';
-                    // Karena datanya berbentuk list ID unik, kita loop sekali
+                    container.style.display = 'block';
+                    let index = 0;
                     snapshot.forEach((child) => {
                         const data = child.val();
-                        document.getElementById('img-promo').src = data.image_url;
-                        document.getElementById('txt-promo').innerText = data.title || "";
+                        // Create Slide
+                        wrapper.innerHTML += `
+                            <div class="slide">
+                                <img src="${data.image_url}">
+                                <div class="slide-title">${data.title || ""}</div>
+                            </div>
+                        `;
+                        // Create Dot
+                        dotsContainer.innerHTML += `<div class="dot ${index === 0 ? 'active' : ''}" onclick="goToSlide(${index})"></div>`;
+                        index++;
                     });
+                    startAutoSlide(index);
                 } else {
-                    bannerDisplay.style.display = 'none';
+                    container.style.display = 'none';
                 }
             });
         }
+
+        function goToSlide(n) {
+            const wrapper = document.getElementById('slider-wrapper');
+            const dots = document.querySelectorAll('.dot');
+            const totalSlides = dots.length;
+            
+            if (n >= totalSlides) n = 0;
+            if (n < 0) n = totalSlides - 1;
+            
+            currentSlide = n;
+            wrapper.style.transform = `translateX(-${n * 100}%)`;
+            
+            dots.forEach(d => d.classList.remove('active'));
+            dots[n].classList.add('active');
+        }
+
+        function startAutoSlide(total) {
+            if(slideInterval) clearInterval(slideInterval);
+            slideInterval = setInterval(() => {
+                goToSlide(currentSlide + 1);
+            }, 4000);
+        }
+        // --- END SLIDER LOGIC ---
 
         function logout() {
             localStorage.clear();
@@ -434,7 +522,7 @@
             loader.style.display = 'block';
             
             initBroadcast();
-            initBannerPromo();
+            initBannerSlider();
 
             const token = localStorage.getItem('sessionToken');
             if (!token) { location.href = "login.html"; return; }
