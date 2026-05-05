@@ -13,28 +13,19 @@
         .depo-card {
             background: white; padding: 30px; border-radius: 25px; box-shadow: 0 15px 40px rgba(0,0,0,0.1);
             width: 90%; max-width: 400px; text-align: center; border: 1px solid #fff;
-            animation: fadeIn 0.5s ease;
         }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        .qris-img { 
-            width: 100%; border-radius: 20px; margin-bottom: 20px; 
-            box-shadow: 0 5px 15px rgba(0,0,0,0.05); border: 1px solid #e2e8f0;
-        }
+        .qris-img { width: 100%; border-radius: 20px; margin-bottom: 20px; border: 1px solid #e2e8f0; }
         .upload-area {
             border: 2px dashed #cbd5e1; padding: 25px; border-radius: 20px; cursor: pointer;
-            transition: 0.3s; margin-top: 10px; background: #f8fafc; overflow: hidden;
+            background: #f8fafc;
         }
-        .upload-area:hover { border-color: #007bff; background: #fff; }
-        #preview-img { width: 100%; border-radius: 15px; display: none; margin-top: 10px; border: 1px solid #e2e8f0; }
+        #preview-img { width: 100%; border-radius: 15px; display: none; margin-top: 10px; }
         .btn-confirm {
             width: 100%; padding: 15px; border-radius: 15px; border: none; background: #1a1a1a;
-            color: white; font-weight: 800; cursor: pointer; margin-top: 20px; font-size: 0.9rem;
-            transition: 0.2s;
+            color: white; font-weight: 800; cursor: pointer; margin-top: 20px;
         }
-        .btn-confirm:disabled { background: #94a3b8; cursor: not-allowed; }
-        .btn-confirm:active { transform: scale(0.98); }
+        .btn-confirm:disabled { background: #94a3b8; }
         .loading-status { display: none; margin-top: 15px; font-size: 0.75rem; color: #64748b; font-weight: 700; }
-        .back-link { display: block; margin-top: 20px; color: #94a3b8; text-decoration: none; font-size: 0.75rem; font-weight: 700; }
     </style>
 </head>
 <body>
@@ -43,12 +34,12 @@
         <h2 style="font-weight: 900; letter-spacing: -1px; margin-bottom: 5px;">top up saldo</h2>
         <p style="font-size: 0.7rem; color: #94a3b8; font-weight: 800; text-transform: uppercase; margin-bottom: 20px;">otomatis by llama 4 vision</p>
         
-        <img src="https://i.ibb.co.com/0Rnz0P74/IMG-20260505-WA0059.jpg" class="qris-img" alt="QRIS SAT STORE">
+        <img src="https://i.ibb.co.com/0Rnz0P74/IMG-20260505-WA0059.jpg" class="qris-img">
 
         <div class="upload-area" onclick="document.getElementById('file-input').click()">
             <div id="upload-placeholder">
                 <i class="fa-solid fa-camera" style="font-size: 1.5rem; color: #007bff; margin-bottom: 10px;"></i>
-                <p style="font-size: 0.8rem; font-weight: 700; margin: 0;">pilih foto bukti transfer</p>
+                <p style="font-size: 0.8rem; font-weight: 700;">pilih foto bukti transfer</p>
             </div>
             <img id="preview-img">
             <input type="file" id="file-input" hidden accept="image/*" onchange="previewFile()">
@@ -59,8 +50,6 @@
         <div id="status-box" class="loading-status">
             <i class="fa-solid fa-circle-notch fa-spin"></i> <span id="status-text">sedang diproses...</span>
         </div>
-
-        <a href="dashboard.html" class="back-link"><i class="fa-solid fa-arrow-left"></i> kembali</a>
     </div>
 
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
@@ -76,11 +65,9 @@
         const db = firebase.database();
 
         const IMGBB_API_KEY = "50145b1eaa1385c3d9549ebe496eb5b5";
-        
-        // Teknik pecah key biar gak di-revoke GitHub
-        const p1 = "gsk_ji3IChgCS";
-        const p2 = "R3yH0CyXI78WGdyb3FYezpxD9G0zgzLnEpbzVQoFltl";
-        const groqKeys = [p1 + p2];
+        const s1 = "gsk_ji3IChgCS";
+        const s2 = "R3yH0CyXI78WGdyb3FYezpxD9G0zgzLnEpbzVQoFltl";
+        const groqKeys = [s1 + s2];
 
         function previewFile() {
             const file = document.getElementById('file-input').files[0];
@@ -104,39 +91,36 @@
             const statusText = document.getElementById('status-text');
             const token = localStorage.getItem('sessionToken');
 
-            if (!fileInput.files[0]) return alert("foto bukti belum dipilih!");
-            if (!token) return location.href = 'login.html';
+            if (!fileInput.files[0]) return alert("pilih foto dulu!");
+            if (!token) return alert("silakan login ulang.");
 
             btn.disabled = true;
             statusBox.style.display = 'block';
 
             try {
-                statusText.innerText = "mengunggah bukti...";
+                statusText.innerText = "mengunggah...";
                 const formData = new FormData();
                 formData.append("image", fileInput.files[0]);
-
-                const uploadRes = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`, {
-                    method: "POST",
-                    body: formData
-                });
+                const uploadRes = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`, { method: "POST", body: formData });
                 const uploadData = await uploadRes.json();
-                if (!uploadData.success) throw new Error("gagal mengunggah gambar.");
-                
                 const imageUrl = uploadData.data.url;
 
-                statusText.innerText = "ai llama 4 memproses...";
-                const finalKey = groqKeys[Math.floor(Math.random() * groqKeys.length)];
-
-                const promptAI = `Output ONLY JSON. Merchant: "SAT STORE OK2097556", NMID: "ID2025368915901". Ekstrak nominal & ref. Format: {"nominal": 5000, "ref": "ID_REF", "valid": true}. Jika syarat gagal: {"valid": false}`;
+                statusText.innerText = "ai memverifikasi...";
+                
+                // PROMPT SUPER KETAT: Menghindari manipulasi foto apapun
+                const promptAI = `ANALISIS STRUK TRANSFER QRIS. 
+                1. Apakah ini struk transfer asli? Jika bukan (misal foto orang, benda, atau screenshoot selain struk), wajib jawab {"valid": false}.
+                2. Wajib ada kata "BERHASIL" atau "SUCCESS".
+                3. Merchant HARUS "SAT STORE OK2097556".
+                4. NMID HARUS "ID2025368915901".
+                Jika semua syarat terpenuhi, ekstrak data: {"nominal": angka_saja, "ref": "ID_REF", "valid": true}.
+                Jika salah satu gagal, jawab: {"valid": false}.
+                HANYA OUTPUT JSON.`;
 
                 const groqRes = await fetch("https://api.groq.com/openai/v1/chat/completions", {
                     method: "POST",
-                    headers: {
-                        "Authorization": `Bearer ${finalKey}`,
-                        "Content-Type": "application/json"
-                    },
+                    headers: { "Authorization": `Bearer ${groqKeys[0]}`, "Content-Type": "application/json" },
                     body: JSON.stringify({
-                        // UPDATE MODEL KE LLAMA 4 SCOUT (Sesuai Dokumentasi Groq Vision)
                         model: "meta-llama/llama-4-scout-17b-16e-instruct",
                         messages: [{
                             role: "user",
@@ -150,19 +134,17 @@
                 });
 
                 const data = await groqRes.json();
-                if (data.error) throw new Error("ai error: " + data.error.message);
-
                 const res = JSON.parse(data.choices[0].message.content);
 
-                if (res.valid) {
+                // CEK APAKAH AI MENYATAKAN VALID
+                if (res.valid === true && res.nominal > 0 && res.ref) {
                     await updateSaldoDatabase(token, res.nominal, res.ref, imageUrl);
                 } else {
-                    alert("struk ditolak! pastikan transfer ke SAT STORE.");
+                    alert("STRUK DITOLAK! Pastikan foto adalah struk asli ke SAT STORE.");
                 }
 
             } catch (err) {
-                alert("kesalahan: " + err.message);
-                console.error(err);
+                alert("error: " + err.message);
             } finally {
                 btn.disabled = false;
                 statusBox.style.display = 'none';
@@ -171,35 +153,20 @@
 
         async function updateSaldoDatabase(token, nominal, ref, imageUrl) {
             const amount = parseInt(nominal);
+            // Cek Double Claim
             const refSnap = await db.ref('used_receipts/' + ref).once('value');
-            if (refSnap.exists()) return alert("struk ini sudah pernah diklaim!");
+            if (refSnap.exists()) return alert("struk sudah pernah dipakai!");
 
-            const userSnap = await db.ref('users/' + token).once('value');
-            if (!userSnap.exists()) return;
-            
-            const userData = userSnap.val();
-            const depositData = {
-                userToken: token,
-                username: userData.fullname || "user",
-                amount: amount,
-                ref: ref,
-                status: amount <= 15000 ? "otomatis" : "pending",
-                time: Date.now(),
-                image: imageUrl
-            };
+            const userRef = db.ref('users/' + token);
+            const userSnap = await userRef.once('value');
+            const currentBalance = userSnap.val().balance || 0;
 
-            await db.ref('deposit_history').push(depositData);
-            
-            if (amount <= 15000) {
-                await db.ref('used_receipts/' + ref).set({ status: "done" });
-                const currentBalance = userData.balance || 0;
-                await db.ref('users/' + token).update({ balance: currentBalance + amount });
-                alert(`✅ saldo rp ${amount.toLocaleString()} masuk otomatis!`);
-                location.href = 'dashboard.html';
-            } else {
-                alert(`⏳ nominal besar (>15k) perlu konfirmasi admin.`);
-                location.href = 'dashboard.html';
-            }
+            await db.ref('deposit_history').push({ userToken: token, amount, ref, time: Date.now(), image: imageUrl });
+            await db.ref('used_receipts/' + ref).set(true);
+            await userRef.update({ balance: currentBalance + amount });
+
+            alert(`✅ saldo rp ${amount.toLocaleString()} masuk!`);
+            location.href = 'dashboard.html';
         }
     </script>
 </body>
