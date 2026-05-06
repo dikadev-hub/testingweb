@@ -85,40 +85,47 @@
 
     <div id="overlay" class="overlay" onclick="closeAll()"></div>
 
-    <div class="header">
-        <div class="btn-action" onclick="toggleSidebar()">
-            <i class="fa-solid fa-screwdriver-wrench"></i>
-        </div>
-        <div style="font-weight: 800; font-size: 0.9rem;">admin panel</div>
-        <div class="btn-action" onclick="toggleProfile()">
-            <i class="fa-solid fa-user-shield"></i>
-        </div>
+    <div id="sidebar" class="sidebar-box">
+    <div class="sidebar-title">admin menu</div>
+    <div class="menu-item" onclick="showBC()">
+        <i class="fa-solid fa-bullhorn"></i>
+        <span>kirim broadcast</span>
+    </div>
+    <div class="menu-item" onclick="showIklanPage()">
+        <i class="fa-solid fa-image"></i>
+        <span>manajemen iklan</span>
+    </div>
+    <div class="menu-item" onclick="showHistoryTF()">
+        <i class="fa-solid fa-receipt"></i>
+        <span>riwayat tf user</span>
     </div>
 
-    <div id="sidebar" class="sidebar-box">
-        <div class="sidebar-title">admin menu</div>
-        <div class="menu-item" onclick="showBC()">
-            <i class="fa-solid fa-bullhorn"></i>
-            <span>kirim broadcast</span>
-        </div>
-        <div class="menu-item" onclick="showIklanPage()">
-            <i class="fa-solid fa-image"></i>
-            <span>manajemen iklan</span>
-        </div>
-        <div class="menu-item" onclick="showHistoryTF()">
-            <i class="fa-solid fa-receipt"></i>
-            <span>riwayat tf user</span>
-        </div>
-        <div class="sidebar-title">manajemen User</div>
-        <div class="menu-item" onclick="openPendingRequest()">
-            <i class="fa-solid fa-clock-rotate-left"></i>
-            <span>request masuk</span>
-        </div>
-        <div class="menu-item" onclick="location.href='../user/dashboard.html'">
-            <i class="fa-solid fa-eye"></i>
-            <span>login user</span>
-        </div>
+    <div class="sidebar-title">manajemen user & sistem</div>
+    <div class="menu-item" onclick="location.href='total-user.html'">
+        <i class="fa-solid fa-users-gear"></i>
+        <span>daftar total user</span>
     </div>
+    
+    <div class="menu-item" onclick="location.href='create-token.html'">
+        <i class="fa-solid fa-key"></i>
+        <span>create token & limit</span>
+    </div>
+
+    <div class="menu-item" onclick="openPendingRequest()">
+        <i class="fa-solid fa-clock-rotate-left"></i>
+        <span>request masuk</span>
+    </div>
+
+    <div class="sidebar-title">akses cepat</div>
+    <div class="menu-item" onclick="location.href='../user/dashboard.html'">
+        <i class="fa-solid fa-right-to-bracket"></i>
+        <span>pindah mode user</span>
+    </div>
+    <div class="menu-item" onclick="logout()" style="color: #ef4444;">
+        <i class="fa-solid fa-power-off"></i>
+        <span>keluar panel</span>
+    </div>
+</div>
 
     <div id="profile-card" class="profile-box">
         <span class="info-label">nama admin :</span>
