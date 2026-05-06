@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>daftar produk</title>
+    <title>market produk</title>
     <script src="../setting.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
@@ -44,119 +44,120 @@
         .content { padding: 20px; max-width: 600px; margin: 0 auto; }
 
         /* search bar */
-        .search-box {
+        .search-wrapper {
             background: white;
-            padding: 5px 15px;
-            border-radius: 15px;
-            display: flex;
-            align-items: center;
-            box-shadow: 0 8px 20px rgba(0,0,0,0.02);
+            padding: 5px;
+            border-radius: 20px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.04);
             border: 1px solid #fff;
             margin-bottom: 20px;
         }
-        .search-box input {
-            width: 100%; padding: 12px;
+        .search-wrapper input {
+            width: 100%; padding: 12px 15px;
             border: none; outline: none;
-            background: transparent; font-size: 0.9rem;
+            background: transparent; font-size: 0.85rem;
         }
 
-        /* banner */
-        .banner-promo {
-            width: 100%; height: 140px;
-            background: linear-gradient(135deg, #007bff, #00c6ff);
-            border-radius: 20px;
-            margin-bottom: 25px;
-            display: flex;
-            align-items: center;
-            padding: 0 25px;
-            color: white;
+        /* slider iklan - gaya dashboard */
+        .slider-container {
+            width: 100%;
             position: relative;
+            margin-bottom: 25px;
             overflow: hidden;
+            border-radius: 20px;
         }
-        .banner-promo i {
-            position: absolute; right: -10px; bottom: -10px;
-            font-size: 8rem; opacity: 0.1; transform: rotate(-15deg);
+        .slider-wrapper {
+            display: flex;
+            transition: transform 0.5s ease-in-out;
         }
-
-        /* kategori */
-        .kategori-scroll {
-            display: flex; gap: 10px;
-            overflow-x: auto; padding-bottom: 15px;
-            margin-bottom: 15px;
-        }
-        .kategori-scroll::-webkit-scrollbar { display: none; }
-        .kat-item {
-            padding: 8px 18px;
-            background: white;
-            border-radius: 12px;
-            font-size: 0.75rem;
-            font-weight: 800;
-            white-space: nowrap;
-            cursor: pointer;
+        .slide { min-width: 100%; position: relative; }
+        .slide img {
+            width: 100%;
+            height: 160px; 
+            object-fit: cover;
             border: 1px solid #fff;
-            transition: 0.3s;
         }
-        .kat-item.active { background: #1a1a1a; color: white; }
+        .slide-text {
+            position: absolute; bottom: 0; left: 0; right: 0; 
+            background: linear-gradient(transparent, rgba(0,0,0,0.8)); 
+            color: white; padding: 25px 15px 10px; 
+            font-size: 0.8rem; font-weight: 700;
+        }
 
-        /* grid produk */
-        .product-grid {
+        /* kategori sinkron add-produk */
+        .label-kat {
+            font-size: 0.65rem; font-weight: 800; color: #94a3b8;
+            text-transform: uppercase; letter-spacing: 1px;
+            margin-bottom: 12px; display: block;
+        }
+        .kat-scroll {
+            display: flex; gap: 8px;
+            overflow-x: auto; padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+        .kat-scroll::-webkit-scrollbar { display: none; }
+        .kat-pill {
+            padding: 10px 18px; background: white;
+            border-radius: 15px; font-size: 0.7rem;
+            font-weight: 800; white-space: nowrap;
+            cursor: pointer; border: 1px solid #fff;
+            transition: 0.3s; color: #475569;
+        }
+        .kat-pill.active { background: #1a1a1a; color: white; border-color: #1a1a1a; }
+
+        /* product grid */
+        .grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 15px;
+            gap: 12px;
             animation: fadein 0.5s ease;
         }
-        .product-card {
-            background: white;
-            padding: 12px;
-            border-radius: 20px;
-            border: 1px solid #fff;
+        .p-card {
+            background: white; padding: 12px;
+            border-radius: 20px; border: 1px solid #fff;
             box-shadow: 0 10px 20px rgba(0,0,0,0.02);
             cursor: pointer;
-            transition: 0.3s;
         }
-        .product-card:active { transform: scale(0.95); }
-        .product-card img {
+        .p-card img {
             width: 100%; aspect-ratio: 1/1;
             object-fit: cover; border-radius: 15px;
             margin-bottom: 10px;
         }
-        .p-kat { font-size: 0.6rem; font-weight: 800; color: #94a3b8; text-transform: uppercase; display: block; }
-        .p-name { font-size: 0.75rem; font-weight: 800; color: #1e293b; display: block; margin: 3px 0 8px; height: 2.4em; overflow: hidden; }
-        .p-price { font-size: 0.9rem; font-weight: 900; color: #007bff; }
+        .p-tag { font-size: 0.6rem; font-weight: 800; color: #94a3b8; text-transform: uppercase; display: block; }
+        .p-title { font-size: 0.75rem; font-weight: 800; color: #1e293b; display: block; height: 2.4em; overflow: hidden; margin: 3px 0; }
+        .p-price { font-size: 0.85rem; font-weight: 900; color: #007bff; display: block; margin-top: 5px; }
 
-        #loading-txt { text-align: center; padding: 40px; color: #94a3b8; font-size: 0.8rem; }
+        #loading-info { text-align: center; padding: 50px; color: #94a3b8; font-size: 0.75rem; }
     </style>
 </head>
 <body>
 
     <div class="header">
         <div class="btn-back" onclick="location.href='dashboard.html'"><i class="fa-solid fa-chevron-left"></i></div>
-        <span style="font-weight: 900; font-size: 1.1rem;">eksplor produk</span>
+        <span style="font-weight: 900; font-size: 1.1rem;">market list</span>
     </div>
 
     <div class="content">
-        <div class="search-box">
-            <i class="fa-solid fa-magnifying-glass" style="color: #94a3b8;"></i>
-            <input type="text" id="cari-input" placeholder="cari produk favoritmu..." oninput="filterProduk()">
+        <div class="search-wrapper">
+            <input type="text" id="pencarian" placeholder="cari produk apa dika?" oninput="jalankanFilter()">
         </div>
 
-        <div class="banner-promo">
-            <div>
-                <h3 style="margin: 0; font-size: 1.2rem;">promo terbatas!</h3>
-                <p style="margin: 5px 0 0; font-size: 0.7rem; opacity: 0.8;">dapatkan diskon hingga 50% untuk<br>produk pilihan hari ini.</p>
-            </div>
-            <i class="fa-solid fa-bolt-lightning"></i>
+        <div id="slider-container" class="slider-container">
+            <div id="slider-wrapper" class="slider-wrapper"></div>
         </div>
 
-        <div class="kategori-scroll" id="kat-container">
-            <div class="kat-item active" onclick="filterKategori('semua', this)">semua</div>
-            <div class="kat-item" onclick="filterKategori('digital', this)">digital</div>
-            <div class="kat-item" onclick="filterKategori('fisik', this)">fisik</div>
-            <div class="kat-item" onclick="filterKategori('topup', this)">topup</div>
+        <span class="label-kat">pilih kategori</span>
+        <div class="kat-scroll">
+            <div class="kat-pill active" onclick="setKategori('semua', this)">semua</div>
+            <div class="kat-pill" onclick="setKategori('AKUN', this)">akun</div>
+            <div class="kat-pill" onclick="setKategori('APP PREM', this)">app prem</div>
+            <div class="kat-pill" onclick="setKategori('E-BOOK', this)">e-book</div>
+            <div class="kat-pill" onclick="setKategori('PRODUK DIGITAL', this)">produk digital</div>
+            <div class="kat-pill" onclick="setKategori('LAIN NYA', this)">lain nya</div>
         </div>
 
-        <div id="loading-txt">menghubungkan ke database...</div>
-        <div class="product-grid" id="product-list"></div>
+        <div id="loading-info">memuat database...</div>
+        <div class="grid" id="product-grid"></div>
     </div>
 
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
@@ -171,63 +172,93 @@
         if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
 
-        let allProducts = [];
-        let currentKat = 'semua';
+        let masterProduk = [];
+        let filterSekarang = 'semua';
+        let currentSlide = 0;
+        let slideInterval;
 
-        function loadProduk() {
-            db.ref('products').on('value', (snap) => {
-                const list = document.getElementById('product-list');
-                const loading = document.getElementById('loading-txt');
-                list.innerHTML = "";
-                allProducts = [];
-
+        // slider logic (copas dashboard)
+        function initSlider() {
+            db.ref('banner_promo').on('value', (snap) => {
+                const wrapper = document.getElementById('slider-wrapper');
+                wrapper.innerHTML = "";
                 if (snap.exists()) {
-                    loading.style.display = 'none';
                     snap.forEach(child => {
-                        allProducts.push(child.val());
+                        const d = child.val();
+                        wrapper.innerHTML += `
+                            <div class="slide">
+                                <img src="${d.image_url}">
+                                <div class="slide-text">${d.title || ""}</div>
+                            </div>`;
                     });
-                    renderDisplay(allProducts);
-                } else {
-                    loading.innerText = "belum ada produk tersedia.";
+                    mulaiAutoSlide();
                 }
             });
         }
 
-        function renderDisplay(data) {
-            const list = document.getElementById('product-list');
-            list.innerHTML = "";
-            data.forEach(p => {
-                list.innerHTML += `
-                    <div class="product-card" onclick="location.href='produk-detail.html?id=${p.productId}'">
-                        <img src="${p.foto || 'https://via.placeholder.com/150'}" alt="${p.nama}">
-                        <span class="p-kat">${p.kategori || 'umum'}</span>
-                        <span class="p-name">${p.nama}</span>
+        function mulaiAutoSlide() {
+            if(slideInterval) clearInterval(slideInterval);
+            slideInterval = setInterval(() => {
+                const wrapper = document.getElementById('slider-wrapper');
+                const slides = document.querySelectorAll('.slide');
+                if(slides.length === 0) return;
+                currentSlide = (currentSlide + 1) % slides.length;
+                wrapper.style.transform = `translateX(-${currentSlide * 100}%)`;
+            }, 4000);
+        }
+
+        // produk logic
+        function loadProduk() {
+            db.ref('products').on('value', (snap) => {
+                const grid = document.getElementById('product-grid');
+                const info = document.getElementById('loading-info');
+                masterProduk = [];
+                grid.innerHTML = "";
+                
+                if (snap.exists()) {
+                    info.style.display = 'none';
+                    snap.forEach(child => { masterProduk.push(child.val()); });
+                    jalankanFilter();
+                } else {
+                    info.innerText = "belum ada produk.";
+                }
+            });
+        }
+
+        function setKategori(kat, el) {
+            filterSekarang = kat;
+            document.querySelectorAll('.kat-pill').forEach(p => p.classList.remove('active'));
+            el.classList.add('active');
+            jalankanFilter();
+        }
+
+        function jalankanFilter() {
+            const cari = document.getElementById('pencarian').value.toLowerCase();
+            const grid = document.getElementById('product-grid');
+            grid.innerHTML = "";
+
+            const hasil = masterProduk.filter(p => {
+                const matchKat = filterSekarang === 'semua' || p.kategori === filterSekarang;
+                const matchName = p.nama.toLowerCase().includes(cari);
+                return matchKat && matchName;
+            });
+
+            hasil.forEach(p => {
+                grid.innerHTML += `
+                    <div class="p-card" onclick="location.href='produk-detail.html?id=${p.productId}'">
+                        <img src="${p.foto || ''}">
+                        <span class="p-tag">${p.kategori}</span>
+                        <span class="p-title">${p.nama}</span>
                         <span class="p-price">rp ${(p.harga || 0).toLocaleString('id-ID')}</span>
                     </div>
                 `;
             });
         }
 
-        function filterProduk() {
-            const keyword = document.getElementById('cari-input').value.toLowerCase();
-            const hasil = allProducts.filter(p => {
-                const matchName = p.nama.toLowerCase().includes(keyword);
-                const matchKat = currentKat === 'semua' || p.kategori === currentKat;
-                return matchName && matchKat;
-            });
-            renderDisplay(hasil);
-        }
-
-        function filterKategori(kat, el) {
-            currentKat = kat;
-            // hapus class active dari semua
-            document.querySelectorAll('.kat-item').forEach(i => i.classList.remove('active'));
-            // tambah ke yang diklik
-            el.classList.add('active');
-            filterProduk();
-        }
-
-        window.onload = loadProduk;
+        window.onload = () => {
+            initSlider();
+            loadProduk();
+        };
     </script>
 </body>
 </html>
