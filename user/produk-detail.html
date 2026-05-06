@@ -24,13 +24,8 @@
             color: #1e293b; text-decoration: none; box-shadow: 0 4px 12px rgba(0,0,0,0.1);
         }
 
-        .image-viewport {
-            width: 100%; aspect-ratio: 1/1; background: #e2e8f0; position: relative;
-        }
-
-        .image-viewport img {
-            width: 100%; height: 100%; object-fit: cover;
-        }
+        .image-viewport { width: 100%; aspect-ratio: 1/1; background: #e2e8f0; position: relative; }
+        .image-viewport img { width: 100%; height: 100%; object-fit: cover; }
 
         .main-content {
             background: white; border-radius: 35px 35px 0 0;
@@ -42,66 +37,26 @@
             display: inline-block; padding: 6px 14px; background: #eff6ff;
             color: #2563eb; border-radius: 12px; font-size: 0.65rem;
             font-weight: 800; text-transform: uppercase; margin-bottom: 15px;
-            letter-spacing: 0.8px;
         }
-
-        .price-section { margin-bottom: 20px; }
 
         .discount-row { display: flex; align-items: center; gap: 10px; margin-bottom: 5px; }
+        .price-original { text-decoration: line-through; color: #94a3b8; font-size: 0.9rem; font-weight: 600; }
+        .discount-badge { background: #fee2e2; color: #ef4444; padding: 3px 8px; border-radius: 8px; font-size: 0.65rem; font-weight: 800; }
+        .price-final { font-size: 1.7rem; font-weight: 900; color: #2563eb; display: block; }
 
-        .price-original { 
-            text-decoration: line-through; color: #94a3b8; font-size: 0.9rem; font-weight: 600; 
-        }
-
-        .discount-badge {
-            background: #fee2e2; color: #ef4444; padding: 3px 8px; border-radius: 8px;
-            font-size: 0.65rem; font-weight: 800;
-        }
-
-        .price-final {
-            font-size: 1.7rem; font-weight: 900; color: #2563eb; display: block;
-        }
-
-        .product-name {
-            font-size: 1.3rem; font-weight: 800; color: #0f172a; 
-            margin: 0 0 15px 0; line-height: 1.4;
-        }
+        .product-name { font-size: 1.3rem; font-weight: 800; color: #0f172a; margin: 0 0 15px 0; line-height: 1.4; }
 
         .stock-info {
             display: flex; align-items: center; gap: 6px; font-size: 0.75rem;
             font-weight: 700; color: #64748b; margin-bottom: 25px;
         }
 
-        .section-divider {
-            height: 1px; background: #f1f5f9; margin: 25px 0;
-        }
+        .section-title { font-size: 0.7rem; font-weight: 800; color: #94a3b8; text-transform: uppercase; margin-bottom: 12px; display: block; letter-spacing: 1px; }
+        .description-box { font-size: 0.9rem; line-height: 1.7; color: #475569; white-space: pre-wrap; margin-bottom: 30px; }
 
-        .section-title {
-            font-size: 0.7rem; font-weight: 800; color: #94a3b8;
-            text-transform: uppercase; margin-bottom: 12px; display: block;
-            letter-spacing: 1px;
-        }
-
-        .description-box {
-            font-size: 0.9rem; line-height: 1.7; color: #475569; white-space: pre-wrap;
-        }
-
-        .owner-card {
-            background: #f8fafc; border: 1px solid #f1f5f9; padding: 16px;
-            border-radius: 22px; display: flex; align-items: center; gap: 14px;
-        }
-
-        .owner-icon {
-            width: 45px; height: 45px; background: white; border-radius: 14px;
-            display: flex; align-items: center; justify-content: center;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.03); font-size: 1.1rem; color: #64748b;
-        }
-
-        .owner-detail span { display: block; }
-
-        .owner-name { font-size: 0.85rem; font-weight: 800; color: #1e293b; }
-
-        .owner-verified { font-size: 0.65rem; color: #10b981; font-weight: 700; margin-top: 2px; }
+        .owner-card { background: #f8fafc; border: 1px solid #f1f5f9; padding: 16px; border-radius: 22px; display: flex; align-items: center; gap: 14px; }
+        .owner-icon { width: 45px; height: 45px; background: white; border-radius: 14px; display: flex; align-items: center; justify-content: center; color: #64748b; }
+        .owner-name { font-size: 0.85rem; font-weight: 800; color: #1e293b; display: block; }
 
         .footer-nav {
             position: fixed; bottom: 0; left: 0; width: 100%;
@@ -110,24 +65,12 @@
             box-shadow: 0 -10px 40px rgba(0,0,0,0.04); z-index: 100;
         }
 
-        .btn-cart {
-            flex: 1; padding: 18px; border-radius: 18px; border: 1.5px solid #e2e8f0;
-            background: white; color: #1e293b; font-weight: 800;
-            font-size: 0.75rem; cursor: pointer; text-transform: uppercase;
-        }
+        .btn-cart { flex: 1; padding: 18px; border-radius: 18px; border: 1.5px solid #e2e8f0; background: white; color: #1e293b; font-weight: 800; font-size: 0.75rem; cursor: pointer; text-transform: uppercase; }
+        .btn-buy { flex: 1.6; padding: 18px; border-radius: 18px; border: none; background: #0f172a; color: white; font-weight: 800; font-size: 0.75rem; cursor: pointer; text-transform: uppercase; box-shadow: 0 10px 20px rgba(15, 23, 42, 0.2); }
 
-        .btn-buy {
-            flex: 1.6; padding: 18px; border-radius: 18px; border: none;
-            background: #0f172a; color: white; font-weight: 800;
-            font-size: 0.75rem; cursor: pointer; text-transform: uppercase;
-            box-shadow: 0 10px 20px rgba(15, 23, 42, 0.2);
-        }
+        .btn-cart:disabled, .btn-buy:disabled { background: #e2e8f0 !important; color: #94a3b8 !important; border: none !important; box-shadow: none !important; cursor: not-allowed; }
 
-        #loading-screen {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: white; z-index: 1000; display: flex;
-            align-items: center; justify-content: center;
-        }
+        #loading-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: white; z-index: 1000; display: flex; align-items: center; justify-content: center; }
     </style>
 </head>
 <body>
@@ -139,7 +82,7 @@
 </div>
 
 <div class="image-viewport">
-    <img id="det-img" src="" alt="produk">
+    <img id="det-img" src="">
 </div>
 
 <div class="main-content">
@@ -153,30 +96,28 @@
         <span id="det-price-new" class="price-final">rp 0</span>
     </div>
 
-    <h1 id="det-title" class="product-name">memuat produk...</h1>
+    <h1 id="det-title" class="product-name">memuat...</h1>
 
-    <div id="det-stock" class="stock-info">
-        <i class="fa-solid fa-boxes-stacked"></i> <span>stok: 0 tersedia</span>
+    <div id="det-stock-box" class="stock-info">
+        <i class="fa-solid fa-boxes-stacked"></i> <span id="det-stock-text">stok: 0 tersedia</span>
     </div>
 
     <span class="section-title">deskripsi lengkap</span>
-    <div id="det-desc" class="description-box">produk digital berkualitas tinggi. proses pengiriman aman dan cepat.</div>
+    <div id="det-desc" class="description-box"></div>
 
-    <div class="section-divider"></div>
-
-    <span class="section-title">penjual terverifikasi</span>
+    <span class="section-title">penjual</span>
     <div class="owner-card">
         <div class="owner-icon"><i class="fa-solid fa-store"></i></div>
         <div class="owner-detail">
             <span id="det-owner" class="owner-name">official store</span>
-            <span class="owner-verified"><i class="fa-solid fa-circle-check"></i> penjual terpercaya</span>
+            <span style="font-size: 0.65rem; color: #10b981; font-weight: 700;"><i class="fa-solid fa-circle-check"></i> terverifikasi</span>
         </div>
     </div>
 </div>
 
 <div class="footer-nav">
-    <button class="btn-cart" onclick="handleCart()">keranjang</button>
-    <button class="btn-buy" onclick="handleBuy()">beli sekarang</button>
+    <button id="btn-cart" class="btn-cart" onclick="handleCart()">keranjang</button>
+    <button id="btn-buy" class="btn-buy" onclick="handleBuy()">beli sekarang</button>
 </div>
 
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
@@ -191,50 +132,115 @@
     if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
 
+    const userToken = localStorage.getItem('userToken');
     const urlParams = new URLSearchParams(window.location.search);
     const productId = urlParams.get('id');
+    
+    let currentStock = 0;
+    let productFullData = null;
+    let productFirebaseKey = null;
 
     function fetchDetail() {
-        if (!productId) {
-            alert("id produk tidak ditemukan.");
-            window.location.href = 'dashboard.html';
-            return;
-        }
+        if (!productId) return window.location.href = 'dashboard.html';
 
         db.ref('products').orderByChild('productId').equalTo(productId).on('value', (snap) => {
             document.getElementById('loading-screen').style.display = 'none';
-            
             if (snap.exists()) {
                 snap.forEach(child => {
-                    const data = child.val();
-                    
-                    document.getElementById('det-img').src = data.foto;
-                    document.getElementById('det-title').innerText = data.nama;
-                    document.getElementById('det-cat').innerText = data.kategori || "umum";
-                    document.getElementById('det-price-new').innerText = "rp " + (data.harga || 0).toLocaleString('id-ID');
-                    document.getElementById('det-desc').innerText = data.deskripsi || "tidak ada deskripsi tambahan.";
-                    document.getElementById('det-owner').innerText = data.uploadBy || "official owner";
-                    document.getElementById('det-stock').innerHTML = `<i class="fa-solid fa-boxes-stacked"></i> <span>stok: ${data.stok || 0} tersedia</span>`;
+                    productFirebaseKey = child.key;
+                    productFullData = child.val();
+                    currentStock = productFullData.stok || 0;
 
-                    if (data.diskon > 0) {
+                    document.getElementById('det-img').src = productFullData.foto;
+                    document.getElementById('det-title').innerText = productFullData.nama;
+                    document.getElementById('det-cat').innerText = productFullData.kategori;
+                    document.getElementById('det-price-new').innerText = "rp " + productFullData.harga.toLocaleString('id-ID');
+                    document.getElementById('det-desc').innerText = productFullData.deskripsi;
+                    document.getElementById('det-owner').innerText = productFullData.uploadBy;
+                    document.getElementById('det-stock-text').innerText = "stok: " + currentStock + " tersedia";
+
+                    if (productFullData.diskon > 0) {
                         document.getElementById('discount-area').style.display = 'flex';
-                        document.getElementById('det-price-old').innerText = "rp " + (data.hargaAwal || 0).toLocaleString('id-ID');
-                        document.getElementById('det-disc-percent').innerText = data.diskon + "% off";
+                        document.getElementById('det-price-old').innerText = "rp " + productFullData.hargaAwal.toLocaleString('id-ID');
+                        document.getElementById('det-disc-percent').innerText = productFullData.diskon + "% off";
                     } else {
                         document.getElementById('discount-area').style.display = 'none';
                     }
 
-                    document.title = data.nama;
+                    const bc = document.getElementById('btn-cart');
+                    const bb = document.getElementById('btn-buy');
+
+                    if (currentStock <= 0) {
+                        bc.disabled = bb.disabled = true;
+                        bc.innerText = "habis";
+                        bb.innerText = "stok kosong";
+                    } else {
+                        bc.disabled = bb.disabled = false;
+                        bc.innerText = "keranjang";
+                        bb.innerText = "beli sekarang";
+                    }
                 });
-            } else {
-                alert("produk tidak tersedia.");
-                window.location.href = 'dashboard.html';
             }
         });
     }
 
-    function handleCart() { alert("berhasil ditambah ke keranjang"); }
-    function handleBuy() { alert("melanjutkan ke pembayaran"); }
+    async function handleBuy() {
+        const btn = document.getElementById('btn-buy');
+        if (!userToken) return alert("login dulu bos");
+        if (currentStock <= 0) return alert("stok habis");
+
+        btn.disabled = true;
+        btn.innerText = "mengecek saldo...";
+
+        try {
+            const userRef = db.ref('users/' + userToken);
+            const userSnap = await userRef.get();
+            if (!userSnap.exists()) throw new Error("user tidak ada");
+
+            const userData = userSnap.val();
+            const saldoSekarang = userData.saldo || 0;
+            const hargaProduk = productFullData.harga;
+
+            if (saldoSekarang < hargaProduk) {
+                alert("saldo kurang! saldo lo: rp " + saldoSekarang.toLocaleString('id-ID'));
+                btn.disabled = false;
+                btn.innerText = "beli sekarang";
+                return;
+            }
+
+            const updates = {};
+            updates['users/' + userToken + '/saldo'] = saldoSekarang - hargaProduk;
+            updates['products/' + productFirebaseKey + '/stok'] = currentStock - 1;
+
+            const orderId = "INV-" + Date.now();
+            updates['pembelian/' + orderId] = {
+                orderId: orderId,
+                userToken: userToken,
+                namaPembeli: userData.fullname || "pembeli",
+                productId: productId,
+                nama: productFullData.nama,
+                foto: productFullData.foto,
+                total: hargaProduk,
+                status: "sukses",
+                timestamp: Date.now(),
+                dataAkun: productFullData.akun // data email/pass pindah ke sini
+            };
+
+            await db.ref().update(updates);
+            alert("pembelian sukses!");
+            window.location.href = 'riwayat.html';
+
+        } catch (e) {
+            alert("gagal beli: " + e.message);
+            btn.disabled = false;
+            btn.innerText = "beli sekarang";
+        }
+    }
+
+    function handleCart() {
+        if (currentStock <= 0) return;
+        alert("masuk keranjang");
+    }
 
     window.onload = fetchDetail;
 </script>
