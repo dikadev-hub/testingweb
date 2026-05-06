@@ -241,22 +241,33 @@
         <div class="btn-action" onclick="toggleProfile()"><i class="fa-solid fa-user"></i></div>
     </div>
 
-    <div id="sidebar" class="sidebar-box">
+ <div id="sidebar" class="sidebar-box">
     <div class="sidebar-title">eksplorasi</div>
-    <div class="menu-item" onclick="openSearch()"><i class="fa-solid fa-magnifying-glass"></i><span>search produk</span></div>
-    <div class="menu-item" onclick="window.location.href='deposit.html'"><i class="fa-solid fa-wallet"></i><span>top up saldo</span></div>
+    <div class="menu-item" onclick="openSearch()">
+        <i class="fa-solid fa-magnifying-glass"></i><span>cari produk</span>
+    </div>
+    <div class="menu-item" onclick="window.location.href='deposit.html'">
+        <i class="fa-solid fa-wallet"></i><span>isi saldo</span>
+    </div>
 
-    <div class="sidebar=title">riwayat beli</div>
+    <div class="sidebar-title">aktivitas saya</div>
     <div class="menu-item" onclick="location.href='riwayat-user.html'">
-    <i class="fa-solid fa-bag-shopping"></i>
+        <i class="fa-solid fa-bag-shopping"></i><span>riwayat pembelian</span>
+    </div>
+
     <div class="sidebar-title">panel owner</div>
-    <div class="menu-item" onclick="window.location.href='riwayat-ajuan.html'"><i class="fa-solid fa-file-invoice"></i><span>riwayat pengajuan</span></div>
+    <div class="menu-item" onclick="window.location.href='riwayat-ajuan.html'">
+        <i class="fa-solid fa-file-invoice"></i><span>riwayat pengajuan</span>
+    </div>
     
     <div class="sidebar-title">akun & sistem</div>
-    <div class="menu-item" onclick="window.location.href='request.html'"><i class="fa-solid fa-crown"></i><span>request owner</span></div>
-    <div class="menu-item" onclick="logout()"><i class="fa-solid fa-right-from-bracket"></i><span>keluar aplikasi</span></div>
-</div>
-
+    <div class="menu-item" onclick="window.location.href='request.html'">
+        <i class="fa-solid fa-crown"></i><span>request owner</span>
+    </div>
+    <div class="menu-item" onclick="logout()">
+        <i class="fa-solid fa-right-from-bracket"></i><span>keluar aplikasi</span>
+    </div>
+ </div>
 
     <div id="profile-card" class="profile-box">
         <span class="info-label">username :</span><span id="p-name" class="info-value">memuat...</span>
