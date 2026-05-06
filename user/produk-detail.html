@@ -6,88 +6,124 @@
     <title>Detail Produk</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap');
+
         body { 
             background: #f8fafc; color: #1e293b; font-family: 'Plus Jakarta Sans', sans-serif; 
             margin: 0; padding: 0; text-transform: lowercase;
         }
+
         .header-nav {
             position: fixed; top: 0; left: 0; width: 100%; height: 70px;
-            display: flex; align-items: center; justify-content: space-between;
-            padding: 0 20px; box-sizing: border-box; z-index: 100;
-            transition: 0.3s;
+            display: flex; align-items: center; padding: 0 20px; box-sizing: border-box; z-index: 100;
         }
+
         .btn-back {
-            width: 40px; height: 40px; background: white; border-radius: 12px;
+            width: 42px; height: 42px; background: white; border-radius: 14px;
             display: flex; align-items: center; justify-content: center;
-            color: #1e293b; text-decoration: none; box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            color: #1e293b; text-decoration: none; box-shadow: 0 4px 12px rgba(0,0,0,0.1);
         }
-        .main-image-container {
-            width: 100%; height: 380px; background: #e2e8f0; position: relative;
+
+        .image-viewport {
+            width: 100%; aspect-ratio: 1/1; background: #e2e8f0; position: relative;
         }
-        .main-image-container img {
+
+        .image-viewport img {
             width: 100%; height: 100%; object-fit: cover;
         }
-        .content-card {
-            background: white; border-radius: 32px 32px 0 0;
-            margin-top: -40px; position: relative; padding: 30px 24px 120px;
-            min-height: 60vh; box-shadow: 0 -15px 35px rgba(0,0,0,0.05);
+
+        .main-content {
+            background: white; border-radius: 35px 35px 0 0;
+            margin-top: -35px; position: relative; padding: 30px 24px 130px;
+            min-height: 50vh; box-shadow: 0 -15px 40px rgba(0,0,0,0.04);
         }
-        .badge-category {
+
+        .category-pill {
             display: inline-block; padding: 6px 14px; background: #eff6ff;
-            color: #2563eb; border-radius: 10px; font-size: 0.65rem;
-            font-weight: 800; text-transform: uppercase; margin-bottom: 16px;
-            letter-spacing: 0.5px;
+            color: #2563eb; border-radius: 12px; font-size: 0.65rem;
+            font-weight: 800; text-transform: uppercase; margin-bottom: 15px;
+            letter-spacing: 0.8px;
         }
-        .price-tag {
-            font-size: 1.5rem; font-weight: 900; color: #2563eb;
-            margin-bottom: 8px; display: block;
+
+        .price-section { margin-bottom: 20px; }
+
+        .discount-row { display: flex; align-items: center; gap: 10px; margin-bottom: 5px; }
+
+        .price-original { 
+            text-decoration: line-through; color: #94a3b8; font-size: 0.9rem; font-weight: 600; 
         }
-        .product-title {
-            font-size: 1.25rem; font-weight: 800; margin: 0 0 20px 0;
-            line-height: 1.4; color: #0f172a;
+
+        .discount-badge {
+            background: #fee2e2; color: #ef4444; padding: 3px 8px; border-radius: 8px;
+            font-size: 0.65rem; font-weight: 800;
         }
-        .section-label {
+
+        .price-final {
+            font-size: 1.7rem; font-weight: 900; color: #2563eb; display: block;
+        }
+
+        .product-name {
+            font-size: 1.3rem; font-weight: 800; color: #0f172a; 
+            margin: 0 0 15px 0; line-height: 1.4;
+        }
+
+        .stock-info {
+            display: flex; align-items: center; gap: 6px; font-size: 0.75rem;
+            font-weight: 700; color: #64748b; margin-bottom: 25px;
+        }
+
+        .section-divider {
+            height: 1px; background: #f1f5f9; margin: 25px 0;
+        }
+
+        .section-title {
             font-size: 0.7rem; font-weight: 800; color: #94a3b8;
             text-transform: uppercase; margin-bottom: 12px; display: block;
-            letter-spacing: 1px; border-bottom: 1px solid #f1f5f9; padding-bottom: 8px;
+            letter-spacing: 1px;
         }
-        .desc-text {
-            font-size: 0.85rem; line-height: 1.7; color: #475569;
-            margin-bottom: 30px; white-space: pre-wrap;
+
+        .description-box {
+            font-size: 0.9rem; line-height: 1.7; color: #475569; white-space: pre-wrap;
         }
-        .owner-info-box {
+
+        .owner-card {
             background: #f8fafc; border: 1px solid #f1f5f9; padding: 16px;
-            border-radius: 20px; display: flex; align-items: center; gap: 14px;
+            border-radius: 22px; display: flex; align-items: center; gap: 14px;
         }
-        .owner-avatar {
-            width: 48px; height: 48px; background: white; border-radius: 14px;
+
+        .owner-icon {
+            width: 45px; height: 45px; background: white; border-radius: 14px;
             display: flex; align-items: center; justify-content: center;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.03);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.03); font-size: 1.1rem; color: #64748b;
         }
-        .owner-name {
-            font-size: 0.85rem; font-weight: 800; color: #1e293b; display: block;
-        }
-        .owner-status {
-            font-size: 0.65rem; color: #10b981; font-weight: 700;
-        }
-        .bottom-bar {
+
+        .owner-detail span { display: block; }
+
+        .owner-name { font-size: 0.85rem; font-weight: 800; color: #1e293b; }
+
+        .owner-verified { font-size: 0.65rem; color: #10b981; font-weight: 700; margin-top: 2px; }
+
+        .footer-nav {
             position: fixed; bottom: 0; left: 0; width: 100%;
-            background: white; padding: 20px 24px 30px; box-sizing: border-box;
+            background: white; padding: 20px 24px 35px; box-sizing: border-box;
             display: flex; gap: 12px; border-top: 1px solid #f1f5f9;
             box-shadow: 0 -10px 40px rgba(0,0,0,0.04); z-index: 100;
         }
-        .btn-secondary {
-            flex: 1; padding: 16px; border-radius: 16px; border: 1.5px solid #e2e8f0;
+
+        .btn-cart {
+            flex: 1; padding: 18px; border-radius: 18px; border: 1.5px solid #e2e8f0;
             background: white; color: #1e293b; font-weight: 800;
             font-size: 0.75rem; cursor: pointer; text-transform: uppercase;
         }
-        .btn-primary {
-            flex: 1.5; padding: 16px; border-radius: 16px; border: none;
+
+        .btn-buy {
+            flex: 1.6; padding: 18px; border-radius: 18px; border: none;
             background: #0f172a; color: white; font-weight: 800;
             font-size: 0.75rem; cursor: pointer; text-transform: uppercase;
             box-shadow: 0 10px 20px rgba(15, 23, 42, 0.2);
         }
-        #loader {
+
+        #loading-screen {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: white; z-index: 1000; display: flex;
             align-items: center; justify-content: center;
@@ -96,39 +132,51 @@
 </head>
 <body>
 
-<div id="loader"><i class="fa-solid fa-spinner fa-spin" style="font-size: 2rem; color: #2563eb;"></i></div>
+<div id="loading-screen"><i class="fa-solid fa-circle-notch fa-spin" style="font-size: 2rem; color: #2563eb;"></i></div>
 
 <div class="header-nav">
     <a href="dashboard.html" class="btn-back"><i class="fa-solid fa-chevron-left"></i></a>
 </div>
 
-<div class="main-image-container">
-    <img id="display-foto" src="" alt="produk">
+<div class="image-viewport">
+    <img id="det-img" src="" alt="produk">
 </div>
 
-<div class="content-card">
-    <span id="display-kategori" class="badge-category">kategori</span>
-    <span id="display-harga" class="price-tag">rp 0</span>
-    <h1 id="display-nama" class="product-title">memuat nama produk...</h1>
-
-    <span class="section-label">deskripsi produk</span>
-    <div id="display-deskripsi" class="desc-text">tidak ada deskripsi untuk produk ini.</div>
+<div class="main-content">
+    <span id="det-cat" class="category-pill">kategori</span>
     
-    <span class="section-label">informasi owner</span>
-    <div class="owner-info-box">
-        <div class="owner-avatar">
-            <i class="fa-solid fa-store" style="color: #64748b;"></i>
+    <div class="price-section">
+        <div id="discount-area" class="discount-row">
+            <span id="det-price-old" class="price-original">rp 0</span>
+            <span id="det-disc-percent" class="discount-badge">0% off</span>
         </div>
-        <div>
-            <span id="display-owner" class="owner-name">nama owner</span>
-            <span class="owner-status"><i class="fa-solid fa-circle-check"></i> terverifikasi sebagai owner</span>
+        <span id="det-price-new" class="price-final">rp 0</span>
+    </div>
+
+    <h1 id="det-title" class="product-name">memuat produk...</h1>
+
+    <div id="det-stock" class="stock-info">
+        <i class="fa-solid fa-boxes-stacked"></i> <span>stok: 0 tersedia</span>
+    </div>
+
+    <span class="section-title">deskripsi lengkap</span>
+    <div id="det-desc" class="description-box">produk digital berkualitas tinggi. proses pengiriman aman dan cepat.</div>
+
+    <div class="section-divider"></div>
+
+    <span class="section-title">penjual terverifikasi</span>
+    <div class="owner-card">
+        <div class="owner-icon"><i class="fa-solid fa-store"></i></div>
+        <div class="owner-detail">
+            <span id="det-owner" class="owner-name">official store</span>
+            <span class="owner-verified"><i class="fa-solid fa-circle-check"></i> penjual terpercaya</span>
         </div>
     </div>
 </div>
 
-<div class="bottom-bar">
-    <button class="btn-secondary" onclick="addCart()">keranjang</button>
-    <button class="btn-primary" onclick="checkout()">beli sekarang</button>
+<div class="footer-nav">
+    <button class="btn-cart" onclick="handleCart()">keranjang</button>
+    <button class="btn-buy" onclick="handleBuy()">beli sekarang</button>
 </div>
 
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
@@ -143,49 +191,52 @@
     if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
 
-    const params = new URLSearchParams(window.location.search);
-    const pid = params.get('id');
+    const urlParams = new URLSearchParams(window.location.search);
+    const productId = urlParams.get('id');
 
-    function loadDetail() {
-        if (!pid) {
-            alert("id produk tidak valid");
+    function fetchDetail() {
+        if (!productId) {
+            alert("id produk tidak ditemukan.");
             window.location.href = 'dashboard.html';
             return;
         }
 
-        db.ref('products').orderByChild('productId').equalTo(pid).on('value', (snap) => {
-            document.getElementById('loader').style.display = 'none';
+        db.ref('products').orderByChild('productId').equalTo(productId).on('value', (snap) => {
+            document.getElementById('loading-screen').style.display = 'none';
             
             if (snap.exists()) {
                 snap.forEach(child => {
                     const data = child.val();
-                    document.getElementById('display-foto').src = data.foto;
-                    document.getElementById('display-nama').innerText = data.nama;
-                    document.getElementById('display-kategori').innerText = data.kategori || "umum";
-                    document.getElementById('display-harga').innerText = "rp " + (data.harga || 0).toLocaleString('id-ID');
-                    document.getElementById('display-deskripsi').innerText = data.deskripsi || "pembelian produk digital ini akan diproses secara otomatis setelah pembayaran.";
                     
-                    // menampilkan nama owner yang mengupload
-                    document.getElementById('display-owner').innerText = data.uploadBy || "official store";
-                    
+                    document.getElementById('det-img').src = data.foto;
+                    document.getElementById('det-title').innerText = data.nama;
+                    document.getElementById('det-cat').innerText = data.kategori || "umum";
+                    document.getElementById('det-price-new').innerText = "rp " + (data.harga || 0).toLocaleString('id-ID');
+                    document.getElementById('det-desc').innerText = data.deskripsi || "tidak ada deskripsi tambahan.";
+                    document.getElementById('det-owner').innerText = data.uploadBy || "official owner";
+                    document.getElementById('det-stock').innerHTML = `<i class="fa-solid fa-boxes-stacked"></i> <span>stok: ${data.stok || 0} tersedia</span>`;
+
+                    if (data.diskon > 0) {
+                        document.getElementById('discount-area').style.display = 'flex';
+                        document.getElementById('det-price-old').innerText = "rp " + (data.hargaAwal || 0).toLocaleString('id-ID');
+                        document.getElementById('det-disc-percent').innerText = data.diskon + "% off";
+                    } else {
+                        document.getElementById('discount-area').style.display = 'none';
+                    }
+
                     document.title = data.nama;
                 });
             } else {
-                alert("produk telah dihapus atau tidak tersedia.");
+                alert("produk tidak tersedia.");
                 window.location.href = 'dashboard.html';
             }
         });
     }
 
-    function addCart() {
-        alert("dimasukkan ke keranjang");
-    }
+    function handleCart() { alert("berhasil ditambah ke keranjang"); }
+    function handleBuy() { alert("melanjutkan ke pembayaran"); }
 
-    function checkout() {
-        alert("memproses pembelian");
-    }
-
-    window.onload = loadDetail;
+    window.onload = fetchDetail;
 </script>
 </body>
 </html>
