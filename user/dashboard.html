@@ -245,7 +245,10 @@
     <div class="sidebar-title">eksplorasi</div>
     <div class="menu-item" onclick="openSearch()"><i class="fa-solid fa-magnifying-glass"></i><span>search produk</span></div>
     <div class="menu-item" onclick="window.location.href='deposit.html'"><i class="fa-solid fa-wallet"></i><span>top up saldo</span></div>
-    
+
+    <div class="sidebar=title">riwayat beli</div>
+    <div class="menu-item" onclick="location.href='riwayat-user.html'">
+    <i class="fa-solid fa-bag-shopping"></i>
     <div class="sidebar-title">panel owner</div>
     <div class="menu-item" onclick="window.location.href='riwayat-ajuan.html'"><i class="fa-solid fa-file-invoice"></i><span>riwayat pengajuan</span></div>
     
@@ -268,28 +271,16 @@
         <button class="btn-docs" onclick="window.location.href='docs.html'">docs api</button>
     </div>
 
-    <div class="content">
-        <div class="wallet-card">
-            <div class="wallet-info"><span>saldo aktif</span><h2 id="p-balance">rp 0</h2></div>
-            <button class="btn-topup" onclick="window.location.href='deposit.html'"><i class="fa-solid fa-plus"></i> top up</button>
-        </div>
-
-        <div id="user-menu-area" style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 25px;">
-    <div onclick="location.href='produk.html'" style="background: #1a1a1a; color: white; padding: 20px; border-radius: 25px; text-align: center; cursor: pointer;">
-        <i class="fa-solid fa-box-open" style="font-size: 1.2rem; margin-bottom: 8px; display: block;"></i>
-        <span style="font-size: 0.7rem; font-weight: 800; text-transform: uppercase;">produk</span>
-    </div>
-
-    <div onclick="location.href='riwayat.html'" style="background: #007bff; color: white; padding: 20px; border-radius: 25px; text-align: center; cursor: pointer;">
-        <i class="fa-solid fa-clock-rotate-left" style="font-size: 1.2rem; margin-bottom: 8px; display: block;"></i>
-        <span style="font-size: 0.7rem; font-weight: 800; text-transform: uppercase;">riwayat pengajuan</span>
-    </div>
-
-    <div onclick="location.href='riwayat-user.html'" style="background: #10b981; color: white; padding: 20px; border-radius: 25px; text-align: center; cursor: pointer; grid-column: span 2;">
-        <i class="fa-solid fa-bag-shopping" style="font-size: 1.2rem; margin-bottom: 8px; display: block;"></i>
-        <span style="font-size: 0.7rem; font-weight: 800; text-transform: uppercase;">pesanan saya</span>
-    </div>
-        </div>
+         <div id="user-menu-area" style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 25px;">
+            <div onclick="location.href='produk.html'" style="background: #1a1a1a; color: white; padding: 20px; border-radius: 25px; text-align: center; cursor: pointer;">
+                <i class="fa-solid fa-box-open" style="font-size: 1.2rem; margin-bottom: 8px; display: block;"></i>
+                <span style="font-size: 0.7rem; font-weight: 800; text-transform: uppercase;">produk</span>
+            </div>
+            <div onclick="location.href='riwayat-user.html'" style="background: #007bff; color: white; padding: 20px; border-radius: 25px; text-align: center; cursor: pointer;">
+                <i class="fa-solid fa-clock-rotate-left" style="font-size: 1.2rem; margin-bottom: 8px; display: block;"></i>
+                <span style="font-size: 0.7rem; font-weight: 800; text-transform: uppercase;">riwayat</span>
+            </div>             
+         </div>
         
         <div id="owner-area-1" class="grid-owner">
             <div class="item-owner" onclick="location.href='edit-produk.html'"><i class="fa-solid fa-pen-to-square"></i><span>edit produk</span></div>
