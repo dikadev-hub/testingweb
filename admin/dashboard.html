@@ -29,12 +29,19 @@
             cursor: pointer; color: #1e293b;
         }
 
+        /* SIDEBAR DENGAN SISTEM SCROLL */
         .sidebar-box {
             position: absolute; top: 85px; left: 20px; width: 220px;
-            background: rgba(255, 255, 255, 0.95); border-radius: 20px;
+            max-height: 75vh; /* Batas tinggi 75% layar */
+            overflow-y: auto;  /* Bisa di-scroll ke bawah */
+            background: rgba(255, 255, 255, 0.98); border-radius: 20px;
             box-shadow: 0 15px 40px rgba(0,0,0,0.1); display: none; z-index: 1001;
-            animation: slideDown 0.3s ease; border: 1px solid rgba(255, 255, 255, 0.5); overflow: hidden;
+            animation: slideDown 0.3s ease; border: 1px solid rgba(255, 255, 255, 0.5);
         }
+
+        /* Scrollbar tipis biar cakep */
+        .sidebar-box::-webkit-scrollbar { width: 4px; }
+        .sidebar-box::-webkit-scrollbar-thumb { background: #e2e8f0; border-radius: 10px; }
 
         .profile-box {
             position: absolute; top: 85px; right: 20px; width: 280px;
@@ -43,10 +50,10 @@
             display: none; padding: 25px; z-index: 1001; animation: slideDown 0.3s ease;
         }
 
-        .sidebar-title { padding: 15px 20px; font-size: 0.7rem; font-weight: 800; color: #94a3b8; text-transform: uppercase; border-bottom: 1px solid rgba(0,0,0,0.03); }
-        .menu-item { padding: 12px 20px; display: flex; align-items: center; color: #475569; cursor: pointer; font-weight: 700; }
+        .sidebar-title { padding: 15px 20px; font-size: 0.65rem; font-weight: 800; color: #94a3b8; text-transform: uppercase; border-bottom: 1px solid rgba(0,0,0,0.03); letter-spacing: 0.5px; }
+        .menu-item { padding: 12px 20px; display: flex; align-items: center; color: #475569; cursor: pointer; font-weight: 700; transition: 0.2s; }
         .menu-item:hover { background: rgba(0, 123, 255, 0.05); color: #007bff; }
-        .menu-item i { margin-right: 12px; font-size: 0.9rem; }
+        .menu-item i { margin-right: 12px; font-size: 0.85rem; width: 20px; text-align: center; }
 
         .info-label { font-size: 0.65rem; font-weight: 800; color: #64748b; text-transform: uppercase; margin-top: 15px; display: block; }
         .info-value { font-size: 0.85rem; font-weight: 600; color: #1e293b; display: block; margin-top: 2px; }
@@ -54,7 +61,7 @@
         .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px; }
         .stat-card { background: white; padding: 15px; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.03); border: 1px solid #fff; text-align: center; }
         .stat-card i { font-size: 1rem; color: #007bff; margin-bottom: 5px; }
-        .stat-card h3 { margin: 5px 0; font-size: 1.2rem; color: #1e293b; }
+        .stat-card h3 { margin: 5px 0; font-size: 1.1rem; color: #1e293b; }
         .stat-card p { margin: 0; font-size: 0.6rem; font-weight: 800; color: #94a3b8; text-transform: uppercase; }
 
         .form-card { background: white; padding: 25px; border-radius: 25px; box-shadow: 0 10px 25px rgba(0,0,0,0.04); margin-top: 10px; display: none; }
@@ -63,17 +70,16 @@
         .input-group input, .input-group textarea { width: 100%; padding: 15px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 15px; outline: none; font-family: inherit; box-sizing: border-box; }
         
         .btn-flex { display: flex; gap: 10px; margin-top: 10px; }
-        .btn-main { width: 100%; padding: 15px; background: #1a1a1a; color: white; border: none; border-radius: 15px; font-weight: 800; cursor: pointer; }
+        .btn-main { width: 100%; padding: 15px; background: #1a1a1a; color: white; border: none; border-radius: 15px; font-weight: 800; cursor: pointer; transition: 0.3s; }
+        .btn-main:hover { background: #007bff; }
         .btn-del { width: 40%; background: #fee2e2; color: #ef4444; border: none; border-radius: 15px; font-weight: 800; cursor: pointer; }
         
         .overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 1000; display: none; }
         .content { padding: 20px; max-width: 600px; margin: 0 auto; }
 
-        /* Banner List Style */
         .banner-item { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 20px; padding: 15px; margin-bottom: 15px; }
         .banner-preview { width: 100%; aspect-ratio: 16/9; object-fit: cover; border-radius: 12px; margin-bottom: 10px; }
 
-        /* Style Baru untuk Riwayat TF */
         .tf-card { background: #fff; padding: 20px; border-radius: 20px; border: 1px solid #e2e8f0; margin-bottom: 15px; }
         .tf-img { width: 100%; border-radius: 15px; margin-top: 10px; border: 1px solid #ddd; }
         .status-badge { display: inline-block; padding: 4px 10px; border-radius: 8px; font-size: 0.6rem; font-weight: 800; text-transform: uppercase; margin-bottom: 10px; }
@@ -85,55 +91,63 @@
 
     <div id="overlay" class="overlay" onclick="closeAll()"></div>
 
+    <div class="header">
+        <div class="btn-action" onclick="toggleSidebar()">
+            <i class="fa-solid fa-screwdriver-wrench"></i>
+        </div>
+        <div style="font-weight: 900; font-size: 0.85rem; letter-spacing: 1px;">admin panel</div>
+        <div class="btn-action" onclick="toggleProfile()">
+            <i class="fa-solid fa-user-shield"></i>
+        </div>
+    </div>
+
     <div id="sidebar" class="sidebar-box">
-    <div class="sidebar-title">admin menu</div>
-    <div class="menu-item" onclick="showBC()">
-        <i class="fa-solid fa-bullhorn"></i>
-        <span>kirim broadcast</span>
-    </div>
-    <div class="menu-item" onclick="showIklanPage()">
-        <i class="fa-solid fa-image"></i>
-        <span>manajemen iklan</span>
-    </div>
-    <div class="menu-item" onclick="showHistoryTF()">
-        <i class="fa-solid fa-receipt"></i>
-        <span>riwayat tf user</span>
-    </div>
+        <div class="sidebar-title">fitur broadcast</div>
+        <div class="menu-item" onclick="showBC()">
+            <i class="fa-solid fa-bullhorn"></i>
+            <span>kirim broadcast</span>
+        </div>
+        <div class="menu-item" onclick="showIklanPage()">
+            <i class="fa-solid fa-image"></i>
+            <span>manajemen iklan</span>
+        </div>
 
-    <div class="sidebar-title">manajemen user & sistem</div>
-    <div class="menu-item" onclick="location.href='total-user.html'">
-        <i class="fa-solid fa-users-gear"></i>
-        <span>daftar total user</span>
-    </div>
-    
-    <div class="menu-item" onclick="location.href='create-token.html'">
-        <i class="fa-solid fa-key"></i>
-        <span>create token & limit</span>
-    </div>
+        <div class="sidebar-title">manajemen transaksi</div>
+        <div class="menu-item" onclick="showHistoryTF()">
+            <i class="fa-solid fa-receipt"></i>
+            <span>riwayat tf user</span>
+        </div>
 
-    <div class="menu-item" onclick="openPendingRequest()">
-        <i class="fa-solid fa-clock-rotate-left"></i>
-        <span>request masuk</span>
-    </div>
+        <div class="sidebar-title">manajemen user & sistem</div>
+        <div class="menu-item" onclick="location.href='total-user.html'">
+            <i class="fa-solid fa-users-gear"></i>
+            <span>daftar total user</span>
+        </div>
+        <div class="menu-item" onclick="location.href='create-token.html'">
+            <i class="fa-solid fa-key"></i>
+            <span>create token & limit</span>
+        </div>
+        <div class="menu-item" onclick="openPendingRequest()">
+            <i class="fa-solid fa-clock-rotate-left"></i>
+            <span>request masuk</span>
+        </div>
 
-    <div class="sidebar-title">akses cepat</div>
-    <div class="menu-item" onclick="location.href='../user/dashboard.html'">
-        <i class="fa-solid fa-right-to-bracket"></i>
-        <span>pindah mode user</span>
+        <div class="sidebar-title">akses cepat</div>
+        <div class="menu-item" onclick="location.href='../user/dashboard.html'">
+            <i class="fa-solid fa-right-to-bracket"></i>
+            <span>mode user</span>
+        </div>
+        <div class="menu-item" onclick="logout()" style="color: #ef4444;">
+            <i class="fa-solid fa-power-off"></i>
+            <span>keluar panel</span>
+        </div>
     </div>
-    <div class="menu-item" onclick="logout()" style="color: #ef4444;">
-        <i class="fa-solid fa-power-off"></i>
-        <span>keluar panel</span>
-    </div>
-</div>
 
     <div id="profile-card" class="profile-box">
         <span class="info-label">nama admin :</span>
         <span class="info-value">admin</span>
         <span class="info-label">role akses :</span>
         <span class="info-value" style="color: #007bff;">Super Administrator</span>
-        <span class="info-label">status :</span>
-        <span class="info-value">online / active</span>
         <button class="btn-main" style="margin-top: 20px; background: #ef4444;" onclick="logout()">logout</button>
     </div>
 
@@ -142,54 +156,44 @@
             <div class="stat-card">
                 <i class="fa-solid fa-users"></i>
                 <h3 id="total-users">0</h3>
-                <p>total user</p>
+                <p>user</p>
             </div>
             <div class="stat-card">
                 <i class="fa-solid fa-box"></i>
                 <h3>0</h3>
-                <p>total produk</p>
+                <p>produk</p>
             </div>
             <div class="stat-card">
                 <i class="fa-solid fa-user-tie"></i>
                 <h3 id="total-owner">0</h3>
-                <p>total owner</p>
+                <p>owner</p>
             </div>
             <div class="stat-card">
                 <i class="fa-solid fa-cart-shopping"></i>
                 <h3>0</h3>
-                <p>total penjualan</p>
+                <p>terjual</p>
             </div>
         </div>
 
         <div id="tf-history-page" class="form-card">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
-                <div class="sidebar-title" style="padding: 0; border: none;">riwayat transfer user</div>
-                <button onclick="hideHistoryTF()" style="background: #f1f5f9; border: none; width: 30px; height: 30px; border-radius: 8px; cursor: pointer;"><i class="fa-solid fa-xmark"></i></button>
+                <div class="sidebar-title" style="padding: 0; border: none;">riwayat transfer</div>
+                <button onclick="hideAllPages()" style="background: #f1f5f9; border: none; width: 30px; height: 30px; border-radius: 8px;"><i class="fa-solid fa-xmark"></i></button>
             </div>
             <div id="list-tf-container"></div>
         </div>
 
-        <div id="admin-request-page" class="form-card" style="margin-top: 0;">
+        <div id="admin-request-page" class="form-card">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
-                <div class="sidebar-title" style="padding: 0; border: none;">antrian request owner</div>
-                <button onclick="hideRequestPage()" style="background: #f1f5f9; border: none; width: 30px; height: 30px; border-radius: 8px; cursor: pointer;"><i class="fa-solid fa-xmark"></i></button>
+                <div class="sidebar-title" style="padding: 0; border: none;">request owner</div>
+                <button onclick="hideAllPages()" style="background: #f1f5f9; border: none; width: 30px; height: 30px; border-radius: 8px;"><i class="fa-solid fa-xmark"></i></button>
             </div>
             <div id="list-request-container"></div>
         </div>
 
         <div id="bc-form" class="form-card">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
-                <div class="sidebar-title" style="padding: 0; border: none;">buat broadcast</div>
-                <button onclick="hideBC()" style="background: #f1f5f9; border: none; width: 30px; height: 30px; border-radius: 8px; cursor: pointer;"><i class="fa-solid fa-xmark"></i></button>
-            </div>
-            <div class="input-group">
-                <label>nama info :</label>
-                <input type="text" id="bc-title" placeholder="contoh: info maintenance">
-            </div>
-            <div class="input-group">
-                <label>isi :</label>
-                <textarea id="bc-msg" rows="4" placeholder="tulis pesan anda..."></textarea>
-            </div>
+            <div class="input-group"><label>nama info :</label><input type="text" id="bc-title"></div>
+            <div class="input-group"><label>isi :</label><textarea id="bc-msg" rows="4"></textarea></div>
             <div class="btn-flex">
                 <button class="btn-main" onclick="sendBC()">luncurkan 🚀</button>
                 <button class="btn-del" onclick="deleteBC()">🗑️</button>
@@ -197,25 +201,10 @@
         </div>
 
         <div id="iklan-page" class="form-card">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
-                <div class="sidebar-title" style="padding: 0; border: none;">manajemen iklan banner</div>
-                <button onclick="hideIklanPage()" style="background: #f1f5f9; border: none; width: 30px; height: 30px; border-radius: 8px; cursor: pointer;"><i class="fa-solid fa-xmark"></i></button>
-            </div>
-            
-            <div style="background: #f8fafc; padding: 15px; border-radius: 20px; border: 1px dashed #cbd5e1; margin-bottom: 20px;">
-                <div class="input-group">
-                    <label>pilih foto (16:9) :</label>
-                    <input type="file" id="foto-banner" accept="image/*">
-                </div>
-                <div class="input-group">
-                    <label>judul promo :</label>
-                    <input type="text" id="judul-banner" placeholder="masukkan judul iklan...">
-                </div>
-                <button id="btn-upload-iklan" class="btn-main" onclick="uploadIklan()">tambah iklan ✅</button>
-            </div>
-
-            <div class="sidebar-title" style="padding: 10px 0; border: none; font-size: 0.6rem;">list iklan aktif</div>
-            <div id="list-iklan-container"></div>
+            <div class="input-group"><label>foto :</label><input type="file" id="foto-banner"></div>
+            <div class="input-group"><label>judul :</label><input type="text" id="judul-banner"></div>
+            <button id="btn-upload-iklan" class="btn-main" onclick="uploadIklan()">tambah iklan ✅</button>
+            <div id="list-iklan-container" style="margin-top: 20px;"></div>
         </div>
     </div>
 
@@ -225,14 +214,9 @@
     <script>
         const firebaseConfig = {
             apiKey: "AIzaSyDGRsCcT-7Bv_nOAybjXyuIT6Ca0IT4YTg",
-            authDomain: "market-d978f.firebaseapp.com",
             databaseURL: "https://market-d978f-default-rtdb.asia-southeast1.firebasedatabase.app",
             projectId: "market-d978f",
-            storageBucket: "market-d978f.firebasestorage.app",
-            messagingSenderId: "291695486607",
-            appId: "1:291695486607:web:dd860d16639b47c163f2fa"
         };
-
         if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
 
@@ -244,10 +228,9 @@
 
         function toggleSidebar() { 
             const sb = document.getElementById('sidebar');
-            if(sb.style.display === 'block') {
-                closeAll();
-            } else {
-                closeAll();
+            const isVisible = sb.style.display === 'block';
+            closeAll();
+            if(!isVisible) {
                 sb.style.display = 'block';
                 document.getElementById('overlay').style.display = 'block';
             }
@@ -255,252 +238,67 @@
 
         function toggleProfile() { 
             const pc = document.getElementById('profile-card');
-            if(pc.style.display === 'block') {
-                closeAll();
-            } else {
-                closeAll();
+            const isVisible = pc.style.display === 'block';
+            closeAll();
+            if(!isVisible) {
                 pc.style.display = 'block';
                 document.getElementById('overlay').style.display = 'block';
             }
         }
-        
-        function showBC() { 
-            hideAllPages();
-            document.getElementById('bc-form').style.display = 'block'; 
-            closeAll(); 
-        }
-
-        function hideBC() { document.getElementById('bc-form').style.display = 'none'; }
-
-        function showIklanPage() {
-            hideAllPages();
-            document.getElementById('iklan-page').style.display = 'block';
-            loadIklanList();
-            closeAll();
-        }
-
-        function hideIklanPage() { document.getElementById('iklan-page').style.display = 'none'; }
 
         function hideAllPages() {
-            document.getElementById('admin-request-page').style.display = 'none';
-            document.getElementById('bc-form').style.display = 'none';
-            document.getElementById('iklan-page').style.display = 'none';
-            document.getElementById('tf-history-page').style.display = 'none';
+            document.querySelectorAll('.form-card').forEach(el => el.style.display = 'none');
         }
 
-        function openPendingRequest() {
-            hideAllPages();
-            document.getElementById('admin-request-page').style.display = 'block';
-            loadRequests();
-            closeAll();
-        }
+        function showBC() { hideAllPages(); document.getElementById('bc-form').style.display = 'block'; closeAll(); }
+        function showIklanPage() { hideAllPages(); document.getElementById('iklan-page').style.display = 'block'; loadIklanList(); closeAll(); }
+        function showHistoryTF() { hideAllPages(); document.getElementById('tf-history-page').style.display = 'block'; loadTFHistory(); closeAll(); }
+        function openPendingRequest() { hideAllPages(); document.getElementById('admin-request-page').style.display = 'block'; loadRequests(); closeAll(); }
 
-        function hideRequestPage() { document.getElementById('admin-request-page').style.display = 'none'; }
-
-        // --- RIWAYAT TF FUNCTIONS ---
-        function showHistoryTF() {
-            hideAllPages();
-            document.getElementById('tf-history-page').style.display = 'block';
-            loadTFHistory();
-            closeAll();
-        }
-
-        function hideHistoryTF() { document.getElementById('tf-history-page').style.display = 'none'; }
-
-        function loadTFHistory() {
-            const container = document.getElementById('list-tf-container');
-            db.ref('deposit_history').on('value', (snap) => {
-                container.innerHTML = "";
-                if (!snap.exists()) {
-                    container.innerHTML = "<p style='text-align:center; color:#94a3b8;'>belum ada riwayat transfer</p>";
-                    return;
-                }
-                snap.forEach((child) => {
-                    const data = child.val();
-                    const key = child.key;
-                    const isManual = data.amount > 15000 && data.status === "pending admin";
-                    
-                    container.innerHTML += `
-                        <div class="tf-card">
-                            <span class="status-badge ${data.status === 'success' ? 'badge-success' : 'badge-pending'}">${data.status}</span>
-                            <span class="info-label">user token :</span> <span class="info-value">${data.userToken}</span>
-                            <span class="info-label">nominal :</span> <span class="info-value">rp ${data.amount.toLocaleString()}</span>
-                            <span class="info-label">id referensi :</span> <span class="info-value">${data.ref}</span>
-                            <img src="${data.image}" class="tf-img" onclick="window.open('${data.image}')">
-                            ${isManual ? `
-                                <div class="btn-flex" style="margin-top:15px;">
-                                    <button onclick="processTF('${key}', '${data.userToken}', ${data.amount}, 'batal')" style="flex:1; padding:10px; border-radius:12px; border:none; background:#fee2e2; color:#ef4444; font-weight:800; cursor:pointer;">BATAL</button>
-                                    <button onclick="processTF('${key}', '${data.userToken}', ${data.amount}, 'terima')" style="flex:1; padding:10px; border-radius:12px; border:none; background:#dcfce7; color:#22c55e; font-weight:800; cursor:pointer;">TERIMA</button>
-                                </div>
-                            ` : ''}
-                        </div>
-                    `;
-                });
-            });
-        }
-
-        async function processTF(historyKey, userToken, amount, action) {
-            if (!confirm(`Apakah Anda yakin ingin ${action} transfer ini?`)) return;
-            try {
-                if (action === 'terima') {
-                    const userRef = db.ref('users/' + userToken);
-                    const userSnap = await userRef.once('value');
-                    const currentBalance = userSnap.val().balance || 0;
-                    await userRef.update({ balance: currentBalance + amount });
-                    await db.ref('deposit_history/' + historyKey).update({ status: 'success' });
-                    alert("Transfer diterima dan saldo ditambahkan!");
-                } else {
-                    await db.ref('deposit_history/' + historyKey).update({ status: 'failed' });
-                    alert("Transfer dibatalkan.");
-                }
-            } catch (e) { alert("Gagal memproses transfer."); }
-        }
-
-        // --- MANAJEMEN IKLAN LOGIC ---
-        async function uploadIklan() {
-            const fileInput = document.getElementById('foto-banner');
-            const judul = document.getElementById('judul-banner').value;
-            const btn = document.getElementById('btn-upload-iklan');
-            const imgApiKey = "50145b1eaa1385c3d9549ebe496eb5b5";
-
-            if (!fileInput.files[0] || !judul) return alert("lengkapi foto dan judul!");
-
-            btn.innerText = "mengupload...";
-            btn.disabled = true;
-
-            try {
-                const formData = new FormData();
-                formData.append("image", fileInput.files[0]);
-
-                const upload = await fetch(`https://api.imgbb.com/1/upload?key=${imgApiKey}`, {
-                    method: "POST",
-                    body: formData
-                });
-                const res = await upload.json();
-
-                if (res.success) {
-                    await db.ref('banner_promo').push({
-                        image_url: res.data.url,
-                        title: judul,
-                        timestamp: Date.now()
-                    });
-                    alert("iklan berhasil ditambahkan!");
-                    document.getElementById('judul-banner').value = "";
-                    fileInput.value = "";
-                }
-            } catch (e) { alert("gagal upload"); }
-            finally { 
-                btn.innerText = "tambah iklan ✅"; 
-                btn.disabled = false; 
-            }
-        }
-
-        function loadIklanList() {
-            const container = document.getElementById('list-iklan-container');
-            db.ref('banner_promo').on('value', (snap) => {
-                container.innerHTML = "";
-                if (!snap.exists()) {
-                    container.innerHTML = "<p style='text-align:center; color:#94a3b8;'>belum ada iklan</p>";
-                    return;
-                }
-                snap.forEach((child) => {
-                    const data = child.val();
-                    container.innerHTML += `
-                        <div class="banner-item">
-                            <img src="${data.image_url}" class="banner-preview">
-                            <div style="font-weight:800; font-size:0.8rem; margin-bottom:10px;">${data.title}</div>
-                            <button onclick="deleteIklan('${child.key}')" style="width:100%; padding:10px; border-radius:12px; border:none; background:#fee2e2; color:#ef4444; font-weight:800; cursor:pointer;">hapus iklan 🗑️</button>
-                        </div>
-                    `;
-                });
-            });
-        }
-
-        async function deleteIklan(key) {
-            if(confirm("hapus iklan ini?")) {
-                await db.ref('banner_promo/' + key).remove();
-                alert("iklan terhapus!");
-            }
-        }
-
-        // --- REQUEST LOGIC ---
-        function loadRequests() {
-            const container = document.getElementById('list-request-container');
-            db.ref('role_requests').on('value', (snap) => {
-                container.innerHTML = "";
-                if (!snap.exists()) {
-                    container.innerHTML = "<p style='text-align:center; color:#94a3b8; margin-top:20px;'>tidak ada request masuk</p>";
-                    return;
-                }
-                snap.forEach((child) => {
-                    const data = child.val();
-                    const key = child.key;
-                    container.innerHTML += `
-                        <div style="background:#f8fafc; padding:20px; border-radius:20px; border:1px solid #e2e8f0; margin-bottom:15px;">
-                            <span style="font-size: 0.6rem; font-weight: 800; color: #007bff; text-transform: uppercase;">REQUEST OWNER</span>
-                            <div style="margin-top: 10px;">
-                                <span class="info-label">NAMA :</span> <span class="info-value">${data.name}</span>
-                                <span class="info-label">NOMOR :</span> <span class="info-value">${data.phone}</span>
-                                <span class="info-label">EMAIL :</span> <span class="info-value">${data.email}</span>
-                                <span class="info-label">ALASAN :</span> <span class="info-value" style="white-space: pre-wrap; background:#fff; padding:10px; border-radius:10px; border:1px solid #e2e8f0; margin-top:5px;">${data.desc}</span>
-                            </div>
-                            <div class="btn-flex" style="margin-top:15px;">
-                                <button onclick="processRole('${key}', 'tolak')" style="flex:1; padding:12px; border-radius:12px; border:none; background:#fee2e2; color:#ef4444; font-weight:800; cursor:pointer;">tolak</button>
-                                <button onclick="processRole('${key}', 'terima')" style="flex:1; padding:12px; border-radius:12px; border:none; background:#dcfce7; color:#22c55e; font-weight:800; cursor:pointer;">terima</button>
-                            </div>
-                        </div>
-                    `;
-                });
-            });
-        }
-
-        async function processRole(userKey, action) {
-            try {
-                if (action === 'terima') {
-                    await db.ref('users/' + userKey).update({ role: 'owner' });
-                    alert("user berhasil menjadi owner! ✅");
-                } else {
-                    alert("request ditolak ❌");
-                }
-                await db.ref('role_requests/' + userKey).remove();
-            } catch (e) { alert("gagal memproses"); }
-        }
-
+        // --- REALTIME STATS ---
         function listenStats() {
             db.ref('users').on('value', (snap) => {
                 document.getElementById('total-users').innerText = snap.numChildren();
                 let countOwner = 0;
-                snap.forEach((child) => {
-                    if (child.val().role === 'owner') countOwner++;
-                });
-                const ownerElem = document.getElementById('total-owner');
-                if(ownerElem) ownerElem.innerText = countOwner;
+                snap.forEach(c => { if(c.val().role === 'owner') countOwner++; });
+                document.getElementById('total-owner').innerText = countOwner;
             });
         }
 
+        // --- BC & IKLAN LOGIC ---
         async function sendBC() {
             const title = document.getElementById('bc-title').value;
             const message = document.getElementById('bc-msg').value;
             if(!title || !message) return alert("lengkapi data");
             await db.ref('broadcast').set({ title, message });
-            alert("broadcast terkirim secara real-time! 🚀");
-            document.getElementById('bc-title').value = "";
-            document.getElementById('bc-msg').value = "";
+            alert("terkirim! 🚀");
         }
 
-        async function deleteBC() {
-            if(confirm("hapus broadcast?")) {
-                await db.ref('broadcast').remove();
-                alert("broadcast dihapus 🗑️");
+        async function uploadIklan() {
+            const file = document.getElementById('foto-banner').files[0];
+            const judul = document.getElementById('judul-banner').value;
+            if(!file || !judul) return alert("lengkapi!");
+            const formData = new FormData();
+            formData.append("image", file);
+            const res = await fetch("https://api.imgbb.com/1/upload?key=50145b1eaa1385c3d9549ebe496eb5b5", { method: "POST", body: formData }).then(r => r.json());
+            if(res.success) {
+                await db.ref('banner_promo').push({ image_url: res.data.url, title: judul });
+                alert("iklan ok!");
             }
         }
 
-        function logout() {
-            localStorage.clear();
-            location.href = "../login.html";
+        function loadIklanList() {
+            db.ref('banner_promo').on('value', snap => {
+                const con = document.getElementById('list-iklan-container');
+                con.innerHTML = "";
+                snap.forEach(c => {
+                    con.innerHTML += `<div class="banner-item"><img src="${c.val().image_url}" class="banner-preview"><b>${c.val().title}</b><button class="btn-del" style="width:100%; margin-top:10px;" onclick="db.ref('banner_promo/${c.key}').remove()">hapus</button></div>`;
+                });
+            });
         }
 
-        window.onload = () => { listenStats(); };
+        function logout() { localStorage.clear(); location.href = "../login.html"; }
+        window.onload = listenStats;
     </script>
 </body>
 </html>
