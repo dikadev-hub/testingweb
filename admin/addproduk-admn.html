@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>admin panel | tertinggi</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap');
+        
+        body { 
+            background: #050505; color: #ffffff; font-family: 'Plus Jakarta Sans', sans-serif; 
+            margin: 0; padding: 20px; text-transform: lowercase;
+        }
+
+        .container { max-width: 480px; margin: 0 auto; }
+
+        .admin-header {
+            text-align: center; margin-bottom: 30px; border: 2px solid #ff0000;
+            padding: 15px; border-radius: 20px; background: rgba(255, 0, 0, 0.05);
+            box-shadow: 0 0 20px rgba(255, 0, 0, 0.1);
+        }
+
+        .form-card { background: #111; border-radius: 30px; padding: 25px; border: 1px solid #222; }
+
+        .image-grid { 
+            display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; 
+            margin-bottom: 25px; 
+        }
+
+        .img-slot { 
+            aspect-ratio: 1/1; background: #000; border: 2px dashed #333; 
+            border-radius: 15px; display: flex; align-items: center; justify-content: center;
+            overflow: hidden; cursor: pointer; transition: 0.3s;
+        }
+
+        .img-slot:hover { border-color: #ff0000; }
+        .img-slot img { width: 100%; height: 100%; object-fit: cover; }
+        .img-slot i { color: #444; font-size: 1.5rem; }
+
+        .input-group { margin-bottom: 18px; }
+        .input-group label { 
+            display: block; font-size: 0.65rem; font-weight: 800; color: #ff0000; 
+            margin-bottom: 8px; text-transform: uppercase; letter-spacing: 1px;
+        }
+
+        .input-group input, textarea, select { 
+            width: 100%; background: #000; border: 1.5px solid #222; border-radius: 14px; 
+            padding: 14px; color: white; font-family: inherit; box-sizing: border-box; outline: none;
+        }
+
+        .input-group input:focus { border-color: #ff0000; }
+
+        .btn-post { 
+            width: 100%; padding: 20px; background: #ff0000; color: white; border: none; 
+            border-radius: 18px; font-weight: 900; cursor: pointer; 
+            box-shadow: 0 10px 20px rgba(255, 0, 0, 0.2); transition: 0.3s;
+            text-transform: uppercase; font-size: 0.8rem;
+        }
+
+        .btn-post:active { transform: scale(0.96); }
+
+        #loading {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.9); z-index: 1000; display: none;
+            align-items: center; justify-content: center; flex-direction: column;
+        }
+    </style>
+</head>
+<body>
+
+<div id="loading">
+    <i class="fa-solid fa-skull-crossbones fa-spin" style="font-size: 3rem; color: #ff0000;"></i>
+    <p style="margin-top: 20px; font-weight: 800;">sedang memproses...</p>
+</div>
+
+<div class="container">
+    <div class="admin-header">
+        <h2 style="margin: 0; font-size: 1rem; letter-spacing: 2px;">TERTINGGI DI WEBSITE INI 😼</h2>
+    </div>
+
+    <div class="form-card">
+        <div class="image-grid" id="image-container">
+            <div class="img-slot" onclick="document.getElementById('multi-file').click()">
+                <i class="fa-solid fa-plus"></i>
+            </div>
+        </div>
+        <input type="file" id="multi-file" hidden multiple accept="image/*" onchange="handleFiles(this)">
+
+        <div class="input-group">
+            <label>nama barang</label>
+            <input type="text" id="p-nama" placeholder="...">
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+            <div class="input-group">
+                <label>harga awal (rp)</label>
+                <input type="number" id="p-harga-awal" placeholder="0">
+            </div>
+            <div class="input-group">
+                <label>diskon (%)</label>
+                <input type="number" id="p-diskon" placeholder="0">
+            </div>
+        </div>
+
+        <div class="input-group">
+            <label>stok</label>
+            <input type="number" id="p-stok" placeholder="999">
+        </div>
+
+        <div class="input-group">
+            <label>deskripsi barang</label>
+            <textarea id="p-desc" rows="4" placeholder="jelaskan kehebatan produk ini..."></textarea>
+        </div>
+
+        <div class="input-group">
+            <label>kategori</label>
+            <select id="p-kategori">
+                <option value="premium">premium</option>
+                <option value="luxury">luxury</option>
+                <option value="special">special edition</option>
+            </select>
+        </div>
+
+        <button class="btn-post" onclick="uploadTertinggi()">posting sekarang 😼</button>
+    </div>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
+
+<script>
+    const firebaseConfig = {
+        apiKey: "AIzaSyDGRsCcT-7Bv_nOAybjXyuIT6Ca0IT4YTg",
+        databaseURL: "https://market-d978f-default-rtdb.asia-southeast1.firebasedatabase.app",
+        projectId: "market-d978f",
+    };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+    let imageArray = [];
+
+    function handleFiles(input) {
+        const files = input.files;
+        for (let file of files) {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                imageArray.push(e.target.result);
+                renderPreview();
+            };
+            reader.readAsDataURL(file);
+        }
+    }
+
+    function renderPreview() {
+        const container = document.getElementById('image-container');
+        container.innerHTML = imageArray.map((img, index) => `
+            <div class="img-slot" onclick="removeImg(${index})">
+                <img src="${img}">
+            </div>
+        `).join('') + `
+            <div class="img-slot" onclick="document.getElementById('multi-file').click()">
+                <i class="fa-solid fa-plus"></i>
+            </div>
+        `;
+    }
+
+    function removeImg(i) {
+        imageArray.splice(i, 1);
+        renderPreview();
+    }
+
+    async function uploadTertinggi() {
+        if(imageArray.length === 0) return alert("masukkan foto dulu bos!");
+        
+        const loading = document.getElementById('loading');
+        loading.style.display = 'flex';
+
+        const id = "PROD-" + Date.now();
+        const awal = parseInt(document.getElementById('p-harga-awal').value) || 0;
+        const disc = parseInt(document.getElementById('p-diskon').value) || 0;
+        const final = awal - (awal * disc / 100);
+
+        try {
+            await db.ref('products/' + id).set({
+                productId: id,
+                nama: document.getElementById('p-nama').value,
+                hargaAwal: awal,
+                diskon: disc,
+                harga: final,
+                deskripsi: document.getElementById('p-desc').value,
+                kategori: document.getElementById('p-kategori').value,
+                stok: parseInt(document.getElementById('p-stok').value) || 0,
+                foto: imageArray[0],
+                album: imageArray,
+                uploadBy: "TERTINGGI DI WEBSITE INI 😼",
+                timestamp: Date.now()
+            });
+            alert("berhasil terposting!");
+            location.reload();
+        } catch(e) {
+            alert(e.message);
+        } finally {
+            loading.style.display = 'none';
+        }
+    }
+</script>
+</body>
+</html>
