@@ -215,7 +215,7 @@
             const formData = new FormData();
             formData.append("image", finalBlob, "produk.jpg");
             // PASTIIN API KEY INI MASIH AKTIF, KALO GAK GANTI DI SINI:
-            const resImg = await fetch("https://api.imgbb.com/1/upload?key=50145b1eaa1385c3d9549ebe496eb5b5", {
+            const resImg = await fetch("https://api.imgbb.com/1/upload?key=37e84e2162972cbe655f784aff8b9218", {
                 method: "POST",
                 body: formData
             }).then(r => r.json());
