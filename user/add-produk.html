@@ -167,7 +167,14 @@
                 img.src = e.result;
                 document.getElementById('cropperModal').style.display = 'flex';
                 if (cropper) cropper.destroy();
-                cropper = new Cropper(img, { aspectRatio: 1, viewMode: 1, autoCropArea: 1 });
+                cropper = new Cropper(img, { 
+                    aspectRatio: 1, 
+                    viewMode: 2,
+                    dragMode: 'move',
+                    autoCropArea: 1,
+                    responsive: true,
+                    checkOrientation: true
+                });
             }
             reader.readAsDataURL(input.files[0]);
         }
@@ -175,7 +182,7 @@
 
     function selesaiMemotong() {
         if (!cropper) return;
-        cropper.getCroppedCanvas({ width: 500, height: 500 }).toBlob((blob) => {
+        cropper.getCroppedCanvas({ width: 600, height: 600 }).toBlob((blob) => {
             finalBlob = blob;
             const preview = document.getElementById('final-preview');
             preview.src = URL.createObjectURL(blob);
@@ -211,7 +218,6 @@
         btn.innerText = "mengirim...";
 
         try {
-            // CEK LIMIT TOKEN SEBELUM LANJUT
             const userRef = db.ref('users/' + ownerToken);
             const userSnap = await userRef.get();
             const currentLimit = userSnap.val()?.saleLimit || 0;
@@ -231,7 +237,6 @@
             }).then(r => r.json());
 
             if(resImg.success) {
-                // KURANGI LIMIT TOKEN
                 await userRef.child('saleLimit').transaction((current) => {
                     return (current || 0) - 1;
                 });
@@ -257,7 +262,7 @@
                     status: "pending",
                     timestamp: Date.now()
                 });
-                alert("berhasil diajukan, limit berkurang");
+                alert("berhasil diajukan");
                 window.location.href = 'dashboard.html';
             }
         } catch (e) {
