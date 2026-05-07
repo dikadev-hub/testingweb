@@ -24,8 +24,31 @@
             color: #1e293b; text-decoration: none; box-shadow: 0 4px 12px rgba(0,0,0,0.1);
         }
 
-        .image-viewport { width: 100%; aspect-ratio: 1/1; background: #e2e8f0; position: relative; }
-        .image-viewport img { width: 100%; height: 100%; object-fit: cover; }
+        /* Logic Slider Tanpa Ubah Struktur Luar */
+        .image-viewport { 
+            width: 100%; aspect-ratio: 1/1; background: #e2e8f0; position: relative; 
+            overflow: hidden;
+        }
+        
+        .slider-wrapper {
+            display: flex; width: 100%; height: 100%;
+            overflow-x: auto; scroll-snap-type: x mandatory;
+            scrollbar-width: none; -ms-overflow-style: none;
+        }
+        .slider-wrapper::-webkit-scrollbar { display: none; }
+        
+        .slide-item {
+            min-width: 100%; height: 100%; scroll-snap-align: start;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .slide-item img { width: 100%; height: 100%; object-fit: cover; }
+
+        .dot-nav {
+            position: absolute; bottom: 50px; width: 100%;
+            display: flex; justify-content: center; gap: 6px; z-index: 10;
+        }
+        .dot { width: 6px; height: 6px; background: rgba(0,0,0,0.15); border-radius: 50%; transition: 0.3s; }
+        .dot.active { background: #2563eb; width: 18px; border-radius: 10px; }
 
         .main-content {
             background: white; border-radius: 35px 35px 0 0;
@@ -87,7 +110,8 @@
 </div>
 
 <div class="image-viewport">
-    <img id="det-img" src="">
+    <div class="slider-wrapper" id="image-slider"></div>
+    <div class="dot-nav" id="dot-nav"></div>
 </div>
 
 <div class="main-content">
@@ -95,8 +119,7 @@
     <h1 id="det-title" class="product-name">memuat...</h1>
 
     <div class="rating-summary">
-        <div class="stars-avg" id="stars-display">
-            </div>
+        <div class="stars-avg" id="stars-display"></div>
         <span class="rating-count" id="rating-text">0.0 (0 ulasan)</span>
     </div>
 
@@ -150,6 +173,26 @@
     let productFullData = null;
     let productFirebaseKey = null;
 
+    function renderSlider(album, singleFoto) {
+        const slider = document.getElementById('image-slider');
+        const dotNav = document.getElementById('dot-nav');
+        
+        if (album && Array.isArray(album) && album.length > 0) {
+            slider.innerHTML = album.map(img => `<div class="slide-item"><img src="${img}"></div>`).join('');
+            dotNav.innerHTML = album.map((_, i) => `<div class="dot ${i===0?'active':''}"></div>`).join('');
+            
+            slider.addEventListener('scroll', () => {
+                const index = Math.round(slider.scrollLeft / slider.offsetWidth);
+                document.querySelectorAll('.dot').forEach((d, i) => {
+                    d.classList.toggle('active', i === index);
+                });
+            });
+        } else {
+            slider.innerHTML = `<div class="slide-item"><img src="${singleFoto}"></div>`;
+            dotNav.innerHTML = '';
+        }
+    }
+
     function fetchDetail() {
         if (!productId) return window.location.href = 'dashboard.html';
 
@@ -161,7 +204,8 @@
                     productFullData = child.val();
                     currentStock = productFullData.stok || 0;
 
-                    document.getElementById('det-img').src = productFullData.foto;
+                    renderSlider(productFullData.album, productFullData.foto);
+
                     document.getElementById('det-title').innerText = productFullData.nama;
                     document.getElementById('det-cat').innerText = productFullData.kategori;
                     document.getElementById('det-price-new').innerText = "rp " + productFullData.harga.toLocaleString('id-ID');
@@ -170,7 +214,7 @@
 
                     if (productFullData.diskon > 0) {
                         document.getElementById('discount-area').style.display = 'flex';
-                        document.getElementById('det-price-old').innerText = "rp " + productFullData.hargaAwal.toLocaleString('id-ID');
+                        document.getElementById('det-price-old').innerText = "rp " + (productFullData.hargaAwal || 0).toLocaleString('id-ID');
                         document.getElementById('det-disc-percent').innerText = productFullData.diskon + "% off";
                     } else {
                         document.getElementById('discount-area').style.display = 'none';
@@ -224,7 +268,6 @@
                 const avg = (totalRating / count).toFixed(1);
                 ratingText.innerText = `${avg} (${count} ulasan)`;
                 
-                // Update bintang rata-rata di atas
                 let avgStars = '';
                 for(let j=1; j<=5; j++) {
                     avgStars += `<i class="fa-solid fa-star" style="color: ${j <= Math.round(avg) ? '#fbbe24' : '#e2e8f0'}"></i>`;
