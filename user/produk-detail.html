@@ -132,7 +132,9 @@
     if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
 
-    const userToken = localStorage.getItem('userToken');
+    // PERBAIKAN: Gunakan sessionToken agar sama dengan dashboard
+    const currentUserToken = localStorage.getItem('sessionToken');
+    
     const urlParams = new URLSearchParams(window.location.search);
     const productId = urlParams.get('id');
     
@@ -186,36 +188,51 @@
 
     async function handleBuy() {
         const btn = document.getElementById('btn-buy');
-        if (!userToken) return alert("login dulu bos");
-        if (currentStock <= 0) return alert("stok habis");
+        
+        // Cek login menggunakan sessionToken
+        if (!currentUserToken) {
+            alert("Silakan login terlebih dahulu untuk membeli produk.");
+            window.location.href = 'login.html';
+            return;
+        }
+        
+        if (currentStock <= 0) return alert("stok produk sudah habis.");
 
         btn.disabled = true;
         btn.innerText = "mengecek saldo...";
 
         try {
-            const userRef = db.ref('users/' + userToken);
+            const userRef = db.ref('users/' + currentUserToken);
             const userSnap = await userRef.get();
-            if (!userSnap.exists()) throw new Error("user tidak ada");
+            if (!userSnap.exists()) throw new Error("Data user tidak ditemukan di database.");
 
             const userData = userSnap.val();
-            const saldoSekarang = userData.saldo || 0;
-            const hargaProduk = productFullData.harga;
+            
+            // PERBAIKAN: Menyamakan pencarian saldo dengan dashboard (balance)
+            const saldoSekarang = parseInt(userData.balance || userData.saldo || 0); 
+            const hargaProduk = parseInt(productFullData.harga);
 
             if (saldoSekarang < hargaProduk) {
-                alert("saldo kurang! saldo lo: rp " + saldoSekarang.toLocaleString('id-ID'));
+                alert("Saldo kamu kurang! Saldo saat ini: rp " + saldoSekarang.toLocaleString('id-ID'));
                 btn.disabled = false;
                 btn.innerText = "beli sekarang";
                 return;
             }
 
+            // Transaksi Pembelian
             const updates = {};
-            updates['users/' + userToken + '/saldo'] = saldoSekarang - hargaProduk;
+            
+            // Potong saldo di database user (gunakan 'balance' sesuai dashboard)
+            updates['users/' + currentUserToken + '/balance'] = saldoSekarang - hargaProduk;
+            
+            // Kurangi stok produk
             updates['products/' + productFirebaseKey + '/stok'] = currentStock - 1;
 
+            // Catat Riwayat Pembelian
             const orderId = "INV-" + Date.now();
             updates['pembelian/' + orderId] = {
                 orderId: orderId,
-                userToken: userToken,
+                userToken: currentUserToken,
                 namaPembeli: userData.fullname || "pembeli",
                 productId: productId,
                 nama: productFullData.nama,
@@ -223,15 +240,15 @@
                 total: hargaProduk,
                 status: "sukses",
                 timestamp: Date.now(),
-                dataAkun: productFullData.akun // data email/pass pindah ke sini
+                dataAkun: productFullData.akun // Data rahasia pindah ke sini
             };
 
             await db.ref().update(updates);
-            alert("pembelian sukses!");
-            window.location.href = 'riwayat.html';
+            alert("Pembelian sukses!");
+            window.location.href = 'riwayat-user.html'; // Mengarahkan ke halaman riwayat user
 
         } catch (e) {
-            alert("gagal beli: " + e.message);
+            alert("Gagal memproses pembelian: " + e.message);
             btn.disabled = false;
             btn.innerText = "beli sekarang";
         }
@@ -239,7 +256,7 @@
 
     function handleCart() {
         if (currentStock <= 0) return;
-        alert("masuk keranjang");
+        alert("Fitur keranjang sedang dikembangkan.");
     }
 
     window.onload = fetchDetail;
