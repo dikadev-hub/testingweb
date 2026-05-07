@@ -47,7 +47,7 @@
         .product-name { font-size: 1.4rem; font-weight: 800; color: #0f172a; margin: 15px 0 10px 0; line-height: 1.3; }
 
         .rating-summary { display: flex; align-items: center; gap: 8px; margin-bottom: 20px; }
-        .stars { color: #fbbe24; font-size: 0.85rem; }
+        .stars-avg { color: #fbbe24; font-size: 0.85rem; }
         .rating-count { font-size: 0.75rem; color: #94a3b8; font-weight: 600; }
 
         .stock-info {
@@ -56,17 +56,13 @@
             margin-bottom: 30px;
         }
 
-        .section-title { font-size: 0.75rem; font-weight: 800; color: #1e293b; text-transform: uppercase; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; }
+        .section-title { font-size: 0.75rem; font-weight: 800; color: #1e293b; text-transform: uppercase; margin-bottom: 12px; display: block; }
         .description-box { font-size: 0.9rem; line-height: 1.7; color: #475569; white-space: pre-wrap; margin-bottom: 30px; }
 
         .comment-section { margin-top: 30px; padding-top: 25px; border-top: 1px solid #f1f5f9; }
         .comment-card { background: #f8fafc; padding: 15px; border-radius: 20px; margin-bottom: 12px; }
         .comment-user { font-size: 0.8rem; font-weight: 800; color: #1e293b; margin-bottom: 4px; display: block; }
         .comment-text { font-size: 0.8rem; color: #64748b; line-height: 1.5; }
-
-        .owner-card { background: #f8fafc; border: 1.5px solid #f1f5f9; padding: 18px; border-radius: 22px; display: flex; align-items: center; gap: 14px; margin-bottom: 20px; }
-        .owner-icon { width: 48px; height: 48px; background: white; border-radius: 16px; display: flex; align-items: center; justify-content: center; color: #2563eb; font-size: 1.2rem; box-shadow: 0 4px 10px rgba(0,0,0,0.03); }
-        .owner-name { font-size: 0.9rem; font-weight: 800; color: #1e293b; display: block; }
 
         .footer-nav {
             position: fixed; bottom: 0; left: 0; width: 100%;
@@ -77,10 +73,7 @@
         }
 
         .btn-cart { width: 55px; height: 55px; border-radius: 18px; border: 1.5px solid #e2e8f0; background: white; color: #1e293b; font-size: 1.1rem; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: 0.2s; }
-        .btn-buy { flex: 1; height: 55px; border-radius: 18px; border: none; background: #0f172a; color: white; font-weight: 800; font-size: 0.85rem; cursor: pointer; text-transform: uppercase; box-shadow: 0 10px 25px rgba(15, 23, 42, 0.2); }
-        
-        .btn-cart:active { transform: scale(0.9); background: #f1f5f9; }
-        .btn-buy:active { transform: scale(0.96); }
+        .btn-buy { flex: 1; height: 55px; border-radius: 18px; border: none; background: #0f172a; color: white; font-weight: 800; font-size: 0.85rem; cursor: pointer; text-transform: uppercase; }
 
         #loading-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: white; z-index: 1000; display: flex; align-items: center; justify-content: center; }
     </style>
@@ -99,18 +92,12 @@
 
 <div class="main-content">
     <span id="det-cat" class="category-pill">kategori</span>
-    
     <h1 id="det-title" class="product-name">memuat...</h1>
 
     <div class="rating-summary">
-        <div class="stars">
-            <i class="fa-solid fa-star"></i>
-            <i class="fa-solid fa-star"></i>
-            <i class="fa-solid fa-star"></i>
-            <i class="fa-solid fa-star"></i>
-            <i class="fa-solid fa-star-half-stroke"></i>
-        </div>
-        <span class="rating-count">4.8 (120 ulasan)</span>
+        <div class="stars-avg" id="stars-display">
+            </div>
+        <span class="rating-count" id="rating-text">0.0 (0 ulasan)</span>
     </div>
 
     <div class="price-section">
@@ -122,7 +109,7 @@
     </div>
 
     <div style="margin: 25px 0;">
-        <div id="det-stock-box" class="stock-info">
+        <div class="stock-info">
             <i class="fa-solid fa-bolt" style="color: #fbbe24;"></i> <span id="det-stock-text">stok: 0 tersedia</span>
         </div>
     </div>
@@ -130,27 +117,9 @@
     <span class="section-title">deskripsi produk</span>
     <div id="det-desc" class="description-box"></div>
 
-    <span class="section-title">informasi penjual</span>
-    <div class="owner-card">
-        <div class="owner-icon"><i class="fa-solid fa-store"></i></div>
-        <div class="owner-detail">
-            <span id="det-owner" class="owner-name">official store</span>
-            <span style="font-size: 0.65rem; color: #10b981; font-weight: 700;"><i class="fa-solid fa-circle-check"></i> merchant terpercaya</span>
-        </div>
-    </div>
-
-    <div class="comment-section">
-        <span class="section-title">ulasan pembeli <span style="color: #2563eb; text-transform: lowercase;">lihat semua</span></span>
-        
-        <div class="comment-card">
-            <span class="comment-user">d***a</span>
-            <div class="stars" style="font-size: 0.6rem; margin-bottom: 5px;">
-                <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
-            </div>
-            <p class="comment-text">produknya mantap bang, langsung dapet akunnya no tipu-tipu!</p>
-        </div>
-        
-        <p style="text-align: center; font-size: 0.7rem; color: #94a3b8; margin-top: 15px;">fitur rating otomatis segera hadir</p>
+    <div class="comment-section" id="list-ulasan">
+        <span class="section-title">ulasan pembeli</span>
+        <p style="font-size: 0.8rem; color: #94a3b8;">memuat ulasan...</p>
     </div>
 </div>
 
@@ -197,7 +166,6 @@
                     document.getElementById('det-cat').innerText = productFullData.kategori;
                     document.getElementById('det-price-new').innerText = "rp " + productFullData.harga.toLocaleString('id-ID');
                     document.getElementById('det-desc').innerText = productFullData.deskripsi;
-                    document.getElementById('det-owner').innerText = productFullData.uploadBy;
                     document.getElementById('det-stock-text').innerText = "stok: " + currentStock + " tersedia";
 
                     if (productFullData.diskon > 0) {
@@ -208,24 +176,87 @@
                         document.getElementById('discount-area').style.display = 'none';
                     }
 
-                    const bc = document.getElementById('btn-cart');
                     const bb = document.getElementById('btn-buy');
-
                     if (currentStock <= 0) {
-                        bc.disabled = bb.disabled = true;
+                        bb.disabled = true;
                         bb.innerText = "stok habis";
                     } else {
-                        bc.disabled = bb.disabled = false;
+                        bb.disabled = false;
                         bb.innerText = "beli sekarang";
                     }
                 });
             }
         });
+        loadReviews();
+    }
+
+    function loadReviews() {
+        db.ref('reviews').orderByChild('productId').equalTo(productId).on('value', (snap) => {
+            const container = document.getElementById('list-ulasan');
+            const starArea = document.getElementById('stars-display');
+            const ratingText = document.getElementById('rating-text');
+            
+            if (snap.exists()) {
+                let html = '<span class="section-title">ulasan pembeli</span>';
+                let totalRating = 0;
+                let count = 0;
+
+                snap.forEach(child => {
+                    const r = child.val();
+                    totalRating += r.rating;
+                    count++;
+
+                    let stars = '';
+                    for(let i=1; i<=5; i++) {
+                        stars += `<i class="fa-solid fa-star" style="color: ${i <= r.rating ? '#fbbe24' : '#e2e8f0'}; font-size: 0.6rem;"></i>`;
+                    }
+
+                    html += `
+                        <div class="comment-card">
+                            <span class="comment-user">${r.user}</span>
+                            <div style="margin-bottom: 5px;">${stars}</div>
+                            <p class="comment-text">${r.komentar || 'pembeli tidak menulis ulasan'}</p>
+                        </div>
+                    `;
+                });
+
+                container.innerHTML = html;
+                const avg = (totalRating / count).toFixed(1);
+                ratingText.innerText = `${avg} (${count} ulasan)`;
+                
+                // Update bintang rata-rata di atas
+                let avgStars = '';
+                for(let j=1; j<=5; j++) {
+                    avgStars += `<i class="fa-solid fa-star" style="color: ${j <= Math.round(avg) ? '#fbbe24' : '#e2e8f0'}"></i>`;
+                }
+                starArea.innerHTML = avgStars;
+            } else {
+                container.innerHTML = '<span class="section-title">ulasan pembeli</span><p style="font-size: 0.8rem; color: #94a3b8; text-align: center;">belum ada ulasan.</p>';
+            }
+        });
+    }
+
+    async function handleCart() {
+        if (!currentUserToken) return alert("silakan login dulu bosku.");
+        if (currentStock <= 0) return alert("stok habis.");
+
+        try {
+            await db.ref('carts/' + currentUserToken).push({
+                productId: productId,
+                nama: productFullData.nama,
+                harga: productFullData.harga,
+                foto: productFullData.foto,
+                timestamp: Date.now()
+            });
+            alert("berhasil masuk keranjang!");
+        } catch (e) {
+            alert("gagal: " + e.message);
+        }
     }
 
     async function handleBuy() {
         if (!currentUserToken) {
-            alert("silakan login dulu bosku.");
+            alert("silakan login dulu.");
             window.location.href = 'login.html';
             return;
         }
@@ -237,22 +268,19 @@
         btn.innerText = "memproses...";
 
         try {
-            const userRef = db.ref('users/' + currentUserToken);
-            const userSnap = await userRef.get();
+            const userSnap = await db.ref('users/' + currentUserToken).get();
             const userData = userSnap.val();
-            
-            const saldoSekarang = parseInt(userData.balance || 0); 
-            const hargaProduk = parseInt(productFullData.harga);
+            const saldo = parseInt(userData.balance || 0); 
+            const harga = parseInt(productFullData.harga);
 
-            if (saldoSekarang < hargaProduk) {
-                alert("saldo kurang! isi saldo dulu.");
-                btn.disabled = false;
-                btn.innerText = "beli sekarang";
+            if (saldo < harga) {
+                alert("saldo kurang!");
+                btn.disabled = false; btn.innerText = "beli sekarang";
                 return;
             }
 
             const updates = {};
-            updates['users/' + currentUserToken + '/balance'] = saldoSekarang - hargaProduk;
+            updates['users/' + currentUserToken + '/balance'] = saldo - harga;
             updates['products/' + productFirebaseKey + '/stok'] = currentStock - 1;
 
             const orderId = "inv-" + Date.now();
@@ -263,25 +291,20 @@
                 productId: productId,
                 nama: productFullData.nama,
                 foto: productFullData.foto,
-                total: hargaProduk,
+                total: harga,
                 status: "sukses",
                 timestamp: Date.now(),
                 dataAkun: productFullData.akun 
             };
 
             await db.ref().update(updates);
-            alert("pembelian sukses! cek riwayat.");
+            alert("pembelian sukses!");
             window.location.href = 'riwayat-user.html';
 
         } catch (e) {
             alert("error: " + e.message);
             btn.disabled = false;
-            btn.innerText = "beli sekarang";
         }
-    }
-
-    function handleCart() {
-        alert("produk dimasukkan ke keranjang (fitur demo)");
     }
 
     window.onload = fetchDetail;
