@@ -58,7 +58,7 @@
         </div>
 
         <label>foto produk :</label>
-        <div class="upload-wrapper" onclick="document.getelementbyid('file-input').click()">
+        <div class="upload-wrapper" onclick="document.getElementById('file-input').click()">
             <img id="final-preview">
             <div id="placeholder-content" class="upload-placeholder">
                 <i class="fa-solid fa-image"></i>
@@ -133,30 +133,30 @@
 
 <script>
     const firebaseconfig = {
-        apikey: "aizasyadgrsccxt-7bv_noaybjxyuit6ca0it4ytg",
-        databaseurl: "https://market-d978f-default-rtdb.asia-southeast1.firebasedatabase.app",
-        projectid: "market-d978f",
+        apiKey: "AIzaSyDGRsCcT-7Bv_nOAybjXyuIT6Ca0IT4YTg",
+        databaseURL: "https://market-d978f-default-rtdb.asia-southeast1.firebasedatabase.app",
+        projectId: "market-d978f",
     };
-    if (!firebase.apps.length) firebase.initializeapp(firebaseconfig);
+    if (!firebase.apps.length) firebase.initializeApp(firebaseconfig);
     const db = firebase.database();
 
-    const currentuser = localstorage.getitem('sessiontoken'); 
-    const randomid = "prd-" + date.now().tostring().slice(-4);
+    const currentuser = localStorage.getItem('sessionToken'); 
+    const randomid = "prd-" + Date.now().toString().slice(-4);
     
     let currentshopname = "official store";
     let currentpaymentnum = "";
     let filetoupload = null;
 
     window.onload = function() {
-        document.getelementbyid('id-produk').value = randomid;
+        document.getElementById('id-produk').value = randomid;
         if(!currentuser) return window.location.href = 'login.html';
 
         db.ref('users/' + currentuser).once('value', (snap) => {
             if(snap.exists()){
                 const d = snap.val();
-                currentshopname = d.shopname || d.fullname || "official store";
-                currentpaymentnum = d.paymentnumber || "";
-                document.getelementbyid('shop-display').innertext = currentshopname;
+                currentshopname = d.shopName || d.fullname || "official store";
+                currentpaymentnum = d.paymentNumber || "";
+                document.getElementById('shop-display').innerText = currentshopname;
             }
         });
     };
@@ -164,70 +164,70 @@
     function prosesfotoutuh(input) {
         if (input.files && input.files[0]) {
             filetoupload = input.files[0];
-            const preview = document.getelementbyid('final-preview');
-            preview.src = url.createobjecturl(filetoupload);
+            const preview = document.getElementById('final-preview');
+            preview.src = URL.createObjectURL(filetoupload);
             preview.style.display = 'block';
-            document.getelementbyid('placeholder-content').style.display = 'none';
+            document.getElementById('placeholder-content').style.display = 'none';
         }
     }
 
     function hitunghargafinal() {
-        const awal = parsefloat(document.getelementbyid('harga-awal').value) || 0;
-        const diskon = parsefloat(document.getelementbyid('persen-diskon').value) || 0;
-        const final = document.getelementbyid('harga-final');
-        final.value = awal > 0 ? math.round(awal - (awal * diskon / 100)) : "";
+        const awal = parseFloat(document.getElementById('harga-awal').value) || 0;
+        const diskon = parseFloat(document.getElementById('persen-diskon').value) || 0;
+        const final = document.getElementById('harga-final');
+        final.value = awal > 0 ? Math.round(awal - (awal * diskon / 100)) : "";
     }
 
     async function ajukanproduk() {
-        const btn = document.getelementbyid('btn-save');
-        const nama = document.getelementbyid('nama-produk').value.trim();
-        const stok = parseint(document.getelementbyid('stok-produk').value);
-        const hargajual = parseint(document.getelementbyid('harga-final').value);
+        const btn = document.getElementById('btn-save');
+        const nama = document.getElementById('nama-produk').value.trim();
+        const stok = parseInt(document.getElementById('stok-produk').value);
+        const hargajual = parseInt(document.getElementById('harga-final').value);
 
         if(!filetoupload || !nama || !stok || !hargajual) return alert("lengkapi data produk!");
 
         btn.disabled = true;
-        btn.innertext = "memproses...";
+        btn.innerText = "memproses...";
 
         try {
             const userref = db.ref('users/' + currentuser);
             const usersnap = await userref.get();
             const userdata = usersnap.val();
-            const currentlimit = parseint(userdata.salelimit || 0);
+            const currentlimit = parseInt(userdata.saleLimit || 0);
 
             if (currentlimit <= 0) {
                 alert("limit upload habis!");
-                btn.disabled = false; btn.innertext = "kirim pengajuan";
+                btn.disabled = false; btn.innerText = "kirim pengajuan";
                 return;
             }
 
-            const formdata = new formdata();
+            const formdata = new FormData();
             formdata.append("image", filetoupload);
             const resimg = await fetch("https://api.imgbb.com/1/upload?key=50145b1eaa1385c3d9549ebe496eb5b5", {
-                method: "post",
+                method: "POST",
                 body: formdata
             }).then(r => r.json());
 
             if(resimg.success) {
-                await userref.update({ salelimit: currentlimit - 1 });
+                await userref.update({ saleLimit: currentlimit - 1 });
                 await db.ref('pending_products').push({
-                    productid: randomid,
+                    productId: randomid,
                     nama: nama,
-                    kategori: document.getelementbyid('kategori-produk').value,
+                    kategori: document.getElementById('kategori-produk').value,
                     foto: resimg.data.url,
                     stok: stok,
                     harga: hargajual,
-                    deskripsi: document.getelementbyid('desc-produk').value,
-                    uploadby: currentshopname,
-                    ownertoken: currentuser,
-                    ownerdana: currentpaymentnum,
+                    deskripsi: document.getElementById('desc-produk').value,
+                    uploadBy: currentshopname,
+                    ownerToken: currentuser,
+                    ownerDana: currentpaymentnum,
                     status: "pending",
-                    timestamp: date.now(),
+                    timestamp: Date.now(),
                     akun: {
-                        email: document.getelementbyid('email-akun').value,
-                        pass: document.getelementbyid('pass-akun').value,
-                        a2f: document.getelementbyid('a2f-status').value,
-                        tambahan: document.getelementbyid('extra-info').value
+                        email: document.getElementById('email-akun').value,
+                        pass: document.getElementById('pass-akun').value,
+                        a2f: document.getElementById('a2f-status').value,
+                        tambahan: document.getElementById('extra-info').value
                     }
                 });
                 alert("berhasil diajukan!");
