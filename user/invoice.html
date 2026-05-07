@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Invoice Pembelian</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap');
+
+        body { 
+            background: #f8fafc; color: #1e293b; font-family: 'Plus Jakarta Sans', sans-serif; 
+            margin: 0; padding: 20px; text-transform: lowercase;
+        }
+
+        .container { max-width: 500px; margin: 0 auto; padding-bottom: 50px; }
+
+        .header {
+            display: flex; align-items: center; justify-content: space-between;
+            margin-bottom: 25px;
+        }
+
+        .btn-back {
+            width: 40px; height: 40px; background: white; border-radius: 12px;
+            display: flex; align-items: center; justify-content: center;
+            color: #1e293b; text-decoration: none; box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+        }
+
+        .invoice-card {
+            background: white; border-radius: 30px; padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.03); border: 1px solid #f1f5f9;
+        }
+
+        .status-badge {
+            display: inline-block; padding: 6px 15px; background: #ecfdf5;
+            color: #10b981; border-radius: 10px; font-size: 0.7rem;
+            font-weight: 800; text-transform: uppercase; margin-bottom: 20px;
+        }
+
+        .product-info { display: flex; gap: 15px; align-items: center; margin-bottom: 25px; }
+        .product-info img { width: 60px; height: 60px; border-radius: 15px; object-fit: cover; }
+        .product-info h3 { font-size: 1rem; margin: 0; font-weight: 800; color: #0f172a; }
+        .product-info p { font-size: 0.8rem; margin: 3px 0 0; color: #64748b; font-weight: 600; }
+
+        .divider { height: 1px; background: #f1f5f9; margin: 20px 0; border: none; }
+
+        .data-box {
+            background: #f8fafc; border: 1px dashed #cbd5e1;
+            padding: 20px; border-radius: 20px; margin-top: 15px;
+        }
+
+        .data-item { margin-bottom: 15px; }
+        .data-item:last-child { margin-bottom: 0; }
+        .data-label { font-size: 0.65rem; font-weight: 800; color: #94a3b8; text-transform: uppercase; display: block; margin-bottom: 5px; }
+        .data-value { 
+            font-size: 0.9rem; font-weight: 700; color: #1e293b; 
+            display: flex; align-items: center; justify-content: space-between;
+            background: white; padding: 12px 15px; border-radius: 12px; border: 1px solid #f1f5f9;
+        }
+
+        .btn-copy { color: #2563eb; cursor: pointer; font-size: 0.9rem; transition: 0.2s; }
+        .btn-copy:active { transform: scale(0.9); }
+
+        .footer-note {
+            text-align: center; margin-top: 30px; font-size: 0.75rem;
+            color: #94a3b8; font-weight: 600; line-height: 1.6;
+        }
+
+        #loading-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: white; z-index: 1000; display: flex; align-items: center; justify-content: center; }
+    </style>
+</head>
+<body>
+
+<div id="loading-screen"><i class="fa-solid fa-circle-notch fa-spin" style="font-size: 2rem; color: #2563eb;"></i></div>
+
+<div class="container">
+    <div class="header">
+        <a href="aktivitas.html" class="btn-back"><i class="fa-solid fa-chevron-left"></i></a>
+        <span style="font-weight: 800; font-size: 0.9rem;">detail pesanan</span>
+        <div style="width: 40px;"></div>
+    </div>
+
+    <div class="invoice-card">
+        <div id="inv-status" class="status-badge">sukses</div>
+        
+        <div class="product-info">
+            <img id="inv-img" src="">
+            <div>
+                <h3 id="inv-name">nama produk</h3>
+                <p id="inv-id">INV-0000000000</p>
+            </div>
+        </div>
+
+        <div class="divider"></div>
+
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+            <span style="font-size: 0.8rem; font-weight: 700; color: #64748b;">total pembayaran</span>
+            <span id="inv-total" style="font-size: 1.1rem; font-weight: 900; color: #2563eb;">rp 0</span>
+        </div>
+
+        <div class="divider"></div>
+
+        <span style="font-size: 0.7rem; font-weight: 800; color: #1e293b; text-transform: uppercase; letter-spacing: 0.5px;">informasi akun</span>
+        
+        <div class="data-box">
+            <div class="data-item">
+                <span class="data-label">email / username</span>
+                <div class="data-value">
+                    <span id="acc-email">memuat...</span>
+                    <i class="fa-regular fa-copy btn-copy" onclick="copyText('acc-email')"></i>
+                </div>
+            </div>
+            <div class="data-item">
+                <span class="data-label">password</span>
+                <div class="data-value">
+                    <span id="acc-pass">memuat...</span>
+                    <i class="fa-regular fa-copy btn-copy" onclick="copyText('acc-pass')"></i>
+                </div>
+            </div>
+            <div class="data-item" id="a2f-area">
+                <span class="data-label">status a2f</span>
+                <div class="data-value">
+                    <span id="acc-a2f">OFF</span>
+                </div>
+            </div>
+            <div class="data-item">
+                <span class="data-label">catatan penjual</span>
+                <div id="acc-note" style="font-size: 0.8rem; color: #475569; padding: 10px; line-height: 1.5;">
+                    tidak ada catatan tambahan.
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <p class="footer-note">
+        simpan informasi akun ini dengan aman.<br>
+        jika ada masalah, hubungi admin dengan melampirkan ID invoice.
+    </p>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
+
+<script>
+    const firebaseConfig = {
+        apiKey: "AIzaSyDGRsCcT-7Bv_nOAybjXyuIT6Ca0IT4YTg",
+        databaseURL: "https://market-d978f-default-rtdb.asia-southeast1.firebasedatabase.app",
+        projectId: "market-d978f",
+    };
+    if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+
+    const urlParams = new URLSearchParams(window.location.search);
+    const orderId = urlParams.get('id');
+
+    function loadInvoice() {
+        if (!orderId) return window.location.href = 'aktivitas.html';
+
+        db.ref('pembelian/' + orderId).on('value', (snap) => {
+            document.getElementById('loading-screen').style.display = 'none';
+            if (snap.exists()) {
+                const data = snap.val();
+                
+                document.getElementById('inv-img').src = data.foto;
+                document.getElementById('inv-name').innerText = data.nama;
+                document.getElementById('inv-id').innerText = data.orderId;
+                document.getElementById('inv-total').innerText = "rp " + data.total.toLocaleString('id-ID');
+                
+                // Menampilkan Data Akun yang dibeli
+                if (data.dataAkun) {
+                    document.getElementById('acc-email').innerText = data.dataAkun.email || '-';
+                    document.getElementById('acc-pass').innerText = data.dataAkun.pass || '-';
+                    document.getElementById('acc-a2f').innerText = data.dataAkun.a2f || 'OFF';
+                    document.getElementById('acc-note').innerText = data.dataAkun.tambahan || 'tidak ada catatan.';
+                }
+
+                // Warna badge status
+                const badge = document.getElementById('inv-status');
+                badge.innerText = data.status;
+                if (data.status !== 'sukses') {
+                    badge.style.background = '#fffbeb';
+                    badge.style.color = '#f59e0b';
+                }
+            } else {
+                alert("Data invoice tidak ditemukan!");
+                window.location.href = 'aktivitas.html';
+            }
+        });
+    }
+
+    function copyText(id) {
+        const text = document.getElementById(id).innerText;
+        navigator.clipboard.writeText(text).then(() => {
+            alert("Berhasil disalin: " + text);
+        });
+    }
+
+    window.onload = loadInvoice;
+</script>
+</body>
+</html>
