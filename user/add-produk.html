@@ -6,6 +6,8 @@
     <title>Penambahan Produk</title>
     <script src="../setting.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.js"></script>
     <style>
         body { 
             background: #f0f4f8; color: #1a1a1a; font-family: 'Inter', sans-serif; 
@@ -37,9 +39,24 @@
         .action-area { position: fixed; bottom: 0; left: 0; width: 100%; background: rgba(240, 244, 248, 0.9); backdrop-filter: blur(10px); padding: 15px 20px 20px; box-sizing: border-box; z-index: 100; }
         .btn-submit { width: 100%; max-width: 460px; margin: 0 auto; display: block; padding: 18px; background: #1a1a1a; color: white; border: none; border-radius: 15px; font-weight: 800; cursor: pointer; transition: 0.3s; text-transform: uppercase; font-size: 0.85rem; }
         .btn-submit:disabled { background: #cbd5e1; cursor: not-allowed; }
+        .cropper-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 1000; display: none; align-items: center; justify-content: center; padding: 20px; }
+        .cropper-container-box { background: white; border-radius: 20px; width: 100%; max-width: 400px; padding: 20px; }
+        .image-crop-area { width: 100%; aspect-ratio: 1/1; background: #333; overflow: hidden; margin-bottom: 15px; }
+        .image-crop-area img { max-width: 100%; display: block; }
+        .btn-crop-done { width: 100%; padding: 15px; background: #007bff; color: white; border: none; border-radius: 12px; font-weight: 800; cursor: pointer; text-transform: uppercase; }
     </style>
 </head>
 <body>
+
+<div id="cropperModal" class="cropper-modal">
+    <div class="cropper-container-box">
+        <h3 style="margin-top: 0; font-size: 1rem; text-align: center;">sesuaikan foto (1:1)</h3>
+        <div class="image-crop-area">
+            <img id="image-to-crop" src="">
+        </div>
+        <button class="btn-crop-done" onclick="selesaiMemotong()">terapkan potongan</button>
+    </div>
+</div>
 
 <div class="container">
     <div class="header">
@@ -48,14 +65,14 @@
     </div>
 
     <div class="card">
-        <label>foto produk (gambar utuh) :</label>
+        <label>foto produk (otomatis 1:1) :</label>
         <div class="upload-wrapper" onclick="document.getElementById('file-input').click()">
             <img id="final-preview">
             <div id="placeholder-content" class="upload-placeholder">
-                <i class="fa-solid fa-image"></i>
-                <br>pilih foto utuh
+                <i class="fa-solid fa-cloud-arrow-up"></i>
+                <br>pilih foto
             </div>
-            <input type="file" id="file-input" accept="image/*" style="display: none;" onchange="prosesFotoUtuh(this)">
+            <input type="file" id="file-input" accept="image/jpeg, image/png" style="display: none;" onchange="prosesFoto(this)">
         </div>
 
         <label>nama produk :</label>
@@ -132,23 +149,40 @@
     const db = firebase.database();
 
     const ownerName = localStorage.getItem('fullname') || 'owner';
-    const ownerToken = localStorage.getItem('userToken');
+    const ownerToken = localStorage.getItem('userToken'); // Berisi key user (seperti dikasipalingcihuy@gmail,com)
     const randomID = "PRD-" + Date.now().toString().slice(-4) + Math.floor(1000 + Math.random() * 9000);
 
-    let fileToUpload = null;
+    let cropper;
+    let finalBlob = null;
 
     window.onload = function() {
         document.getElementById('id-produk').value = randomID;
     };
 
-    function prosesFotoUtuh(input) {
+    function prosesFoto(input) {
         if (input.files && input.files[0]) {
-            fileToUpload = input.files[0];
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const img = document.getElementById('image-to-crop');
+                img.src = e.result;
+                document.getElementById('cropperModal').style.display = 'flex';
+                if (cropper) cropper.destroy();
+                cropper = new Cropper(img, { aspectRatio: 1, viewMode: 1, autoCropArea: 1 });
+            }
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
+
+    function selesaiMemotong() {
+        if (!cropper) return;
+        cropper.getCroppedCanvas({ width: 500, height: 500 }).toBlob((blob) => {
+            finalBlob = blob;
             const preview = document.getElementById('final-preview');
-            preview.src = URL.createObjectURL(fileToUpload);
+            preview.src = URL.createObjectURL(blob);
             preview.style.display = 'block';
             document.getElementById('placeholder-content').style.display = 'none';
-        }
+            document.getElementById('cropperModal').style.display = 'none';
+        }, 'image/jpeg', 0.9);
     }
 
     function hitungHargaFinal() {
@@ -171,38 +205,49 @@
         const email = document.getElementById('email-akun').value.trim();
         const pass = document.getElementById('pass-akun').value.trim();
 
-        if(!fileToUpload || !nama || !stok || !hargaJual || !email || !pass) return alert("lengkapi semua data");
+        if(!finalBlob || !nama || !stok || !hargaJual || !email || !pass) return alert("lengkapi semua data");
+        if(!ownerToken) return alert("token tidak ditemukan, silakan login ulang");
 
         btn.disabled = true;
         btn.innerText = "mengirim...";
 
         try {
+            // 1. CEK LIMIT DARI DATABASE
             const userRef = db.ref('users/' + ownerToken);
             const userSnap = await userRef.get();
-            const currentLimit = userSnap.val()?.saleLimit || 0;
-
-            if (currentLimit <= 0) {
-                alert("limit upload kamu sudah habis!");
+            
+            if (!userSnap.exists()) {
+                alert("data user tidak ditemukan");
                 btn.disabled = false;
                 btn.innerText = "kirim pengajuan";
                 return;
             }
 
+            const currentLimit = parseInt(userSnap.val().saleLimit || 0);
+
+            // 2. VALIDASI LIMIT
+            if (currentLimit <= 0) {
+                alert("limit upload kamu sudah habis! hubungi admin");
+                btn.disabled = false;
+                btn.innerText = "kirim pengajuan";
+                return;
+            }
+
+            // 3. UPLOAD FOTO KE IMGBB
             const formData = new FormData();
-            formData.append("image", fileToUpload);
-            
+            formData.append("image", finalBlob, "produk.jpg");
             const resImg = await fetch("https://api.imgbb.com/1/upload?key=50145b1eaa1385c3d9549ebe496eb5b5", {
                 method: "POST",
                 body: formData
             }).then(r => r.json());
 
             if(resImg.success) {
-                // Potong limit
-                await userRef.child('saleLimit').transaction((current) => {
-                    return (current || 0) - 1;
+                // 4. KURANGI LIMIT DI DATABASE
+                await userRef.update({
+                    saleLimit: currentLimit - 1
                 });
 
-                // Simpan ke pending
+                // 5. SIMPAN DATA PRODUK KE PENDING
                 await db.ref('pending_products').push({
                     productId: randomID,
                     nama: nama,
@@ -224,14 +269,16 @@
                     status: "pending",
                     timestamp: Date.now()
                 });
-                alert("berhasil diajukan! limit sisa: " + (currentLimit - 1));
+                
+                alert("berhasil diajukan! sisa limit: " + (currentLimit - 1));
                 window.location.href = 'dashboard.html';
             } else {
-                alert("gagal upload ke ImgBB, cek koneksi/api key.");
+                alert("gagal upload gambar");
+                btn.disabled = false;
+                btn.innerText = "kirim pengajuan";
             }
         } catch (e) {
             alert("error: " + e.message);
-        } finally {
             btn.disabled = false;
             btn.innerText = "kirim pengajuan";
         }
