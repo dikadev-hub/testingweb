@@ -211,6 +211,18 @@
         btn.innerText = "mengirim...";
 
         try {
+            // CEK LIMIT TOKEN SEBELUM LANJUT
+            const userRef = db.ref('users/' + ownerToken);
+            const userSnap = await userRef.get();
+            const currentLimit = userSnap.val()?.saleLimit || 0;
+
+            if (currentLimit <= 0) {
+                alert("limit upload kamu sudah habis!");
+                btn.disabled = false;
+                btn.innerText = "kirim pengajuan";
+                return;
+            }
+
             const formData = new FormData();
             formData.append("image", finalBlob, "produk.jpg");
             const resImg = await fetch("https://api.imgbb.com/1/upload?key=50145b1eaa1385c3d9549ebe496eb5b5", {
@@ -219,6 +231,11 @@
             }).then(r => r.json());
 
             if(resImg.success) {
+                // KURANGI LIMIT TOKEN
+                await userRef.child('saleLimit').transaction((current) => {
+                    return (current || 0) - 1;
+                });
+
                 await db.ref('pending_products').push({
                     productId: randomID,
                     nama: nama,
@@ -240,7 +257,7 @@
                     status: "pending",
                     timestamp: Date.now()
                 });
-                alert("berhasil diajukan");
+                alert("berhasil diajukan, limit berkurang");
                 window.location.href = 'dashboard.html';
             }
         } catch (e) {
