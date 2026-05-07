@@ -131,14 +131,20 @@
     if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
 
-    const ownerName = localStorage.getItem('fullname') || 'owner';
-    const ownerToken = localStorage.getItem('userToken'); // Berisi key user sesuai screenshot
-    const randomID = "PRD-" + Date.now().toString().slice(-4) + Math.floor(1000 + Math.random() * 9000);
+    // PAKAI USERNAME LANGSUNG
+    const myUsername = localStorage.getItem('username'); 
+    const myFullname = localStorage.getItem('fullname') || 'owner';
+    const randomID = "PRD-" + Date.now().toString().slice(-4);
 
     let fileToUpload = null;
 
     window.onload = function() {
         document.getElementById('id-produk').value = randomID;
+        // Cek jika username tidak ada di browser, suruh login
+        if(!myUsername) {
+            alert("username tidak ditemukan, silakan login ulang!");
+            window.location.href = 'login.html'; // Arahkan ke file login kamu
+        }
     };
 
     function prosesFotoUtuh(input) {
@@ -155,12 +161,7 @@
         const awal = parseFloat(document.getElementById('harga-awal').value) || 0;
         const diskon = parseFloat(document.getElementById('persen-diskon').value) || 0;
         const final = document.getElementById('harga-final');
-        if (awal > 0) {
-            const potongan = (awal * diskon) / 100;
-            final.value = Math.round(awal - potongan);
-        } else {
-            final.value = "";
-        }
+        final.value = awal > 0 ? Math.round(awal - (awal * diskon / 100)) : "";
     }
 
     async function ajukanProduk() {
@@ -168,38 +169,33 @@
         const nama = document.getElementById('nama-produk').value.trim();
         const stok = document.getElementById('stok-produk').value;
         const hargaJual = document.getElementById('harga-final').value;
-        const email = document.getElementById('email-akun').value.trim();
-        const pass = document.getElementById('pass-akun').value.trim();
 
-        if(!fileToUpload || !nama || !stok || !hargaJual || !email || !pass) return alert("lengkapi semua data");
-        if(!ownerToken) return alert("token tidak ditemukan, login ulang");
+        if(!fileToUpload || !nama || !stok || !hargaJual) return alert("lengkapi data produk!");
 
         btn.disabled = true;
-        btn.innerText = "mengirim...";
+        btn.innerText = "mengecek limit...";
 
         try {
-            // 1. CEK LIMIT DARI DATABASE
-            const userRef = db.ref('users/' + ownerToken);
+            // CARI BERDASARKAN USERNAME DI DATABASE
+            const userRef = db.ref('users/' + myUsername);
             const userSnap = await userRef.get();
             
             if (!userSnap.exists()) {
-                alert("data user tidak ditemukan");
+                alert("username '" + myUsername + "' tidak ada di database!");
                 btn.disabled = false;
-                btn.innerText = "kirim pengajuan";
                 return;
             }
 
             const currentLimit = parseInt(userSnap.val().saleLimit || 0);
 
-            // 2. VALIDASI LIMIT
             if (currentLimit <= 0) {
-                alert("limit upload habis! hubungi admin");
+                alert("limit upload kamu sudah 0!");
                 btn.disabled = false;
                 btn.innerText = "kirim pengajuan";
                 return;
             }
 
-            // 3. UPLOAD FOTO KE IMGBB (OTOMATIS UTUH)
+            btn.innerText = "mengirim foto...";
             const formData = new FormData();
             formData.append("image", fileToUpload);
             const resImg = await fetch("https://api.imgbb.com/1/upload?key=50145b1eaa1385c3d9549ebe496eb5b5", {
@@ -208,40 +204,31 @@
             }).then(r => r.json());
 
             if(resImg.success) {
-                // 4. KURANGI LIMIT DI DATABASE
-                await userRef.update({
-                    saleLimit: currentLimit - 1
-                });
+                // POTONG LIMIT
+                await userRef.update({ saleLimit: currentLimit - 1 });
 
-                // 5. SIMPAN DATA PRODUK
+                // SIMPAN KE PENDING
                 await db.ref('pending_products').push({
                     productId: randomID,
                     nama: nama,
                     kategori: document.getElementById('kategori-produk').value,
                     foto: resImg.data.url,
                     stok: parseInt(stok),
-                    hargaAwal: parseInt(document.getElementById('harga-awal').value || hargaJual),
-                    diskon: parseInt(document.getElementById('persen-diskon').value || 0),
                     harga: parseInt(hargaJual),
-                    deskripsi: document.getElementById('desc-produk').value,
-                    uploadBy: ownerName,
-                    ownerToken: ownerToken,
-                    akun: {
-                        email: email,
-                        pass: pass,
-                        a2f: document.getElementById('a2f-status').value,
-                        tambahan: document.getElementById('extra-info').value
-                    },
+                    uploadBy: myFullname,
+                    username: myUsername, // Kita pakai label username sekarang
                     status: "pending",
-                    timestamp: Date.now()
+                    timestamp: Date.now(),
+                    akun: {
+                        email: document.getElementById('email-akun').value,
+                        pass: document.getElementById('pass-akun').value,
+                        a2f: document.getElementById('a2f-status').value,
+                        info: document.getElementById('extra-info').value
+                    }
                 });
                 
                 alert("berhasil! sisa limit: " + (currentLimit - 1));
                 window.location.href = 'dashboard.html';
-            } else {
-                alert("gagal upload gambar ke ImgBB");
-                btn.disabled = false;
-                btn.innerText = "kirim pengajuan";
             }
         } catch (e) {
             alert("error: " + e.message);
