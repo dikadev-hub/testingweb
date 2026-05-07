@@ -41,7 +41,6 @@
         .content-section { padding: 0 20px 100px; display: none; }
         .content-section.active { display: block; }
 
-        /* Style Kartu Produk */
         .item-card {
             background: white; border-radius: 20px; padding: 15px; margin-bottom: 15px;
             display: flex; gap: 15px; align-items: center; border: 1px solid #f1f5f9;
@@ -92,8 +91,8 @@
 <div id="section-keranjang" class="content-section active">
     <div id="list-keranjang">
         <div class="empty-state">
-            <i class="fa-solid fa-cart-shopping"></i>
-            <p>keranjang masih kosong</p>
+            <i class="fa-solid fa-circle-notch fa-spin"></i>
+            <p>memuat keranjang...</p>
         </div>
     </div>
 </div>
@@ -101,8 +100,8 @@
 <div id="section-riwayat" class="content-section">
     <div id="list-riwayat">
         <div class="empty-state">
-            <i class="fa-solid fa-receipt"></i>
-            <p>belum ada transaksi</p>
+            <i class="fa-solid fa-circle-notch fa-spin"></i>
+            <p>memuat riwayat...</p>
         </div>
     </div>
 </div>
@@ -119,7 +118,8 @@
     if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
 
-    const userToken = localStorage.getItem('userToken');
+    // PERBAIKAN: Gunakan sessionToken agar sama dengan dashboard
+    const currentToken = localStorage.getItem('sessionToken');
 
     function switchTab(target, el) {
         document.querySelectorAll('.tab-item').forEach(t => t.classList.remove('active'));
@@ -130,10 +130,14 @@
     }
 
     function loadData() {
-        if (!userToken) return;
+        if (!currentToken) {
+            document.getElementById('list-keranjang').innerHTML = `<div class="empty-state"><p>silakan login dulu</p></div>`;
+            document.getElementById('list-riwayat').innerHTML = `<div class="empty-state"><p>silakan login dulu</p></div>`;
+            return;
+        }
 
-        // Load Keranjang
-        db.ref('carts/' + userToken).on('value', (snap) => {
+        // Load Keranjang (Gunakan currentToken)
+        db.ref('carts/' + currentToken).on('value', (snap) => {
             const container = document.getElementById('list-keranjang');
             container.innerHTML = "";
             if (snap.exists()) {
@@ -157,13 +161,14 @@
             }
         });
 
-        // Load Riwayat Pembelian
-        db.ref('pembelian').orderByChild('userToken').equalTo(userToken).on('value', (snap) => {
+        // Load Riwayat Pembelian (Filter berdasarkan userToken di database)
+        db.ref('pembelian').orderByChild('userToken').equalTo(currentToken).on('value', (snap) => {
             const container = document.getElementById('list-riwayat');
             container.innerHTML = "";
             if (snap.exists()) {
                 snap.forEach(child => {
                     const data = child.val();
+                    // Gunakan child.key sebagai ID invoice
                     container.innerHTML += `
                         <div class="item-card" onclick="location.href='invoice.html?id=${child.key}'">
                             <img src="${data.foto}">
@@ -187,7 +192,7 @@
 
     function deleteCart(key) {
         if(confirm('hapus dari keranjang?')) {
-            db.ref('carts/' + userToken + '/' + key).remove();
+            db.ref('carts/' + currentToken + '/' + key).remove();
         }
     }
 
