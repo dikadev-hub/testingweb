@@ -3,67 +3,113 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Invoice Pembelian</title>
+    <title>Invoice Pesanan</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap');
 
         body { 
-            background: #f8fafc; color: #1e293b; font-family: 'Plus Jakarta Sans', sans-serif; 
-            margin: 0; padding: 20px; text-transform: lowercase;
+            background: #f4f7fa; color: #1e293b; font-family: 'Plus Jakarta Sans', sans-serif; 
+            margin: 0; padding: 0; text-transform: lowercase;
         }
 
-        .container { max-width: 500px; margin: 0 auto; padding-bottom: 50px; }
+        .container { max-width: 450px; margin: 0 auto; padding: 20px; padding-bottom: 50px; }
 
+        /* Header Style */
         .header {
             display: flex; align-items: center; justify-content: space-between;
-            margin-bottom: 25px;
+            margin-bottom: 25px; padding: 10px 5px;
         }
 
         .btn-back {
-            width: 40px; height: 40px; background: white; border-radius: 12px;
+            width: 45px; height: 45px; background: white; border-radius: 16px;
             display: flex; align-items: center; justify-content: center;
-            color: #1e293b; text-decoration: none; box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+            color: #1e293b; text-decoration: none; box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            transition: 0.3s;
         }
+        .btn-back:active { transform: scale(0.9); }
 
+        /* Invoice Card */
         .invoice-card {
-            background: white; border-radius: 30px; padding: 30px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.03); border: 1px solid #f1f5f9;
+            background: white; border-radius: 35px; padding: 30px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.04); border: 1px solid rgba(255,255,255,0.8);
+            position: relative; overflow: hidden;
         }
 
+        .invoice-card::before {
+            content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 8px;
+            background: linear-gradient(90deg, #2563eb, #7dd3fc);
+        }
+
+        .status-area { text-align: center; margin-bottom: 25px; }
         .status-badge {
-            display: inline-block; padding: 6px 15px; background: #ecfdf5;
-            color: #10b981; border-radius: 10px; font-size: 0.7rem;
-            font-weight: 800; text-transform: uppercase; margin-bottom: 20px;
+            display: inline-block; padding: 8px 20px; background: #ecfdf5;
+            color: #10b981; border-radius: 12px; font-size: 0.75rem;
+            font-weight: 800; text-transform: uppercase; letter-spacing: 1px;
         }
 
-        .product-info { display: flex; gap: 15px; align-items: center; margin-bottom: 25px; }
-        .product-info img { width: 60px; height: 60px; border-radius: 15px; object-fit: cover; }
-        .product-info h3 { font-size: 1rem; margin: 0; font-weight: 800; color: #0f172a; }
-        .product-info p { font-size: 0.8rem; margin: 3px 0 0; color: #64748b; font-weight: 600; }
+        .product-box { 
+            display: flex; flex-direction: column; align-items: center; 
+            text-align: center; gap: 15px; margin-bottom: 30px; 
+        }
+        .product-box img { 
+            width: 100px; height: 100px; border-radius: 25px; 
+            object-fit: cover; box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+        .product-box h3 { font-size: 1.2rem; margin: 0; font-weight: 800; color: #0f172a; }
+        .product-box p { font-size: 0.85rem; margin: 0; color: #94a3b8; font-weight: 600; }
 
-        .divider { height: 1px; background: #f1f5f9; margin: 20px 0; border: none; }
+        .price-tag {
+            background: #f8fafc; padding: 20px; border-radius: 20px;
+            display: flex; justify-content: space-between; align-items: center;
+            margin-bottom: 25px;
+        }
+        .price-label { font-size: 0.8rem; font-weight: 700; color: #64748b; }
+        .price-value { font-size: 1.3rem; font-weight: 900; color: #2563eb; }
 
-        .data-box {
-            background: #f8fafc; border: 1px dashed #cbd5e1;
-            padding: 20px; border-radius: 20px; margin-top: 15px;
+        /* Account Data Box */
+        .info-title { 
+            font-size: 0.75rem; font-weight: 800; color: #1e293b; 
+            text-transform: uppercase; letter-spacing: 1px; margin-bottom: 15px;
+            display: block; padding-left: 5px;
         }
 
-        .data-item { margin-bottom: 15px; }
-        .data-item:last-child { margin-bottom: 0; }
-        .data-label { font-size: 0.65rem; font-weight: 800; color: #94a3b8; text-transform: uppercase; display: block; margin-bottom: 5px; }
-        .data-value { 
-            font-size: 0.9rem; font-weight: 700; color: #1e293b; 
-            display: flex; align-items: center; justify-content: space-between;
-            background: white; padding: 12px 15px; border-radius: 12px; border: 1px solid #f1f5f9;
+        .data-container { display: flex; flex-direction: column; gap: 12px; }
+        
+        .data-tile {
+            background: #ffffff; border: 1.5px solid #f1f5f9;
+            padding: 15px; border-radius: 18px; transition: 0.3s;
+        }
+        .data-tile:hover { border-color: #2563eb; }
+
+        .tile-label { font-size: 0.65rem; font-weight: 800; color: #94a3b8; text-transform: uppercase; margin-bottom: 6px; display: block; }
+        .tile-content { 
+            display: flex; align-items: center; justify-content: space-between; 
+            font-size: 0.95rem; font-weight: 700; color: #1e293b; 
+        }
+        .tile-content span { word-break: break-all; padding-right: 10px; }
+
+        .btn-copy { 
+            width: 35px; height: 35px; background: #eff6ff; color: #2563eb;
+            border-radius: 10px; display: flex; align-items: center; justify-content: center;
+            cursor: pointer; font-size: 0.9rem; flex-shrink: 0;
+        }
+        .btn-copy:active { background: #2563eb; color: white; }
+
+        .note-box {
+            margin-top: 20px; padding: 15px; background: #fffbeb;
+            border-radius: 15px; border: 1px solid #fef3c7;
+            font-size: 0.8rem; color: #92400e; line-height: 1.5;
         }
 
-        .btn-copy { color: #2563eb; cursor: pointer; font-size: 0.9rem; transition: 0.2s; }
-        .btn-copy:active { transform: scale(0.9); }
-
-        .footer-note {
-            text-align: center; margin-top: 30px; font-size: 0.75rem;
-            color: #94a3b8; font-weight: 600; line-height: 1.6;
+        .footer-action {
+            text-align: center; margin-top: 30px;
+        }
+        .btn-home {
+            display: inline-block; padding: 15px 40px; background: #0f172a;
+            color: white; text-decoration: none; border-radius: 18px;
+            font-weight: 800; font-size: 0.85rem; text-transform: uppercase;
+            box-shadow: 0 10px 20px rgba(15,23,42,0.2);
         }
 
         #loading-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: white; z-index: 1000; display: flex; align-items: center; justify-content: center; }
@@ -75,67 +121,65 @@
 
 <div class="container">
     <div class="header">
-        <a href="aktivitas.html" class="btn-back"><i class="fa-solid fa-chevron-left"></i></a>
-        <span style="font-weight: 800; font-size: 0.9rem;">detail pesanan</span>
-        <div style="width: 40px;"></div>
+        <a href="riwayat-user.html" class="btn-back"><i class="fa-solid fa-arrow-left"></i></a>
+        <span style="font-weight: 800; font-size: 0.95rem; color: #0f172a;">e-receipt</span>
+        <div style="width: 45px;"></div>
     </div>
 
     <div class="invoice-card">
-        <div id="inv-status" class="status-badge">sukses</div>
+        <div class="status-area">
+            <div id="inv-status" class="status-badge">transaksi sukses</div>
+        </div>
         
-        <div class="product-info">
-            <img id="inv-img" src="">
+        <div class="product-box">
+            <img id="inv-img" src="https://via.placeholder.com/100">
             <div>
                 <h3 id="inv-name">nama produk</h3>
                 <p id="inv-id">INV-0000000000</p>
             </div>
         </div>
 
-        <div class="divider"></div>
-
-        <div style="display: flex; justify-content: space-between; align-items: center;">
-            <span style="font-size: 0.8rem; font-weight: 700; color: #64748b;">total pembayaran</span>
-            <span id="inv-total" style="font-size: 1.1rem; font-weight: 900; color: #2563eb;">rp 0</span>
+        <div class="price-tag">
+            <span class="price-label">total bayar</span>
+            <span id="inv-total" class="price-value">rp 0</span>
         </div>
 
-        <div class="divider"></div>
-
-        <span style="font-size: 0.7rem; font-weight: 800; color: #1e293b; text-transform: uppercase; letter-spacing: 0.5px;">informasi akun</span>
+        <span class="info-title">detail akun anda</span>
         
-        <div class="data-box">
-            <div class="data-item">
-                <span class="data-label">email / username</span>
-                <div class="data-value">
+        <div class="data-container">
+            <div class="data-tile">
+                <span class="tile-label">email / user</span>
+                <div class="tile-content">
                     <span id="acc-email">memuat...</span>
-                    <i class="fa-regular fa-copy btn-copy" onclick="copyText('acc-email')"></i>
+                    <div class="btn-copy" onclick="copyText('acc-email')"><i class="fa-regular fa-copy"></i></div>
                 </div>
             </div>
-            <div class="data-item">
-                <span class="data-label">password</span>
-                <div class="data-value">
+
+            <div class="data-tile">
+                <span class="tile-label">password</span>
+                <div class="tile-content">
                     <span id="acc-pass">memuat...</span>
-                    <i class="fa-regular fa-copy btn-copy" onclick="copyText('acc-pass')"></i>
+                    <div class="btn-copy" onclick="copyText('acc-pass')"><i class="fa-regular fa-copy"></i></div>
                 </div>
             </div>
-            <div class="data-item" id="a2f-area">
-                <span class="data-label">status a2f</span>
-                <div class="data-value">
+
+            <div class="data-tile" id="a2f-tile">
+                <span class="tile-label">keamanan a2f</span>
+                <div class="tile-content">
                     <span id="acc-a2f">OFF</span>
                 </div>
             </div>
-            <div class="data-item">
-                <span class="data-label">catatan penjual</span>
-                <div id="acc-note" style="font-size: 0.8rem; color: #475569; padding: 10px; line-height: 1.5;">
-                    tidak ada catatan tambahan.
-                </div>
-            </div>
+        </div>
+
+        <div id="note-area" class="note-box">
+            <b>catatan penjual:</b><br>
+            <span id="acc-note">tidak ada catatan tambahan.</span>
         </div>
     </div>
 
-    <p class="footer-note">
-        simpan informasi akun ini dengan aman.<br>
-        jika ada masalah, hubungi admin dengan melampirkan ID invoice.
-    </p>
+    <div class="footer-action">
+        <a href="dashboard.html" class="btn-home">kembali ke dashboard</a>
+    </div>
 </div>
 
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
@@ -154,44 +198,44 @@
     const orderId = urlParams.get('id');
 
     function loadInvoice() {
-        if (!orderId) return window.location.href = 'aktivitas.html';
+        if (!orderId) return window.location.href = 'riwayat-user.html';
 
         db.ref('pembelian/' + orderId).on('value', (snap) => {
             document.getElementById('loading-screen').style.display = 'none';
             if (snap.exists()) {
                 const data = snap.val();
                 
-                document.getElementById('inv-img').src = data.foto;
+                document.getElementById('inv-img').src = data.foto || '';
                 document.getElementById('inv-name').innerText = data.nama;
                 document.getElementById('inv-id').innerText = data.orderId;
-                document.getElementById('inv-total').innerText = "rp " + data.total.toLocaleString('id-ID');
+                document.getElementById('inv-total').innerText = "rp " + (data.total || 0).toLocaleString('id-ID');
                 
-                // Menampilkan Data Akun yang dibeli
                 if (data.dataAkun) {
                     document.getElementById('acc-email').innerText = data.dataAkun.email || '-';
                     document.getElementById('acc-pass').innerText = data.dataAkun.pass || '-';
                     document.getElementById('acc-a2f').innerText = data.dataAkun.a2f || 'OFF';
-                    document.getElementById('acc-note').innerText = data.dataAkun.tambahan || 'tidak ada catatan.';
+                    document.getElementById('acc-note').innerText = data.dataAkun.tambahan || 'terima kasih sudah berbelanja!';
                 }
 
-                // Warna badge status
                 const badge = document.getElementById('inv-status');
-                badge.innerText = data.status;
+                badge.innerText = data.status || 'sukses';
                 if (data.status !== 'sukses') {
-                    badge.style.background = '#fffbeb';
-                    badge.style.color = '#f59e0b';
+                    badge.style.background = '#fff7ed';
+                    badge.style.color = '#c2410c';
                 }
             } else {
-                alert("Data invoice tidak ditemukan!");
-                window.location.href = 'aktivitas.html';
+                alert("invoice tidak ditemukan!");
+                window.location.href = 'riwayat-user.html';
             }
         });
     }
 
     function copyText(id) {
         const text = document.getElementById(id).innerText;
+        if(text === "memuat..." || text === "-") return;
+        
         navigator.clipboard.writeText(text).then(() => {
-            alert("Berhasil disalin: " + text);
+            alert("disalin ke clipboard!");
         });
     }
 
