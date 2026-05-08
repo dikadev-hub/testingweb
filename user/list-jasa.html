@@ -32,8 +32,7 @@
         /* Search Bar */
         .search-wrapper {
             background: white; padding: 2px; border-radius: 18px;
-            box-shadow: 0 8px 20px rgba(0,0,0,0.03); 
-            border: 1.5px solid #cbd5e1; /* Stroke ditambahkan di sini */
+            box-shadow: 0 8px 20px rgba(0,0,0,0.03); border: 1.5px solid #cbd5e1;
             margin-bottom: 20px; display: flex; align-items: center;
         }
         .search-wrapper i { margin-left: 15px; color: #94a3b8; font-size: 0.9rem; }
@@ -78,10 +77,24 @@
         }
         .provider-img-wrapper {
             width: 65px; height: 65px; border-radius: 22px;
-            padding: 3px; border: 2px solid transparent; transition: 0.3s;
+            padding: 3px; border: 2.5px solid transparent; /* default transparent border */
+            transition: 0.3s;
             background: white; box-shadow: 0 5px 15px rgba(0,0,0,0.03);
+            overflow: hidden; /* pastikan gambar terpotong */
         }
-        .provider-item.active .provider-img-wrapper { border-color: #1a1a1a; transform: translateY(-3px); }
+        
+        /* Menambahkan stroke aktif */
+        .provider-item.active .provider-img-wrapper { 
+            border-color: #1a1a1a; /* warna stroke aktif */
+            transform: translateY(-3px); 
+        }
+
+        /* Menambahkan stroke pada SEMUA foto profil penyedia agar lebih bagus */
+        .provider-item .provider-img-wrapper img {
+            border: 2px solid #e2e8f0; /* stroke pada foto profil */
+            border-radius: 18px; /* samakan dengan wrapper */
+        }
+
         .provider-item img { width: 100%; height: 100%; border-radius: 18px; object-fit: cover; }
         .provider-name { 
             font-size: 0.65rem; font-weight: 800; color: #64748b;
@@ -109,8 +122,7 @@
         }
         .p-card {
             background: white; padding: 10px; border-radius: 22px; 
-            border: 1.5px solid #cbd5e1; /* Stroke ditambahkan di sini */
-            box-shadow: 0 10px 20px rgba(0,0,0,0.02);
+            border: 1.5px solid #cbd5e1; box-shadow: 0 10px 20px rgba(0,0,0,0.02);
             cursor: pointer; transition: 0.3s; position: relative;
         }
         .p-card:active { transform: scale(0.96); }
@@ -127,7 +139,10 @@
             margin-bottom: 12px; background: #f8fafc;
             display: flex; align-items: center; justify-content: center;
             overflow: hidden;
+            /* Menambahkan stroke pada gambar kartu jasa */
+            border: 1px solid #e2e8f0; 
         }
+        
         .img-box img {
             width: 100%;
             height: 100%;
@@ -164,7 +179,7 @@
         <span class="label-section">provider by</span>
         <div class="provider-scroll" id="list-provider">
             <div class="provider-item active" onclick="filterBySeller('all', this)">
-                <div class="provider-img-wrapper" style="display:flex; align-items:center; justify-content:center;">
+                <div class="provider-img-wrapper" style="display:flex; align-items:center; justify-content:center; border-width: 2.5px;">
                     <i class="fa-solid fa-bolt-lightning"></i>
                 </div>
                 <span class="provider-name">semua</span>
@@ -187,6 +202,7 @@
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
 
     <script>
+        // ... (seluruh bagian JavaScript tetap sama) ...
         const firebaseConfig = {
             apiKey: "AIzaSyDGRsCcT-7Bv_nOAybjXyuIT6Ca0IT4YTg",
             databaseURL: "https://market-d978f-default-rtdb.asia-southeast1.firebasedatabase.app",
