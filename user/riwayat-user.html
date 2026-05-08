@@ -3,169 +3,110 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>e-receipt</title>
+    <title>Aktivitas Saya</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap');
 
         body { 
-            background: #f1f5f9; color: #1e293b; font-family: 'Plus Jakarta Sans', sans-serif; 
+            background: #f8fafc; color: #1e293b; font-family: 'Plus Jakarta Sans', sans-serif; 
             margin: 0; padding: 0; text-transform: lowercase;
         }
 
-        .container { max-width: 450px; margin: 0 auto; padding: 20px 20px 80px; }
-
         .header {
-            display: flex; align-items: center; justify-content: space-between;
-            margin-bottom: 20px; padding: 10px 5px;
+            background: white; padding: 20px; display: flex; align-items: center; gap: 15px;
+            position: sticky; top: 0; z-index: 100; border-bottom: 1px solid #f1f5f9;
         }
 
         .btn-back {
-            width: 45px; height: 45px; background: white; border-radius: 16px;
+            width: 35px; height: 35px; background: #f1f5f9; border-radius: 10px;
             display: flex; align-items: center; justify-content: center;
-            color: #1e293b; text-decoration: none; box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            color: #1e293b; text-decoration: none; font-size: 0.9rem;
         }
 
-        .invoice-card {
-            background: white; border-radius: 35px; padding: 30px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.03); border: 1px solid rgba(255,255,255,1);
-            position: relative; overflow: hidden;
+        .tabs-container {
+            display: flex; background: #f1f5f9; margin: 20px; border-radius: 16px; padding: 5px;
         }
 
-        .invoice-card::before {
-            content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 6px;
-            background: linear-gradient(90deg, #2563eb, #60a5fa);
+        .tab-item {
+            flex: 1; text-align: center; padding: 12px; font-size: 0.75rem; font-weight: 800;
+            text-transform: uppercase; cursor: pointer; border-radius: 12px; transition: 0.3s;
+            color: #64748b; letter-spacing: 0.5px;
         }
 
+        .tab-item.active {
+            background: white; color: #2563eb; box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        }
+
+        .content-section { padding: 0 20px 100px; display: none; }
+        .content-section.active { display: block; }
+
+        .item-card {
+            background: white; border-radius: 20px; padding: 15px; margin-bottom: 15px;
+            display: flex; gap: 15px; align-items: center; border: 1px solid #cbd5e1;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.02);
+        }
+
+        .item-card img {
+            width: 70px; height: 70px; border-radius: 14px; object-fit: cover; background: #f8fafc;
+            border: 1px solid #e2e8f0;
+        }
+
+        .item-info { flex: 1; }
+        .item-name { font-size: 0.85rem; font-weight: 800; color: #0f172a; display: block; margin-bottom: 4px; }
+        .item-price { font-size: 0.8rem; font-weight: 700; color: #2563eb; }
+        
         .status-badge {
-            display: inline-block; padding: 8px 18px; background: #f0fdf4;
-            color: #16a34a; border-radius: 12px; font-size: 0.7rem;
-            font-weight: 800; text-transform: uppercase; margin-bottom: 25px;
+            font-size: 0.6rem; font-weight: 800; padding: 4px 10px; border-radius: 8px;
+            text-transform: uppercase; margin-top: 8px; display: inline-block;
         }
+        .status-success { background: #ecfdf5; color: #10b981; }
+        .status-pending { background: #fffbeb; color: #f59e0b; }
 
-        .product-box { text-align: center; margin-bottom: 30px; }
-        .product-box img { 
-            width: 110px; height: 110px; border-radius: 28px; 
-            object-fit: cover; margin-bottom: 15px; box-shadow: 0 15px 30px rgba(0,0,0,0.08);
-            border: 2px solid #f1f5f9; /* Stroke tambahan pada foto */
-        }
-
-        .price-tag {
-            background: #f8fafc; padding: 20px; border-radius: 22px;
-            display: flex; justify-content: space-between; align-items: center;
-            margin-bottom: 25px; border: 1px dashed #e2e8f0;
-        }
-
-        /* Styling Instruksi Joki */
-        .joki-instruction {
-            background: #eff6ff; border: 1.5px solid #bfdbfe;
-            padding: 20px; border-radius: 24px; margin-bottom: 20px;
-        }
-        .joki-instruction h4 { margin: 0 0 10px; font-size: 0.75rem; color: #1e40af; text-transform: uppercase; }
-        .joki-instruction p { font-size: 0.75rem; color: #1e40af; margin: 0 0 15px; line-height: 1.5; font-weight: 600; }
-        
-        .btn-mail {
-            display: flex; align-items: center; justify-content: center; gap: 8px;
-            width: 100%; padding: 12px; background: #2563eb; color: white;
-            border-radius: 14px; text-decoration: none; font-size: 0.75rem; font-weight: 800;
-        }
-
-        .info-title { 
-            font-size: 0.7rem; font-weight: 800; color: #94a3b8; 
-            text-transform: uppercase; margin-bottom: 15px; display: block;
-            letter-spacing: 1px;
-        }
-
-        .data-tile {
-            background: #ffffff; border: 1.5px solid #f1f5f9;
-            padding: 16px; border-radius: 20px; margin-bottom: 12px;
-        }
-
-        .tile-label { font-size: 0.6rem; font-weight: 800; color: #94a3b8; display: block; margin-bottom: 6px; }
-        .tile-content { display: flex; align-items: center; justify-content: space-between; font-weight: 700; font-size: 0.9rem; color: #0f172a; }
-        
-        .btn-copy { 
-            width: 32px; height: 32px; background: #eff6ff; color: #2563eb; 
+        /* Style Tombol Aksi */
+        .action-group { display: flex; gap: 8px; }
+        .btn-action {
+            width: 38px; height: 38px; border-radius: 12px; border: none;
             display: flex; align-items: center; justify-content: center;
-            border-radius: 10px; cursor: pointer; font-size: 0.8rem;
+            cursor: pointer; transition: 0.2s; font-size: 0.9rem;
         }
+        .btn-delete { background: #fff1f2; color: #ef4444; border: 1px solid #fecdd3; }
+        .btn-buy { background: #eff6ff; color: #2563eb; border: 1px solid #bfdbfe; }
 
-        .rating-card {
-            background: white; border-radius: 30px; padding: 25px; margin-top: 20px;
-            box-shadow: 0 15px 35px rgba(0,0,0,0.02); text-align: center;
+        .empty-state {
+            text-align: center; padding: 60px 20px; color: #94a3b8;
         }
-        .stars-input { display: flex; justify-content: center; gap: 12px; margin: 20px 0; }
-        .stars-input i { font-size: 2rem; color: #e2e8f0; cursor: pointer; transition: 0.3s; }
-        .stars-input i.active { color: #fbbe24; transform: scale(1.1); }
-        
-        .comment-input {
-            width: 100%; border: 1.5px solid #f1f5f9; border-radius: 18px; padding: 15px;
-            font-family: inherit; font-size: 0.85rem; outline: none; box-sizing: border-box;
-            resize: none; margin-bottom: 15px;
-        }
-
-        .btn-post {
-            width: 100%; padding: 16px; background: #0f172a; color: white; border: none;
-            border-radius: 18px; font-weight: 800; cursor: pointer; text-transform: uppercase;
-            font-size: 0.75rem;
-        }
-
-        #loading-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: white; z-index: 1000; display: flex; align-items: center; justify-content: center; }
+        .empty-state i { font-size: 3rem; margin-bottom: 15px; opacity: 0.3; }
+        .empty-state p { font-size: 0.85rem; font-weight: 700; }
     </style>
 </head>
 <body>
 
-<div id="loading-screen"><i class="fa-solid fa-circle-notch fa-spin" style="font-size: 2rem; color: #2563eb;"></i></div>
+<div class="header">
+    <a href="dashboard.html" class="btn-back"><i class="fa-solid fa-chevron-left"></i></a>
+    <h1 style="font-size: 1rem; margin: 0; font-weight: 800;">aktivitas saya</h1>
+</div>
 
-<div class="container">
-    <div class="header">
-        <a href="riwayat-user.html" class="btn-back"><i class="fa-solid fa-arrow-left"></i></a>
-        <span style="font-weight: 800; font-size: 0.9rem;">e-receipt</span>
-        <div style="width: 45px;"></div>
-    </div>
+<div class="tabs-container">
+    <div class="tab-item active" onclick="switchTab('keranjang', this)">keranjang</div>
+    <div class="tab-item" onclick="switchTab('riwayat', this)">riwayat pembelian</div>
+</div>
 
-    <div class="invoice-card">
-        <center><div id="inv-status" class="status-badge">loading...</div></center>
-        
-        <div class="product-box">
-            <img id="inv-img" src="">
-            <h3 id="inv-name" style="margin:0; font-size: 1.2rem; font-weight: 800;">nama produk</h3>
-            <p id="inv-id" style="color: #94a3b8; font-size: 0.75rem; margin-top: 6px;">inv-id</p>
-        </div>
-
-        <div class="price-tag">
-            <span style="font-weight: 700; color: #64748b; font-size: 0.8rem;">total bayar</span>
-            <span id="inv-total" style="font-weight: 900; color: #2563eb; font-size: 1.25rem;">rp 0</span>
-        </div>
-
-        <div class="joki-instruction">
-            <h4><i class="fa-solid fa-circle-info"></i> instruksi order joki</h4>
-            <p id="joki-text-info">silahkan kirim data akun anda ke email penjual sesuai format di bawah ini agar proses joki segera dikerjakan.</p>
-            <a id="btn-kirim-email" href="#" class="btn-mail">
-                <i class="fa-solid fa-envelope"></i> kirim data via email
-            </a>
-        </div>
-
-        <span class="info-title">rincian akun (jika ada)</span>
-        <div id="account-data-list"></div>
-
-        <div id="note-box" style="background: #fffbeb; padding: 16px; border-radius: 18px; margin-top: 10px; border: 1px solid #fef3c7; display: none;">
-            <span class="tile-label" style="color: #92400e;">catatan:</span>
-            <p id="acc-note" style="font-size: 0.8rem; color: #92400e; margin: 5px 0 0; line-height: 1.4;"></p>
+<div id="section-keranjang" class="content-section active">
+    <div id="list-keranjang">
+        <div class="empty-state">
+            <i class="fa-solid fa-circle-notch fa-spin"></i>
+            <p>memuat keranjang...</p>
         </div>
     </div>
+</div>
 
-    <div class="rating-card" id="rating-area">
-        <h4 id="rating-title" style="margin:0; font-size:0.9rem; font-weight: 800;">bagaimana pengalaman belanja kamu?</h4>
-        <div class="stars-input" id="star-container">
-            <i class="fa-solid fa-star" onclick="setStar(1)"></i>
-            <i class="fa-solid fa-star" onclick="setStar(2)"></i>
-            <i class="fa-solid fa-star" onclick="setStar(3)"></i>
-            <i class="fa-solid fa-star" onclick="setStar(4)"></i>
-            <i class="fa-solid fa-star" onclick="setStar(5)"></i>
+<div id="section-riwayat" class="content-section">
+    <div id="list-riwayat">
+        <div class="empty-state">
+            <i class="fa-solid fa-circle-notch fa-spin"></i>
+            <p>memuat riwayat...</p>
         </div>
-        <textarea id="user-comment" class="comment-input" rows="3" placeholder="tulis pesan singkat..."></textarea>
-        <button class="btn-post" id="btn-rating" onclick="postReview()">kirim ulasan</button>
     </div>
 </div>
 
@@ -178,120 +119,139 @@
         databaseURL: "https://market-d978f-default-rtdb.asia-southeast1.firebasedatabase.app",
         projectId: "market-d978f",
     };
-    firebase.initializeApp(firebaseConfig);
+    if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
 
-    const urlParams = new URLSearchParams(window.location.search);
-    const orderId = urlParams.get('id');
-    let selectedRating = 0;
-    let currentProdId = "";
-    let buyerName = "";
+    const currentToken = localStorage.getItem('sessionToken');
 
-    function loadInvoice() {
-        if (!orderId) return window.location.href = 'riwayat-user.html';
+    function switchTab(target, el) {
+        document.querySelectorAll('.tab-item').forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('.content-section').forEach(s => s.classList.remove('active'));
+        el.classList.add('active');
+        document.getElementById('section-' + target).classList.add('active');
+    }
 
-        db.ref('pembelian/' + orderId).on('value', (snap) => {
-            document.getElementById('loading-screen').style.display = 'none';
+    function loadData() {
+        if (!currentToken) {
+            const err = `<div class="empty-state"><p>silakan login dulu</p></div>`;
+            document.getElementById('list-keranjang').innerHTML = err;
+            document.getElementById('list-riwayat').innerHTML = err;
+            return;
+        }
+
+        // LOAD KERANJANG
+        db.ref('carts/' + currentToken).on('value', (snap) => {
+            const container = document.getElementById('list-keranjang');
+            container.innerHTML = "";
             if (snap.exists()) {
-                const data = snap.val();
-                currentProdId = data.productId;
-                buyerName = data.namaPembeli;
+                snap.forEach(child => {
+                    const data = child.val();
+                    container.innerHTML += `
+                        <div class="item-card">
+                            <img src="${data.foto || '../logo/joki.jpg'}">
+                            <div class="item-info">
+                                <span class="item-name">${data.nama}</span>
+                                <span class="item-price">rp ${data.harga.toLocaleString('id-ID')}</span>
+                            </div>
+                            <div class="action-group">
+                                <button class="btn-action btn-buy" onclick="checkoutCart('${child.key}', ${data.harga})">
+                                    <i class="fa-solid fa-wallet"></i>
+                                </button>
+                                <button class="btn-action btn-delete" onclick="deleteCart('${child.key}')">
+                                    <i class="fa-solid fa-trash-can"></i>
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                });
+            } else {
+                container.innerHTML = `<div class="empty-state"><i class="fa-solid fa-cart-shopping"></i><p>keranjang kosong</p></div>`;
+            }
+        });
 
-                document.getElementById('inv-img').src = data.foto || '../logo/joki.jpg';
-                document.getElementById('inv-name').innerText = data.nama;
-                document.getElementById('inv-id').innerText = data.orderId;
-                document.getElementById('inv-total').innerText = "rp " + data.total.toLocaleString('id-ID');
-                document.getElementById('inv-status').innerText = data.status || 'sukses';
-                
-                // SET LINK EMAIL OTOMATIS
-                const subject = encodeURIComponent(`Data Akun Joki - ${data.nama} - ${data.orderId}`);
-                const body = encodeURIComponent(
-                    `HAI, KAMU TELAH ORDER JASA ${data.nama.toUpperCase()} DI ${data.namaToko ? data.namaToko.toUpperCase() : 'STORE'}\n\n` +
-                    `Data akun :\n` +
-                    `Email : \n` +
-                    `Password: \n` +
-                    `Log via : \n` +
-                    `Rank now to rank target: \n\n` +
-                    `Lengkapi data di atas lalu kirim email ini.`
-                );
-                document.getElementById('btn-kirim-email').href = `mailto:satriahubdeals@gmail.com?subject=${subject}&body=${body}`;
-
-                const listContainer = document.getElementById('account-data-list');
-                listContainer.innerHTML = "";
-                
-                if (data.dataAkun) {
-                    const acc = data.dataAkun;
-                    const fields = [
-                        { label: 'email / username', value: acc.email, id: 'c-email' },
-                        { label: 'password', value: acc.pass, id: 'c-pass' },
-                        { label: 'keamanan a2f', value: acc.a2f, id: 'c-a2f' }
-                    ];
-
-                    fields.forEach(f => {
-                        if (f.value) {
-                            listContainer.innerHTML += `
-                                <div class="data-tile">
-                                    <span class="tile-label">${f.label}</span>
-                                    <div class="tile-content">
-                                        <span id="${f.id}">${f.value}</span>
-                                        <div class="btn-copy" onclick="copyText('${f.id}')"><i class="fa-regular fa-copy"></i></div>
-                                    </div>
-                                </div>
-                            `;
-                        }
-                    });
-
-                    if(acc.tambahan) {
-                        document.getElementById('note-box').style.display = 'block';
-                        document.getElementById('acc-note').innerText = acc.tambahan;
-                    }
-                } else {
-                    listContainer.innerHTML = `<p style="font-size:0.75rem; color:#94a3b8; text-align:center;">gunakan tombol di atas untuk mengirim data akun.</p>`;
-                }
-
-                if (data.rated) {
-                    document.getElementById('rating-area').innerHTML = `<p style="color:#16a34a; font-weight:800; font-size:0.8rem; margin:10px 0;"><i class="fa-solid fa-circle-check"></i> ulasan telah diberikan</p>`;
-                }
+        // LOAD RIWAYAT
+        db.ref('pembelian').orderByChild('userToken').equalTo(currentToken).on('value', (snap) => {
+            const container = document.getElementById('list-riwayat');
+            container.innerHTML = "";
+            if (snap.exists()) {
+                snap.forEach(child => {
+                    const data = child.val();
+                    container.innerHTML += `
+                        <div class="item-card" onclick="showJokiInstruction('${data.nama}', '${data.namaToko || 'store'}')">
+                            <img src="${data.foto || '../logo/joki.jpg'}">
+                            <div class="item-info">
+                                <span class="item-name">${data.nama}</span>
+                                <span class="item-price">rp ${data.total.toLocaleString('id-ID')}</span>
+                                <br>
+                                <span class="status-badge ${data.status === 'sukses' ? 'status-success' : 'status-pending'}">
+                                    ${data.status}
+                                </span>
+                            </div>
+                            <i class="fa-solid fa-chevron-right" style="color: #cbd5e1; font-size: 0.8rem;"></i>
+                        </div>
+                    `;
+                });
+            } else {
+                container.innerHTML = `<div class="empty-state"><i class="fa-solid fa-receipt"></i><p>belum ada transaksi</p></div>`;
             }
         });
     }
 
-    function setStar(n) {
-        selectedRating = n;
-        document.querySelectorAll('#star-container i').forEach((s, i) => {
-            s.classList.toggle('active', i < n);
-        });
-    }
-
-    async function postReview() {
-        if (selectedRating === 0) return alert("pilih bintang dulu");
-        const comment = document.getElementById('user-comment').value;
-        const btn = document.getElementById('btn-rating');
-        btn.disabled = true;
+    // FUNGSI BELI DARI KERANJANG
+    async function checkoutCart(key, harga) {
+        if (!confirm(`beli jasa ini seharga rp ${harga.toLocaleString('id-ID')}?`)) return;
 
         try {
-            await db.ref('reviews').push({
-                productId: currentProdId,
-                rating: selectedRating,
-                komentar: comment,
-                user: buyerName,
+            const uSnap = await db.ref('users/' + currentToken).get();
+            const sld = parseInt(uSnap.val().balance || 0);
+            if (sld < harga) return alert("saldo tidak cukup.");
+
+            const cSnap = await db.ref('carts/' + currentToken + '/' + key).get();
+            const cData = cSnap.val();
+            const orderId = "order-js-" + Date.now();
+
+            const upd = {};
+            upd['users/' + currentToken + '/balance'] = sld - harga;
+            upd['pembelian/' + orderId] = {
+                orderId, userToken: currentToken, namaPembeli: uSnap.val().fullname,
+                productId: cData.productId || key, nama: cData.nama, foto: cData.foto || '',
+                total: harga, status: "sukses", type: "jasa",
+                ownerToken: cData.ownerToken || '', namaToko: cData.namaToko || 'store',
                 timestamp: Date.now()
-            });
-            await db.ref('pembelian/' + orderId).update({ rated: true });
-            location.reload();
-        } catch (e) {
-            alert(e.message);
-            btn.disabled = false;
+            };
+            
+            // Hapus dari keranjang setelah beli
+            upd['carts/' + currentToken + '/' + key] = null;
+
+            await db.ref().update(upd);
+            alert("pembelian berhasil!");
+            switchTab('riwayat', document.querySelectorAll('.tab-item')[1]);
+        } catch (e) { alert(e.message); }
+    }
+
+    function deleteCart(key) {
+        if(confirm('hapus dari keranjang?')) {
+            db.ref('carts/' + currentToken + '/' + key).remove();
         }
     }
 
-    function copyText(id) {
-        const text = document.getElementById(id).innerText;
-        navigator.clipboard.writeText(text);
-        alert("berhasil disalin");
+    // POPUP INSTRUKSI JOKI (SESUAI REQUEST)
+    function showJokiInstruction(namaJasa, namaToko) {
+        const msg = `HAI, KAMU TELAH ORDER JASA ${namaJasa.toUpperCase()} DI ${namaToko.toUpperCase()} SILAHKAN ISI FORMULIR DI BAWAH INI\n\n` +
+                    `CONTOH:\n` +
+                    `Data akun :\n` +
+                    `Email : testhajai@hwis.com\n` +
+                    `Password: 8173819\n` +
+                    `Log via : google/montoon\n` +
+                    `Rank now to rank target: epik 2 bintang 5 ke legend 1 bintang 5\n\n` +
+                    `Isi formulir tersebut seperti pada contoh lalu kirim ke email berikut ini: satriahubdeals@gmail.com`;
+        
+        alert(msg);
+        // Bisa juga diarahkan ke invoice detail jika ada:
+        // location.href = 'invoice.html?id=' + orderId;
     }
 
-    window.onload = loadInvoice;
+    window.onload = loadData;
 </script>
 </body>
 </html>
