@@ -29,7 +29,6 @@
             cursor: pointer; color: #1e293b;
         }
 
-        /* SIDEBAR TETEP UKURAN SAMA TAPI BISA DI-SCROLL */
         .sidebar-box {
             position: absolute; top: 85px; left: 20px; width: 220px;
             max-height: 70vh; overflow-y: auto;
@@ -98,57 +97,77 @@
     </div>
 
     <div id="sidebar" class="sidebar-box">
-    <div class="sidebar-title">admin menu</div>
-    <div class="menu-item" onclick="showBC()">
-        <i class="fa-solid fa-bullhorn"></i>
-        <span>kirim broadcast</span>
-    </div>
-    <div class="menu-item" onclick="showIklanPage()">
-        <i class="fa-solid fa-image"></i>
-        <span>manajemen iklan</span>
-    </div>
-    <div class="menu-item" onclick="showHistoryTF()">
-        <i class="fa-solid fa-receipt"></i>
-        <span>riwayat tf user</span>
-    </div>
+        <div class="sidebar-title">admin menu</div>
+        <div class="menu-item" onclick="showBC()">
+            <i class="fa-solid fa-bullhorn"></i>
+            <span>kirim broadcast</span>
+        </div>
+        <div class="menu-item" onclick="showIklanPage()">
+            <i class="fa-solid fa-image"></i>
+            <span>manajemen iklan</span>
+        </div>
+        <div class="menu-item" onclick="showHistoryTF()">
+            <i class="fa-solid fa-receipt"></i>
+            <span>riwayat tf user</span>
+        </div>
 
-    <div class="sidebar-title">manajemen produk</div>
-    <div class="menu-item" onclick="location.href='approve-produk.html'">
-        <i class="fa-solid fa-clipboard-check"></i>
-        <span>pengajuan produk</span>
-    </div>
-     <div class="menu-item" onclick="location.href='addproduk-admn.html'">
-        <i class="fa-solid fa-arrow-circle-up"></i>
-        <span>tambah produk</span>
-     </div>        
+        <div class="sidebar-title">manajemen produk</div>
+        <div class="menu-item" onclick="location.href='approve-produk.html'">
+            <i class="fa-solid fa-clipboard-check"></i>
+            <span>pengajuan produk</span>
+        </div>
+        <div class="menu-item" onclick="location.href='addproduk-admn.html'">
+            <i class="fa-solid fa-arrow-circle-up"></i>
+            <span>tambah produk</span>
+        </div>
+        <div class="menu-item" onclick="location.href='deleteproduk-admn.html'">
+            <i class="fa-solid fa-trash-can"></i>
+            <span>delete produk</span>
+        </div>
+        <div class="menu-item" onclick="location.href='editproduk-admn.html'">
+            <i class="fa-solid fa-pen-to-square"></i>
+            <span>edit produk</span>
+        </div>
+        <div class="menu-item" onclick="location.href='listproduk-admn.html'">
+            <i class="fa-solid fa-list-check"></i>
+            <span>list produk</span>
+        </div>
 
-    <div class="sidebar-title">manajemen user</div>
-    <div class="menu-item" onclick="location.href='total-user.html'">
-        <i class="fa-solid fa-users-gear"></i>
-        <span>daftar total user</span>
-    </div>
-    <div class="menu-item" onclick="location.href='create-token.html'">
-        <i class="fa-solid fa-key"></i>
-        <span>create token & limit</span>
-    </div>
-   <div class="menu-item" onclick="location.href='wd-req.html'">
-        <i class="fa-solid fa-envelope"></i>
-        <span>request wd user</span>
-    </div>
-    <div class="menu-item" onclick="openPendingRequest()">
-        <i class="fa-solid fa-clock-rotate-left"></i>
-        <span>request masuk</span>
-    </div>
-    <div class="menu-item" onclick="location.href='../user/dashboard.html'">
-        <i class="fa-solid fa-eye"></i>
-        <span>login user</span>
-    </div>
+        <div class="sidebar-title">manajemen user</div>
+        <div class="menu-item" onclick="location.href='total-user.html'">
+            <i class="fa-solid fa-users-gear"></i>
+            <span>daftar total user</span>
+        </div>
+        <div class="menu-item" onclick="location.href='total-penjualan-user.html'">
+            <i class="fa-solid fa-chart-line"></i>
+            <span>total penjualan user</span>
+        </div>
+        <div class="menu-item" onclick="location.href='list-produk-user.html'">
+            <i class="fa-solid fa-boxes-stacked"></i>
+            <span>list produk user</span>
+        </div>
+        <div class="menu-item" onclick="location.href='create-token.html'">
+            <i class="fa-solid fa-key"></i>
+            <span>create token & limit</span>
+        </div>
+        <div class="menu-item" onclick="location.href='wd-req.html'">
+            <i class="fa-solid fa-envelope"></i>
+            <span>request wd user</span>
+        </div>
+        <div class="menu-item" onclick="openPendingRequest()">
+            <i class="fa-solid fa-clock-rotate-left"></i>
+            <span>request masuk</span>
+        </div>
+        <div class="menu-item" onclick="location.href='../user/dashboard.html'">
+            <i class="fa-solid fa-eye"></i>
+            <span>login user</span>
+        </div>
 
-    <div class="sidebar-title">settings</div>
-    <div class="menu-item" onclick="logout()" style="color: #ef4444;">
-        <i class="fa-solid fa-power-off"></i>
-        <span>keluar panel</span>
-    </div>
+        <div class="sidebar-title">settings</div>
+        <div class="menu-item" onclick="logout()" style="color: #ef4444;">
+            <i class="fa-solid fa-power-off"></i>
+            <span>keluar panel</span>
+        </div>
     </div>
 
     <div id="profile-card" class="profile-box">
@@ -242,7 +261,6 @@
             document.getElementById('tf-history-page').style.display='none';
         }
 
-        // FUNGSI MENU
         function showBC() { hideAllPages(); document.getElementById('bc-form').style.display='block'; closeAll(); }
         function hideBC() { document.getElementById('bc-form').style.display='none'; }
         function showIklanPage() { hideAllPages(); document.getElementById('iklan-page').style.display='block'; loadIklanList(); closeAll(); }
@@ -252,7 +270,6 @@
         function openPendingRequest() { hideAllPages(); document.getElementById('admin-request-page').style.display='block'; loadRequests(); closeAll(); }
         function hideRequestPage() { document.getElementById('admin-request-page').style.display='none'; }
 
-        // LOGIC BROADCAST
         async function sendBC() {
             const t = document.getElementById('bc-title').value;
             const m = document.getElementById('bc-msg').value;
@@ -262,7 +279,6 @@
         }
         async function deleteBC() { if(confirm("hapus bc?")) await db.ref('broadcast').remove(); }
 
-        // LOGIC RIWAYAT TF
         function loadTFHistory() {
             db.ref('deposit_history').on('value', snap => {
                 const con = document.getElementById('list-tf-container');
@@ -289,7 +305,6 @@
             } else { await db.ref('deposit_history/'+key).update({ status: 'failed' }); }
         }
 
-        // LOGIC REQUEST & IKLAN & STATS
         function loadRequests() {
             db.ref('role_requests').on('value', snap => {
                 const con = document.getElementById('list-request-container');
@@ -314,6 +329,14 @@
                 document.getElementById('total-users').innerText = s.numChildren();
                 let o = 0; s.forEach(c => { if(c.val().role==='owner') o++; });
                 document.getElementById('total-owner').innerText = o;
+            });
+            
+            db.ref('products').on('value', s => {
+                document.querySelectorAll('.stat-card h3')[1].innerText = s.numChildren();
+            });
+
+            db.ref('transactions').on('value', s => {
+                document.querySelectorAll('.stat-card h3')[3].innerText = s.numChildren();
             });
         }
         function logout() { localStorage.clear(); location.href = "../login.html"; }
