@@ -317,11 +317,14 @@
 
 
         <div id="owner-sidebar-section" style="display:none;">
-            <div class="sidebar-title">panel penjual</div>
-            <div class="menu-item" onclick="location.href='riwayat-ajuan.html'">
-                <i class="fa-solid fa-file-invoice"></i><span>riwayat pengajuan</span>
-            </div>
-        </div>
+    <div class="sidebar-title">panel penjual</div>
+    <div class="menu-item" onclick="location.href='add-jasa.html'">
+        <i class="fa-solid fa-wand-magic-sparkles"></i><span>tambah jasa</span>
+    </div>
+    <div class="menu-item" onclick="location.href='riwayat-ajuan.html'">
+        <i class="fa-solid fa-file-invoice"></i><span>riwayat pengajuan</span>
+    </div>
+   </div>
 
         <div id="owner-menu-penarikan" class="menu-item" onclick="location.href='penarikan.html'" style="display:none;">
      <i class="fa-solid fa-wallet"></i><span>penarikan</span>
@@ -587,7 +590,6 @@
     document.getElementById('owner-area-1').style.display = 'none';
     document.getElementById('owner-area-2').style.display = 'none';
 }
-
                 }
             });
             setTimeout(() => { loader.style.display = 'none'; }, 600);
