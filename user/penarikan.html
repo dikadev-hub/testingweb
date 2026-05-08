@@ -107,7 +107,6 @@
             db.ref('users/' + myToken).on('value', (snap) => {
                 dataUser = snap.val();
                 if(dataUser) {
-                    // Konversi ke number untuk memastikan perhitungan matematika benar
                     saldoSekarang = Number(dataUser.balance) || 0;
                     document.getElementById('status-saldo').innerText = "saldo aktif: rp " + saldoSekarang.toLocaleString('id-ID');
                     
@@ -124,31 +123,28 @@
         }
 
         function prosesTarik() {
-            const nominalInput = document.getElementById('nominal').value;
-            const nominal = parseInt(nominalInput);
+            const nominal = parseInt(document.getElementById('nominal').value);
             const selectElement = document.getElementById('rekening-list');
             const rekeningValue = selectElement.value;
 
             if(!nominal || nominal < 10000) return alert("minimal penarikan rp 10.000");
             if(!rekeningValue) return alert("silahkan pilih rekening tujuan");
-            
-            // Validasi saldo
-            if(nominal > saldoSekarang) {
-                return alert("saldo tidak mencukupi untuk penarikan ini");
-            }
+            if(nominal > saldoSekarang) return alert("saldo tidak mencukupi");
 
             if(confirm(`tarik saldo sebesar rp ${nominal.toLocaleString('id-ID')}?`)) {
                 const pullRef = db.ref('withdraw_requests').push();
+                
+                // Data ini akan masuk ke Web Admin sebagai bukti
                 pullRef.set({
                     id: pullRef.key,
                     userToken: myToken,
-                    userName: dataUser.fullname,
+                    userName: dataUser.fullname || "User",
                     nominal: nominal,
                     tujuan: rekeningValue,
                     status: "pending",
                     date: new Date().toISOString()
                 }).then(() => {
-                    // Update saldo di database
+                    // Potong saldo di database
                     return db.ref('users/' + myToken).update({
                         balance: saldoSekarang - nominal
                     });
@@ -158,10 +154,10 @@
                     
                     const waUrl = `https://api.whatsapp.com/send?phone=${noAdmin}&text=${encodeURIComponent(pesan)}`;
                     
-                    alert("permintaan berhasil! saldo anda telah dipotong. beralih ke whatsapp admin...");
+                    alert("permintaan terkirim ke admin! mengalihkan ke whatsapp...");
                     window.location.href = waUrl;
                 }).catch(err => {
-                    alert("terjadi kesalahan: " + err.message);
+                    alert("gagal mengirim request: " + err.message);
                 });
             }
         }
