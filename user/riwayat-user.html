@@ -44,7 +44,7 @@
         .item-card {
             background: white; border-radius: 20px; padding: 15px; margin-bottom: 15px;
             display: flex; gap: 15px; align-items: center; border: 1px solid #cbd5e1;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.02);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.02); cursor: pointer;
         }
 
         .item-card img {
@@ -63,7 +63,6 @@
         .status-success { background: #ecfdf5; color: #10b981; }
         .status-pending { background: #fffbeb; color: #f59e0b; }
 
-        /* Style Tombol Aksi */
         .action-group { display: flex; gap: 8px; }
         .btn-action {
             width: 38px; height: 38px; border-radius: 12px; border: none;
@@ -169,22 +168,27 @@
             }
         });
 
-        // LOAD RIWAYAT
+        // LOAD RIWAYAT & LINK KE INVOICE
         db.ref('pembelian').orderByChild('userToken').equalTo(currentToken).on('value', (snap) => {
             const container = document.getElementById('list-riwayat');
             container.innerHTML = "";
             if (snap.exists()) {
+                let items = [];
                 snap.forEach(child => {
-                    const data = child.val();
+                    items.push(child.val());
+                });
+                
+                // Urutkan dari yang terbaru
+                items.reverse().forEach(data => {
                     container.innerHTML += `
-                        <div class="item-card" onclick="showJokiInstruction('${data.nama}', '${data.namaToko || 'store'}')">
+                        <div class="item-card" onclick="goToInvoice('${data.orderId}')">
                             <img src="${data.foto || '../logo/joki.jpg'}">
                             <div class="item-info">
                                 <span class="item-name">${data.nama}</span>
                                 <span class="item-price">rp ${data.total.toLocaleString('id-ID')}</span>
                                 <br>
                                 <span class="status-badge ${data.status === 'sukses' ? 'status-success' : 'status-pending'}">
-                                    ${data.status}
+                                    ${data.status || 'sukses'}
                                 </span>
                             </div>
                             <i class="fa-solid fa-chevron-right" style="color: #cbd5e1; font-size: 0.8rem;"></i>
@@ -197,10 +201,8 @@
         });
     }
 
-    // FUNGSI BELI DARI KERANJANG
     async function checkoutCart(key, harga) {
         if (!confirm(`beli jasa ini seharga rp ${harga.toLocaleString('id-ID')}?`)) return;
-
         try {
             const uSnap = await db.ref('users/' + currentToken).get();
             const sld = parseInt(uSnap.val().balance || 0);
@@ -219,8 +221,6 @@
                 ownerToken: cData.ownerToken || '', namaToko: cData.namaToko || 'store',
                 timestamp: Date.now()
             };
-            
-            // Hapus dari keranjang setelah beli
             upd['carts/' + currentToken + '/' + key] = null;
 
             await db.ref().update(upd);
@@ -235,20 +235,9 @@
         }
     }
 
-    // POPUP INSTRUKSI JOKI (SESUAI REQUEST)
-   /* function showJokiInstruction(namaJasa, namaToko) {
-        const msg = `HAI, KAMU TELAH ORDER JASA ${namaJasa.toUpperCase()} DI ${namaToko.toUpperCase()} SILAHKAN ISI FORMULIR DI BAWAH INI\n\n` +
-                    `CONTOH:\n` +
-                    `Data akun :\n` +
-                    `Email : testhajai@hwis.com\n` +
-                    `Password: 8173819\n` +
-                    `Log via : google/montoon\n` +
-                    `Rank now to rank target: epik 2 bintang 5 ke legend 1 bintang 5\n\n` +
-                    `Isi formulir tersebut seperti pada contoh lalu kirim ke email berikut ini: satriahubdeals@gmail.com`;
-        
-        alert(msg);
-        */
-        /location.href = 'invoice.html?id=' + orderId;
+    // FUNGSI PINDAH KE INVOICE
+    function goToInvoice(orderId) {
+        window.location.href = 'invoice.html?id=' + orderId;
     }
 
     window.onload = loadData;
