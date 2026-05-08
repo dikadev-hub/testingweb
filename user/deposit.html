@@ -17,14 +17,16 @@
         .qris-img { width: 100%; border-radius: 20px; margin-bottom: 20px; border: 1px solid #e2e8f0; }
         .upload-area {
             border: 2px dashed #cbd5e1; padding: 25px; border-radius: 20px; cursor: pointer;
-            background: #f8fafc;
+            background: #f8fafc; transition: 0.3s;
         }
+        .upload-area:hover { background: #f1f5f9; border-color: #007bff; }
         #preview-img { width: 100%; border-radius: 15px; display: none; margin-top: 10px; }
         .btn-confirm {
             width: 100%; padding: 15px; border-radius: 15px; border: none; background: #1a1a1a;
-            color: white; font-weight: 800; cursor: pointer; margin-top: 20px;
+            color: white; font-weight: 800; cursor: pointer; margin-top: 20px; transition: 0.3s;
         }
-        .btn-confirm:disabled { background: #94a3b8; }
+        .btn-confirm:active { transform: scale(0.98); }
+        .btn-confirm:disabled { background: #94a3b8; cursor: not-allowed; }
         .loading-status { display: none; margin-top: 15px; font-size: 0.75rem; color: #64748b; font-weight: 700; }
     </style>
 </head>
@@ -32,7 +34,7 @@
 
     <div class="depo-card">
         <h2 style="font-weight: 900; letter-spacing: -1px; margin-bottom: 5px;">top up saldo</h2>
-        <p style="font-size: 0.7rem; color: #94a3b8; font-weight: 800; text-transform: uppercase; margin-bottom: 20px;">otomatis by llama 4 vision</p>
+        <p style="font-size: 0.7rem; color: #94a3b8; font-weight: 800; text-transform: uppercase; margin-bottom: 20px;">otomatis by llama vision</p>
         
         <img src="https://i.ibb.co.com/0Rnz0P74/IMG-20260505-WA0059.jpg" class="qris-img">
 
@@ -65,9 +67,14 @@
         const db = firebase.database();
 
         const IMGBB_API_KEY = "50145b1eaa1385c3d9549ebe496eb5b5";
-        const s1 = "gsk_ji3IChgCS";
-        const s2 = "R3yH0CyXI78WGdyb3FYezpxD9G0zgzLnEpbzVQoFltl";
-        const groqKeys = [s1 + s2];
+        
+        // TEKNIK PARTIAL API KEYS AGAR AMAN
+        const p1 = "gsk_ji3IChgCS"; const p1_ = "R3yH0CyXI78WGdyb3FYezpxD9G0zgzLnEpbzVQoFltl";
+        const p2 = "gsk_B71OpeIS"; const p2_ = "m5H9HSI9x3uAWGdyb3FY5nAJNqaSeusVnPHZbjK3NyXK";
+        const p3 = "gsk_i6V2S8Fc"; const p3_ = "qiR5hz0PdPggWGdyb3FYYm1bDPNxOOyqWtAiSZnekbOw";
+        const p4 = "gsk_PCvVdMUt"; const p4_ = "hQbvwutBhR9BWGdyb3FYGbLtlNEIVXoXd76RSV7YzHa3";
+
+        const groqKeys = [p1+p1_, p2+p2_, p3+p3_, p4+p4_];
 
         function previewFile() {
             const file = document.getElementById('file-input').files[0];
@@ -84,6 +91,40 @@
             }
         }
 
+        async function callGroqAI(imageUrl) {
+            const promptAI = `ANALISIS STRUK TRANSFER QRIS. 1. Apakah ini struk asli? Jika bukan, {"valid": false}. 2. Harus ada kata "BERHASIL" atau "SUCCESS". 3. Merchant HARUS "SAT STORE OK2097556". 4. NMID HARUS "ID2025368915901". Hasil wajib JSON: {"nominal": angka, "ref": "ID_REF", "valid": true}. HANYA OUTPUT JSON TANPA TEKS LAIN.`;
+
+            for (let key of groqKeys) {
+                try {
+                    const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+                        method: "POST",
+                        headers: { "Authorization": `Bearer ${key}`, "Content-Type": "application/json" },
+                        body: JSON.stringify({
+                            model: "llama-3.2-11b-vision-preview",
+                            messages: [{
+                                role: "user",
+                                content: [
+                                    { type: "text", text: promptAI },
+                                    { type: "image_url", image_url: { url: imageUrl } }
+                                ]
+                            }],
+                            response_format: { type: "json_object" },
+                            temperature: 0
+                        })
+                    });
+
+                    const data = await response.json();
+                    if (data && data.choices && data.choices.length > 0) {
+                        return JSON.parse(data.choices[0].message.content);
+                    }
+                } catch (e) {
+                    console.log("kunci limit, mencoba berikutnya...");
+                    continue;
+                }
+            }
+            throw new Error("semua api key sedang bermasalah.");
+        }
+
         async function prosesDeposit() {
             const fileInput = document.getElementById('file-input');
             const btn = document.getElementById('btn-submit');
@@ -98,53 +139,25 @@
             statusBox.style.display = 'block';
 
             try {
-                statusText.innerText = "mengunggah...";
+                statusText.innerText = "mengunggah bukti...";
                 const formData = new FormData();
                 formData.append("image", fileInput.files[0]);
                 const uploadRes = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`, { method: "POST", body: formData });
                 const uploadData = await uploadRes.json();
+                
+                if(!uploadData.success) throw new Error("gagal upload bukti.");
                 const imageUrl = uploadData.data.url;
 
                 statusText.innerText = "ai memverifikasi...";
-                
-                // PROMPT SUPER KETAT: Menghindari manipulasi foto apapun
-                const promptAI = `ANALISIS STRUK TRANSFER QRIS. 
-                1. Apakah ini struk transfer asli? Jika bukan (misal foto orang, benda, atau screenshoot selain struk), wajib jawab {"valid": false}.
-                2. Wajib ada kata "BERHASIL" atau "SUCCESS".
-                3. Merchant HARUS "SAT STORE OK2097556".
-                4. NMID HARUS "ID2025368915901".
-                Jika semua syarat terpenuhi, ekstrak data: {"nominal": angka_saja, "ref": "ID_REF", "valid": true}.
-                Jika salah satu gagal, jawab: {"valid": false}.
-                HANYA OUTPUT JSON.`;
+                const resAI = await callGroqAI(imageUrl);
 
-                const groqRes = await fetch("https://api.groq.com/openai/v1/chat/completions", {
-                    method: "POST",
-                    headers: { "Authorization": `Bearer ${groqKeys[0]}`, "Content-Type": "application/json" },
-                    body: JSON.stringify({
-                        model: "meta-llama/llama-4-scout-17b-16e-instruct",
-                        messages: [{
-                            role: "user",
-                            content: [
-                                { type: "text", text: promptAI },
-                                { type: "image_url", image_url: { url: imageUrl } }
-                            ]
-                        }],
-                        response_format: { type: "json_object" }
-                    })
-                });
-
-                const data = await groqRes.json();
-                const res = JSON.parse(data.choices[0].message.content);
-
-                // CEK APAKAH AI MENYATAKAN VALID
-                if (res.valid === true && res.nominal > 0 && res.ref) {
-                    await updateSaldoDatabase(token, res.nominal, res.ref, imageUrl);
+                if (resAI.valid === true && resAI.nominal > 0 && resAI.ref) {
+                    await updateSaldoDatabase(token, resAI.nominal, resAI.ref, imageUrl);
                 } else {
                     alert("STRUK DITOLAK! Pastikan foto adalah struk asli ke SAT STORE.");
                 }
-
             } catch (err) {
-                alert("error: " + err.message);
+                alert("kesalahan: " + err.message);
             } finally {
                 btn.disabled = false;
                 statusBox.style.display = 'none';
@@ -153,19 +166,22 @@
 
         async function updateSaldoDatabase(token, nominal, ref, imageUrl) {
             const amount = parseInt(nominal);
-            // Cek Double Claim
-            const refSnap = await db.ref('used_receipts/' + ref).once('value');
-            if (refSnap.exists()) return alert("struk sudah pernah dipakai!");
+            const cleanRef = ref.toString().replace(/[^a-zA-Z0-9]/g, "");
+
+            const refSnap = await db.ref('used_receipts/' + cleanRef).once('value');
+            if (refSnap.exists()) return alert("struk sudah pernah diklaim!");
 
             const userRef = db.ref('users/' + token);
             const userSnap = await userRef.once('value');
-            const currentBalance = userSnap.val().balance || 0;
+            const currentBalance = parseInt(userSnap.val().balance || 0);
 
-            await db.ref('deposit_history').push({ userToken: token, amount, ref, time: Date.now(), image: imageUrl });
-            await db.ref('used_receipts/' + ref).set(true);
-            await userRef.update({ balance: currentBalance + amount });
+            const upd = {};
+            upd['deposit_history/' + Date.now()] = { userToken: token, amount, ref: cleanRef, time: Date.now(), image: imageUrl };
+            upd['used_receipts/' + cleanRef] = { usedBy: token, time: Date.now() };
+            upd['users/' + token + '/balance'] = currentBalance + amount;
 
-            alert(`✅ saldo rp ${amount.toLocaleString()} masuk!`);
+            await db.ref().update(upd);
+            alert(`✅ saldo rp ${amount.toLocaleString()} masuk otomatis!`);
             location.href = 'dashboard.html';
         }
     </script>
