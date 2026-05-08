@@ -239,7 +239,6 @@
                         sellerIds.add(data.ownerToken);
                     });
 
-                    // Clear provider list but keep "Semua" button
                     const btnSemua = document.getElementById('btn-semua-seller');
                     providerCont.innerHTML = "";
                     providerCont.appendChild(btnSemua);
@@ -342,10 +341,18 @@
                 if (sld < harga) return alert("saldo anda tidak mencukupi.");
 
                 const jData = masterJasa.find(x => x.id === id);
+                const ownerToken = jData.ownerToken.replace(/\./g, ',');
                 const orderId = "order-js-" + Date.now();
-                const upd = {};
+                
+                const nominalPotongan = (harga * 5) / 100;
+                const saldoBersihOwner = harga - nominalPotongan;
 
+                const ownerSnap = await db.ref('users/' + ownerToken).get();
+                const saldoOwnerSekarang = parseInt(ownerSnap.val().balance || 0);
+
+                const upd = {};
                 upd['users/' + token + '/balance'] = sld - harga;
+                upd['users/' + ownerToken + '/balance'] = saldoOwnerSekarang + saldoBersihOwner;
                 upd['pembelian/' + orderId] = {
                     orderId: orderId,
                     userToken: token,
@@ -354,6 +361,8 @@
                     nama: jData.nama,
                     foto: jData.foto || '',
                     total: harga,
+                    potonganAdmin: nominalPotongan,
+                    diterimaOwner: saldoBersihOwner,
                     status: "sukses",
                     type: "jasa",
                     ownerToken: jData.ownerToken,
@@ -363,7 +372,6 @@
 
                 await db.ref().update(upd);
                 alert("berhasil melakukan order jasa!");
-                // Langsung arahkan ke invoice.html agar pembeli bisa isi data joki
                 location.href = 'invoice.html?id=' + orderId;
             } catch (e) { alert(e.message); }
         }
