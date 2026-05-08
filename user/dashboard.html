@@ -328,12 +328,12 @@
         </div>
         
         <div class="sidebar-title">akun & sistem</div>
+        <div id="menu-merchant" class="menu-item" onclick="location.href='settings.html'" style="display:none;">
+            <i class="fa-solid fa-cogs"></i><span>akun & merchant</span>
+        </div>
         <div class="menu-item" onclick="location.href='request.html'">
             <i class="fa-solid fa-crown"></i><span>request owner</span>
-        </div>
-        <div id="menu-merchant" class="menu-item" onclick="location.href='settings.html'" style="display:none;">
-    <i class="fa-solid fa-cogs"></i><span>akun & merchant</span>
-</div>
+        </div>    
         <div class="menu-item" onclick="logout()" style="color: #ef4444;">
             <i class="fa-solid fa-right-from-bracket"></i><span>keluar</span>
         </div>
@@ -575,6 +575,8 @@
                         document.getElementById('user-menu-area').style.display = 'none';
                         document.getElementById('owner-area-1').style.display = 'grid';
                         document.getElementById('owner-area-2').style.display = 'grid';
+                        document.getElementById('owner-menu-merchant').style.display = 'flex';
+                        document.getElementById('owner-menu-penarikan').style.display = 'flex';
                        } else {
                         document.getElementById('owner-sidebar-section').style.display = 'none';
                         document.getElementById('user-menu-area').style.display = 'grid';
