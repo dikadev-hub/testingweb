@@ -17,7 +17,7 @@
             font-family: 'inter', sans-serif; 
             margin: 0; 
             text-transform: lowercase; 
-            overflow-x: hidden;
+            overflow-x: hidden; /* solusi supaya layar ga geser-geser */
             width: 100%;
         }
 
@@ -48,6 +48,7 @@
 
         .content { padding: 15px; max-width: 500px; margin: 0 auto; }
 
+        /* search bar lebih rapi */
         .search-wrapper {
             background: white;
             padding: 2px;
@@ -66,6 +67,7 @@
             font-family: inherit;
         }
 
+        /* slider iklan - style dashboard presisi */
         .slider-container {
             width: 100%;
             height: 170px;
@@ -81,7 +83,10 @@
             transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
         }
         .slide { min-width: 100%; height: 100%; position: relative; }
-        .slide img { width: 100%; height: 100%; object-fit: cover; }
+        .slide img {
+            width: 100%; height: 100%;
+            object-fit: cover;
+        }
         .slide-text {
             position: absolute; bottom: 0; left: 0; right: 0; 
             background: linear-gradient(transparent, rgba(0,0,0,0.8)); 
@@ -89,6 +94,7 @@
             font-size: 0.85rem; font-weight: 800;
         }
 
+        /* kategori scroll modern */
         .kat-section { margin-bottom: 20px; }
         .label-kat {
             font-size: 0.7rem; font-weight: 900; color: #94a3b8;
@@ -111,6 +117,7 @@
         }
         .kat-pill.active { background: #1a1a1a; color: white; border-color: #1a1a1a; transform: translateY(-2px); }
 
+        /* grid produk - rapi & simetris */
         .grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
@@ -170,7 +177,6 @@
                 <div class="kat-pill" onclick="setKategori('APP PREM', this)">app prem</div>
                 <div class="kat-pill" onclick="setKategori('E-BOOK', this)">e-book</div>
                 <div class="kat-pill" onclick="setKategori('PRODUK DIGITAL', this)">produk digital</div>
-                <div class="kat-pill" onclick="setKategori('JASA', this)">jasa joki</div>
                 <div class="kat-pill" onclick="setKategori('LAIN NYA', this)">lain nya</div>
             </div>
         </div>
@@ -196,6 +202,7 @@
         let currentSlide = 0;
         let slideInterval;
 
+        // slider logic (fix presisi)
         function initSlider() {
             db.ref('banner_promo').on('value', (snap) => {
                 const wrapper = document.getElementById('slider-wrapper');
@@ -225,36 +232,26 @@
             }, 4000);
         }
 
-        // FUNGSI LOAD MULTI-FOLDER (SOLUSI PRODUK TIDAK MUNCUL)
+        // produk logic
         function loadProduk() {
-            const paths = ['products', 'pending_products', 'services'];
-            let loadedCount = 0;
-            masterProduk = []; // Reset
-
-            paths.forEach(path => {
-                db.ref(path).on('value', (snap) => {
-                    // Filter produk lama dari folder ini agar tidak duplikat saat update real-time
-                    masterProduk = masterProduk.filter(p => p._folder !== path);
-                    
-                    if (snap.exists()) {
-                        snap.forEach(child => {
-                            let pData = child.val();
-                            pData._folder = path; // Tandai asalnya
-                            masterProduk.push(pData);
-                        });
-                    }
-
-                    loadedCount++;
-                    if (loadedCount >= paths.length || masterProduk.length > 0) {
-                        document.getElementById('loading-info').style.display = 'none';
-                        jalankanFilter();
-                    }
-                });
+            db.ref('products').on('value', (snap) => {
+                const grid = document.getElementById('product-grid');
+                const info = document.getElementById('loading-info');
+                masterProduk = [];
+                grid.innerHTML = "";
+                
+                if (snap.exists()) {
+                    info.style.display = 'none';
+                    snap.forEach(child => { masterProduk.push(child.val()); });
+                    jalankanFilter();
+                } else {
+                    info.innerHTML = "belum ada produk tersedia.";
+                }
             });
         }
 
         function setKategori(kat, el) {
-            filterSekarang = kat.toLowerCase();
+            filterSekarang = kat;
             document.querySelectorAll('.kat-pill').forEach(p => p.classList.remove('active'));
             el.classList.add('active');
             jalankanFilter();
@@ -266,14 +263,8 @@
             grid.innerHTML = "";
 
             const hasil = masterProduk.filter(p => {
-                const pKat = (p.kategori || "").toLowerCase();
-                const pNama = (p.nama || "").toLowerCase();
-                
-                // Logika Filter Kategori
-                const matchKat = filterSekarang === 'semua' || pKat.includes(filterSekarang);
-                // Logika Search
-                const matchName = pNama.includes(cari);
-                
+                const matchKat = filterSekarang === 'semua' || p.kategori === filterSekarang;
+                const matchName = p.nama.toLowerCase().includes(cari);
                 return matchKat && matchName;
             });
 
@@ -282,13 +273,10 @@
                 return;
             }
 
-            // Urutkan berdasarkan waktu terbaru jika ada timestamp
-            hasil.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
-
             hasil.forEach(p => {
                 grid.innerHTML += `
-                    <div class="p-card" onclick="location.href='produk-detail.html?id=${p.productId}&folder=${p._folder}'">
-                        <img src="${p.foto || '../logo/joki.jpg'}">
+                    <div class="p-card" onclick="location.href='produk-detail.html?id=${p.productId}'">
+                        <img src="${p.foto || ''}">
                         <div style="padding: 0 2px;">
                             <span class="p-tag">${p.kategori}</span>
                             <span class="p-title">${p.nama}</span>
