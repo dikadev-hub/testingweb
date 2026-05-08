@@ -29,7 +29,6 @@
 
         .content { padding: 15px; max-width: 500px; margin: 0 auto; }
 
-        /* Search Bar */
         .search-wrapper {
             background: white; padding: 2px; border-radius: 18px;
             box-shadow: 0 8px 20px rgba(0,0,0,0.03); border: 1.5px solid #cbd5e1;
@@ -41,7 +40,6 @@
             background: transparent; font-size: 0.85rem; font-family: inherit;
         }
 
-        /* Slider Iklan */
         .slider-container {
             width: 100%; height: 170px; position: relative;
             margin-bottom: 25px; overflow: hidden; border-radius: 25px;
@@ -59,7 +57,6 @@
             color: white; padding: 30px 20px 15px; font-size: 0.85rem; font-weight: 800;
         }
 
-        /* SISTEM PROVIDER BY (Circle Scroll) */
         .label-section {
             font-size: 0.7rem; font-weight: 900; color: #94a3b8;
             text-transform: uppercase; letter-spacing: 1.5px;
@@ -77,22 +74,20 @@
         }
         .provider-img-wrapper {
             width: 65px; height: 65px; border-radius: 22px;
-            padding: 3px; border: 2.5px solid transparent; /* default transparent border */
+            padding: 3px; border: 2.5px solid transparent;
             transition: 0.3s;
             background: white; box-shadow: 0 5px 15px rgba(0,0,0,0.03);
-            overflow: hidden; /* pastikan gambar terpotong */
+            overflow: hidden;
         }
         
-        /* Menambahkan stroke aktif */
         .provider-item.active .provider-img-wrapper { 
-            border-color: #1a1a1a; /* warna stroke aktif */
+            border-color: #1a1a1a;
             transform: translateY(-3px); 
         }
 
-        /* Menambahkan stroke pada SEMUA foto profil penyedia agar lebih bagus */
         .provider-item .provider-img-wrapper img {
-            border: 2px solid #e2e8f0; /* stroke pada foto profil */
-            border-radius: 18px; /* samakan dengan wrapper */
+            border: 2px solid #e2e8f0;
+            border-radius: 18px;
         }
 
         .provider-item img { width: 100%; height: 100%; border-radius: 18px; object-fit: cover; }
@@ -102,7 +97,6 @@
             overflow: hidden; text-overflow: ellipsis; 
         }
 
-        /* Kategori Pills (Sesuai Add Jasa) */
         .kat-scroll {
             display: flex; gap: 8px; overflow-x: auto; padding: 5px;
             margin: 0 -5px 20px; scrollbar-width: none;
@@ -115,7 +109,6 @@
         }
         .kat-pill.active { background: #1a1a1a; color: white; border-color: #1a1a1a; }
 
-        /* Grid Jasa */
         .grid {
             display: grid; grid-template-columns: repeat(2, 1fr);
             gap: 15px; animation: fadein 0.6s ease;
@@ -131,7 +124,7 @@
             position: absolute; top: 15px; right: 15px;
             background: rgba(255,255,255,0.9); padding: 4px 8px;
             border-radius: 10px; font-size: 0.6rem; font-weight: 900;
-            color: #fbbe24; z-index: 2;
+            color: #fbbe24; z-index: 2; border: 1px solid #e2e8f0;
         }
 
         .img-box {
@@ -139,15 +132,10 @@
             margin-bottom: 12px; background: #f8fafc;
             display: flex; align-items: center; justify-content: center;
             overflow: hidden;
-            /* Menambahkan stroke pada gambar kartu jasa */
             border: 1px solid #e2e8f0; 
         }
         
-        .img-box img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
+        .img-box img { width: 100%; height: 100%; object-fit: cover; }
 
         .p-tag { font-size: 0.55rem; font-weight: 900; color: #6366f1; text-transform: uppercase; display: block; margin-left: 4px; }
         .p-title { 
@@ -178,7 +166,7 @@
 
         <span class="label-section">provider by</span>
         <div class="provider-scroll" id="list-provider">
-            <div class="provider-item active" onclick="filterBySeller('all', this)">
+            <div class="provider-item active" id="btn-semua-seller" onclick="filterBySeller('all', this)">
                 <div class="provider-img-wrapper" style="display:flex; align-items:center; justify-content:center; border-width: 2.5px;">
                     <i class="fa-solid fa-bolt-lightning"></i>
                 </div>
@@ -202,7 +190,6 @@
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
 
     <script>
-        // ... (seluruh bagian JavaScript tetap sama) ...
         const firebaseConfig = {
             apiKey: "AIzaSyDGRsCcT-7Bv_nOAybjXyuIT6Ca0IT4YTg",
             databaseURL: "https://market-d978f-default-rtdb.asia-southeast1.firebasedatabase.app",
@@ -252,29 +239,35 @@
                         sellerIds.add(data.ownerToken);
                     });
 
+                    // Clear provider list but keep "Semua" button
+                    const btnSemua = document.getElementById('btn-semua-seller');
+                    providerCont.innerHTML = "";
+                    providerCont.appendChild(btnSemua);
+
                     for (let token of sellerIds) {
-                        if (!sellerCache[token]) {
-                            const sSnap = await db.ref('users/' + token).get();
-                            const u = sSnap.val() || {};
-                            sellerCache[token] = {
-                                name: u.fullname || "store",
-                                photo: u.foto || `https://ui-avatars.com/api/?name=${u.fullname}&background=random`,
-                                rating: parseFloat(u.ratingJasa || 0)
-                            };
-                            
-                            const item = document.createElement('div');
-                            item.className = 'provider-item';
-                            item.onclick = () => filterBySeller(token, item);
-                            item.innerHTML = `<div class="provider-img-wrapper"><img src="${sellerCache[token].photo}"></div><span class="provider-name">${sellerCache[token].name}</span>`;
-                            providerCont.appendChild(item);
-                        }
+                        const sSnap = await db.ref('users/' + token.replace(/\./g, ',')).get();
+                        const u = sSnap.val() || {};
+                        sellerCache[token] = {
+                            name: u.shopName || u.fullname || "store",
+                            photo: u.foto || `https://ui-avatars.com/api/?name=${u.fullname}&background=random`,
+                            rating: parseFloat(u.ratingJasa || 0)
+                        };
+                        
+                        const item = document.createElement('div');
+                        item.className = 'provider-item' + (filterSeller === token ? ' active' : '');
+                        item.onclick = () => filterBySeller(token, item);
+                        item.innerHTML = `
+                            <div class="provider-img-wrapper"><img src="${sellerCache[token].photo}"></div>
+                            <span class="provider-name">${sellerCache[token].name}</span>
+                        `;
+                        providerCont.appendChild(item);
                     }
 
                     masterJasa = tempJasa.map(j => ({
                         ...j,
-                        sellerName: sellerCache[j.ownerToken].name,
-                        rating: sellerCache[j.ownerToken].rating
-                    })).sort((a,b) => b.rating - a.rating);
+                        sellerName: sellerCache[j.ownerToken]?.name || "store",
+                        sellerRating: sellerCache[j.ownerToken]?.rating || 0
+                    })).sort((a,b) => b.sellerRating - a.sellerRating);
 
                     jalankanFilter();
                 } else {
@@ -315,11 +308,15 @@
             }
 
             hasil.forEach(j => {
-               const imgUrl = j.foto ? j.foto : '../logo/joki.jpg';
+                const imgUrl = j.foto ? j.foto : '../logo/joki.jpg';
+                const starRating = j.sellerRating > 0 ? `
+                    <div class="p-rating">
+                        <i class="fa-solid fa-star"></i> ${j.sellerRating.toFixed(1)}
+                    </div>` : '';
                 
                 grid.innerHTML += `
                     <div class="p-card" onclick="prosesOrder('${j.id}', ${j.harga})">
-                        ${j.rating > 0 ? `<div class="p-rating"><i class="fa-solid fa-star"></i> ${j.rating.toFixed(1)}</div>` : ''}
+                        ${starRating}
                         <div class="img-box">
                             <img src="${imgUrl}" alt="logo joki">
                         </div>
@@ -350,16 +347,24 @@
 
                 upd['users/' + token + '/balance'] = sld - harga;
                 upd['pembelian/' + orderId] = {
-                    orderId, userToken: token, namaPembeli: uSnap.val().fullname,
-                    productId: id, nama: jData.nama, kategori: jData.kategori,
-                    total: harga, status: "sukses", type: "jasa",
-                    ownerToken: jData.ownerToken, namaToko: jData.sellerName,
+                    orderId: orderId,
+                    userToken: token,
+                    namaPembeli: uSnap.val().fullname,
+                    productId: id,
+                    nama: jData.nama,
+                    foto: jData.foto || '',
+                    total: harga,
+                    status: "sukses",
+                    type: "jasa",
+                    ownerToken: jData.ownerToken,
+                    namaToko: jData.sellerName,
                     timestamp: Date.now()
                 };
 
                 await db.ref().update(upd);
                 alert("berhasil melakukan order jasa!");
-                location.href = 'riwayat-user.html';
+                // Langsung arahkan ke invoice.html agar pembeli bisa isi data joki
+                location.href = 'invoice.html?id=' + orderId;
             } catch (e) { alert(e.message); }
         }
 
