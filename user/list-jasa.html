@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>market jasa & joki</title>
+    <title>market jasa</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
         @keyframes fadein { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
@@ -29,7 +29,7 @@
 
         .content { padding: 15px; max-width: 500px; margin: 0 auto; }
 
-        /* Search Bar Identik */
+        /* Search Bar */
         .search-wrapper {
             background: white; padding: 2px; border-radius: 18px;
             box-shadow: 0 8px 20px rgba(0,0,0,0.03); border: 1px solid #fff;
@@ -41,7 +41,7 @@
             background: transparent; font-size: 0.85rem; font-family: inherit;
         }
 
-        /* Slider Iklan Identik */
+        /* Slider Iklan */
         .slider-container {
             width: 100%; height: 170px; position: relative;
             margin-bottom: 25px; overflow: hidden; border-radius: 25px;
@@ -59,26 +59,49 @@
             color: white; padding: 30px 20px 15px; font-size: 0.85rem; font-weight: 800;
         }
 
-        /* Kategori Scroll Identik */
-        .kat-section { margin-bottom: 20px; }
-        .label-kat {
+        /* SISTEM PROVIDER BY (Circle Scroll) */
+        .label-section {
             font-size: 0.7rem; font-weight: 900; color: #94a3b8;
             text-transform: uppercase; letter-spacing: 1.5px;
             margin-left: 5px; margin-bottom: 12px; display: block;
         }
-        .kat-scroll {
-            display: flex; gap: 10px; overflow-x: auto; padding: 5px; margin: 0 -5px;
+        .provider-scroll {
+            display: flex; gap: 15px; overflow-x: auto; padding: 5px;
+            margin: 0 -5px 20px; scrollbar-width: none;
         }
-        .kat-scroll::-webkit-scrollbar { display: none; }
-        .kat-pill {
-            padding: 10px 20px; background: white; border-radius: 16px; 
-            font-size: 0.75rem; font-weight: 800; white-space: nowrap;
-            cursor: pointer; border: 1px solid #fff; transition: 0.3s; color: #64748b;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.02);
+        .provider-scroll::-webkit-scrollbar { display: none; }
+        
+        .provider-item {
+            display: flex; flex-direction: column; align-items: center;
+            gap: 8px; cursor: pointer; transition: 0.3s; min-width: 75px;
         }
-        .kat-pill.active { background: #1a1a1a; color: white; border-color: #1a1a1a; transform: translateY(-2px); }
+        .provider-img-wrapper {
+            width: 65px; height: 65px; border-radius: 22px;
+            padding: 3px; border: 2px solid transparent; transition: 0.3s;
+            background: white; box-shadow: 0 5px 15px rgba(0,0,0,0.03);
+        }
+        .provider-item.active .provider-img-wrapper { border-color: #1a1a1a; transform: translateY(-3px); }
+        .provider-item img { width: 100%; height: 100%; border-radius: 18px; object-fit: cover; }
+        .provider-name { 
+            font-size: 0.65rem; font-weight: 800; color: #64748b;
+            max-width: 75px; text-align: center; white-space: nowrap; 
+            overflow: hidden; text-overflow: ellipsis; 
+        }
 
-        /* Grid Jasa - Gaya 2 Kolom Produk */
+        /* Kategori Pills (Sesuai Add Jasa) */
+        .kat-scroll {
+            display: flex; gap: 8px; overflow-x: auto; padding: 5px;
+            margin: 0 -5px 20px; scrollbar-width: none;
+        }
+        .kat-pill {
+            padding: 10px 18px; background: white; border-radius: 14px;
+            font-size: 0.7rem; font-weight: 800; color: #64748b;
+            border: 1px solid #fff; box-shadow: 0 4px 10px rgba(0,0,0,0.02);
+            white-space: nowrap; cursor: pointer;
+        }
+        .kat-pill.active { background: #1a1a1a; color: white; border-color: #1a1a1a; }
+
+        /* Grid Jasa */
         .grid {
             display: grid; grid-template-columns: repeat(2, 1fr);
             gap: 15px; animation: fadein 0.6s ease;
@@ -94,22 +117,21 @@
             position: absolute; top: 15px; right: 15px;
             background: rgba(255,255,255,0.9); padding: 4px 8px;
             border-radius: 10px; font-size: 0.6rem; font-weight: 900;
-            color: #fbbe24; box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+            color: #fbbe24; z-index: 2;
         }
 
-        .p-card .img-placeholder {
+        .img-box {
             width: 100%; aspect-ratio: 1/1; border-radius: 18px;
             margin-bottom: 12px; background: #f8fafc;
             display: flex; align-items: center; justify-content: center;
-            font-size: 2rem; color: #e2e8f0;
+            font-size: 2.2rem; color: #e2e8f0; overflow: hidden;
         }
 
-        .p-tag { font-size: 0.6rem; font-weight: 900; color: #6366f1; text-transform: uppercase; display: block; margin-left: 4px; }
+        .p-tag { font-size: 0.55rem; font-weight: 900; color: #6366f1; text-transform: uppercase; display: block; margin-left: 4px; }
         .p-title { 
             font-size: 0.8rem; font-weight: 800; color: #1e293b; 
             display: block; height: 2.4em; overflow: hidden; margin: 5px 4px; line-height: 1.2;
         }
-        .p-seller { font-size: 0.65rem; color: #94a3b8; font-weight: 700; margin: 0 4px; display: block; }
         .p-price { font-size: 0.95rem; font-weight: 900; color: #1a1a1a; display: block; margin: 8px 4px 5px; }
 
         #loading-info { text-align: center; padding: 100px 0; color: #94a3b8; font-size: 0.8rem; font-weight: 700; }
@@ -132,18 +154,25 @@
             <div id="slider-wrapper" class="slider-wrapper"></div>
         </div>
 
-        <div class="kat-section">
-            <span class="label-kat">kategori jasa</span>
-            <div class="kat-scroll">
-                <div class="kat-pill active" onclick="setKategori('semua', this)">semua</div>
-                <div class="kat-pill" onclick="setKategori('JOKI', this)">joki game</div>
-                <div class="kat-pill" onclick="setKategori('DESIGN', this)">design</div>
-                <div class="kat-pill" onclick="setKategori('CODING', this)">coding</div>
-                <div class="kat-pill" onclick="setKategori('EDITING', this)">editing</div>
+        <span class="label-section">provider by</span>
+        <div class="provider-scroll" id="list-provider">
+            <div class="provider-item active" onclick="filterBySeller('all', this)">
+                <div class="provider-img-wrapper" style="display:flex; align-items:center; justify-content:center;">
+                    <i class="fa-solid fa-bolt-lightning"></i>
+                </div>
+                <span class="provider-name">semua</span>
             </div>
         </div>
 
-        <div id="loading-info"><i class="fa-solid fa-spinner fa-spin"></i><br><br>mencari penyedia jasa...</div>
+        <div class="kat-scroll">
+            <div class="kat-pill active" onclick="setKategori('semua', this)">semua</div>
+            <div class="kat-pill" onclick="setKategori('jasa push rank ml', this)">push rank ml</div>
+            <div class="kat-pill" onclick="setKategori('jasa push rank ff', this)">push rank ff</div>
+            <div class="kat-pill" onclick="setKategori('jasa joki event', this)">joki event</div>
+            <div class="kat-pill" onclick="setKategori('jasa lainnya', this)">lainnya</div>
+        </div>
+
+        <div id="loading-info"><i class="fa-solid fa-spinner fa-spin"></i><br><br>memuat data...</div>
         <div class="grid" id="jasa-grid"></div>
     </div>
 
@@ -161,69 +190,69 @@
 
         let masterJasa = [];
         let sellerCache = {};
-        let filterSekarang = 'semua';
+        let filterKategori = 'semua';
+        let filterSeller = 'all';
         let currentSlide = 0;
-        let slideInterval;
 
-        // 1. Slider Iklan (Identik Produk)
         function initSlider() {
             db.ref('banner_promo').on('value', (snap) => {
                 const wrapper = document.getElementById('slider-wrapper');
                 wrapper.innerHTML = "";
                 if (snap.exists()) {
                     snap.forEach(child => {
-                        const d = child.val();
-                        wrapper.innerHTML += `
-                            <div class="slide">
-                                <img src="${d.image_url}">
-                                <div class="slide-text">${d.title || ""}</div>
-                            </div>`;
+                        wrapper.innerHTML += `<div class="slide"><img src="${child.val().image_url}"><div class="slide-text">${child.val().title || ""}</div></div>`;
                     });
-                    mulaiAutoSlide();
+                    setInterval(() => {
+                        const slides = document.querySelectorAll('.slide');
+                        if(slides.length <= 1) return;
+                        currentSlide = (currentSlide + 1) % slides.length;
+                        wrapper.style.transform = `translateX(-${currentSlide * 100}%)`;
+                    }, 4000);
                 }
             });
         }
 
-        function mulaiAutoSlide() {
-            if(slideInterval) clearInterval(slideInterval);
-            slideInterval = setInterval(() => {
-                const wrapper = document.getElementById('slider-wrapper');
-                const slides = document.querySelectorAll('.slide');
-                if(slides.length <= 1) return;
-                currentSlide = (currentSlide + 1) % slides.length;
-                wrapper.style.transform = `translateX(-${currentSlide * 100}%)`;
-            }, 4000);
-        }
-
-        // 2. Load Jasa & Seller
-        async function loadJasa() {
+        async function loadData() {
             db.ref('services').on('value', async (snap) => {
-                const grid = document.getElementById('jasa-grid');
                 const info = document.getElementById('loading-info');
+                const providerCont = document.getElementById('list-provider');
                 masterJasa = [];
                 
                 if (snap.exists()) {
                     info.style.display = 'none';
-                    
-                    // Ambil semua data jasa
                     let tempJasa = [];
-                    snap.forEach(child => {
-                        tempJasa.push({ id: child.key, ...child.val() });
+                    let sellerIds = new Set();
+                    
+                    snap.forEach(c => {
+                        let data = { id: c.key, ...c.val() };
+                        tempJasa.push(data);
+                        sellerIds.add(data.ownerToken);
                     });
 
-                    // Ambil data seller untuk rating & nama
-                    for (let j of tempJasa) {
-                        if (!sellerCache[j.ownerToken]) {
-                            const sSnap = await db.ref('users/' + j.ownerToken).get();
-                            sellerCache[j.ownerToken] = sSnap.val() || { fullname: "store", ratingJasa: 0 };
+                    for (let token of sellerIds) {
+                        if (!sellerCache[token]) {
+                            const sSnap = await db.ref('users/' + token).get();
+                            const u = sSnap.val() || {};
+                            sellerCache[token] = {
+                                name: u.fullname || "store",
+                                photo: u.foto || `https://ui-avatars.com/api/?name=${u.fullname}&background=random`,
+                                rating: parseFloat(u.ratingJasa || 0)
+                            };
+                            
+                            const item = document.createElement('div');
+                            item.className = 'provider-item';
+                            item.onclick = () => filterBySeller(token, item);
+                            item.innerHTML = `<div class="provider-img-wrapper"><img src="${sellerCache[token].photo}"></div><span class="provider-name">${sellerCache[token].name}</span>`;
+                            providerCont.appendChild(item);
                         }
-                        j.sellerName = sellerCache[j.ownerToken].fullname;
-                        j.rating = parseFloat(sellerCache[j.ownerToken].ratingJasa || 0);
-                        masterJasa.push(j);
                     }
 
-                    // Urutkan rating tertinggi
-                    masterJasa.sort((a, b) => b.rating - a.rating);
+                    masterJasa = tempJasa.map(j => ({
+                        ...j,
+                        sellerName: sellerCache[j.ownerToken].name,
+                        rating: sellerCache[j.ownerToken].rating
+                    })).sort((a,b) => b.rating - a.rating);
+
                     jalankanFilter();
                 } else {
                     info.innerHTML = "belum ada jasa tersedia.";
@@ -232,8 +261,15 @@
         }
 
         function setKategori(kat, el) {
-            filterSekarang = kat;
+            filterKategori = kat;
             document.querySelectorAll('.kat-pill').forEach(p => p.classList.remove('active'));
+            el.classList.add('active');
+            jalankanFilter();
+        }
+
+        function filterBySeller(token, el) {
+            filterSeller = token;
+            document.querySelectorAll('.provider-item').forEach(p => p.classList.remove('active'));
             el.classList.add('active');
             jalankanFilter();
         }
@@ -244,9 +280,10 @@
             grid.innerHTML = "";
 
             const hasil = masterJasa.filter(j => {
-                const matchKat = filterSekarang === 'semua' || j.kategori === filterSekarang;
+                const matchKat = filterKategori === 'semua' || j.kategori === filterKategori;
+                const matchSell = filterSeller === 'all' || j.ownerToken === filterSeller;
                 const matchName = j.nama.toLowerCase().includes(cari);
-                return matchKat && matchName;
+                return matchKat && matchSell && matchName;
             });
 
             if(hasil.length === 0) {
@@ -258,11 +295,11 @@
                 grid.innerHTML += `
                     <div class="p-card" onclick="prosesOrder('${j.id}', ${j.harga})">
                         ${j.rating > 0 ? `<div class="p-rating"><i class="fa-solid fa-star"></i> ${j.rating.toFixed(1)}</div>` : ''}
-                        <div class="img-placeholder"><i class="fa-solid fa-handshake-angle"></i></div>
+                        <div class="img-box"><i class="fa-solid fa-gamepad"></i></div>
                         <div style="padding: 0 2px;">
                             <span class="p-tag">${j.kategori}</span>
                             <span class="p-title">${j.nama}</span>
-                            <span class="p-seller">by ${j.sellerName}</span>
+                            <span style="font-size:0.6rem; color:#94a3b8; font-weight:700; margin-left:4px;">by ${j.sellerName}</span>
                             <span class="p-price">rp ${(j.harga || 0).toLocaleString('id-ID')}</span>
                         </div>
                     </div>
@@ -270,25 +307,21 @@
             });
         }
 
-        // 3. Fungsi Order Langsung (Gabung Jadi 1)
         async function prosesOrder(id, harga) {
             const token = localStorage.getItem('sessionToken');
             if (!token) return alert("silakan login dahulu.");
-
-            const yakin = confirm(`konfirmasi pemesanan seharga rp ${harga.toLocaleString('id-ID')}?`);
-            if (!yakin) return;
+            if (!confirm(`order jasa ini seharga rp ${harga.toLocaleString('id-ID')}?`)) return;
 
             try {
                 const uSnap = await db.ref('users/' + token).get();
-                const saldo = parseInt(uSnap.val().balance || 0);
+                const sld = parseInt(uSnap.val().balance || 0);
+                if (sld < harga) return alert("saldo anda tidak mencukupi.");
 
-                if (saldo < harga) return alert("saldo anda tidak cukup.");
-
-                const jData = masterJasa.find(item => item.id === id);
+                const jData = masterJasa.find(x => x.id === id);
                 const orderId = "order-js-" + Date.now();
                 const upd = {};
 
-                upd['users/' + token + '/balance'] = saldo - harga;
+                upd['users/' + token + '/balance'] = sld - harga;
                 upd['pembelian/' + orderId] = {
                     orderId, userToken: token, namaPembeli: uSnap.val().fullname,
                     productId: id, nama: jData.nama, kategori: jData.kategori,
@@ -298,15 +331,12 @@
                 };
 
                 await db.ref().update(upd);
-                alert("pembelian jasa berhasil!");
+                alert("berhasil melakukan order jasa!");
                 location.href = 'riwayat-user.html';
             } catch (e) { alert(e.message); }
         }
 
-        window.onload = () => {
-            initSlider();
-            loadJasa();
-        };
+        window.onload = () => { initSlider(); loadData(); };
     </script>
 </body>
 </html>
