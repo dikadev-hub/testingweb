@@ -298,11 +298,8 @@
             }
 
             hasil.forEach(j => {
-                // LOGIKA LOGO OTOMATIS
-                // Jika j.foto ada (dari database), pakai itu.
-                // Jika kosong, pakai logo statis 'logo/joki.png'.
-                const imgUrl = j.foto ? j.foto : 'logo/joki.png';
-
+               const imgUrl = j.foto ? j.foto : '../logo/joki.jpg';
+                
                 grid.innerHTML += `
                     <div class="p-card" onclick="prosesOrder('${j.id}', ${j.harga})">
                         ${j.rating > 0 ? `<div class="p-rating"><i class="fa-solid fa-star"></i> ${j.rating.toFixed(1)}</div>` : ''}
