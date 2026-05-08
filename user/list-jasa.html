@@ -3,120 +3,151 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>layanan jasa</title>
+    <title>professional service market</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=plus+jakarta+sans:wght@400;600;700;800&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=plus+jakarta+sans:wght@400;500;600;700;800&display=swap');
 
         body { 
-            background: #f8fafc; color: #1e293b; font-family: 'plus jakarta sans', sans-serif; 
+            background: #fdfdfd; color: #0f172a; font-family: 'plus jakarta sans', sans-serif; 
             margin: 0; padding: 0; text-transform: lowercase; overflow-x: hidden;
         }
 
-        /* Navigasi Atas - Clean Look */
         .header-nav {
             position: sticky; top: 0; background: rgba(255, 255, 255, 0.9);
-            backdrop-filter: blur(10px); padding: 15px 20px; z-index: 1000;
-            border-bottom: 1px solid #f1f5f9; display: flex; 
+            backdrop-filter: blur(20px); padding: 18px 20px; z-index: 1000;
+            border-bottom: 1px solid rgba(0,0,0,0.04); display: flex; 
             align-items: center; justify-content: space-between;
         }
 
         .btn-back {
-            width: 40px; height: 40px; background: #f1f5f9; border-radius: 14px;
+            width: 42px; height: 42px; background: #ffffff; border-radius: 15px;
             display: flex; align-items: center; justify-content: center;
-            color: #1e293b; text-decoration: none;
+            color: #0f172a; border: 1px solid #f1f5f9; text-decoration: none;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.03);
         }
 
-        /* Iklan Full Lebar - Tanpa Margin Sama Sekali */
+        /* Premium Full Edge-to-Edge Banner */
         .slider-container {
             width: 100vw; height: 260px; position: relative; 
             display: none; overflow: hidden; background: #000;
         }
         .slider-wrapper {
             display: flex; height: 100%;
-            transition: transform 0.8s cubic-bezier(0.2, 1, 0.2, 1);
+            transition: transform 0.8s cubic-bezier(0.25, 1, 0.5, 1);
         }
         .slide { min-width: 100vw; position: relative; }
-        .slide img { 
-            width: 100%; height: 100%; object-fit: cover; opacity: 0.8;
-        }
+        .slide img { width: 100%; height: 100%; object-fit: cover; opacity: 0.8; }
         
         .slide-overlay {
             position: absolute; bottom: 0; left: 0; right: 0;
-            height: 50%; background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);
-            display: flex; align-items: flex-end; padding: 25px;
+            height: 100%; background: linear-gradient(to top, rgba(0,0,0,0.8) 0%, transparent 60%);
+            display: flex; flex-direction: column; justify-content: flex-end; padding: 35px 25px;
         }
-        .slide-title { color: white; font-size: 1.2rem; font-weight: 800; margin: 0; }
+        .slide-title {
+            color: white; font-size: 1.4rem; font-weight: 800;
+            margin: 0; letter-spacing: -0.5px;
+        }
 
         .slider-dots {
-            position: absolute; bottom: 20px; right: 20px;
+            position: absolute; bottom: 25px; left: 25px;
             display: flex; gap: 6px;
         }
-        .dot { width: 6px; height: 6px; background: rgba(255,255,255,0.4); border-radius: 50%; transition: 0.4s; }
-        .dot.active { background: #fff; width: 20px; border-radius: 10px; }
+        .dot {
+            width: 6px; height: 6px; background: rgba(255,255,255,0.4);
+            border-radius: 50%; transition: 0.4s;
+        }
+        .dot.active { background: #fff; width: 24px; border-radius: 10px; }
 
         .container { max-width: 500px; margin: 0 auto; padding: 25px 20px; }
 
-        /* Provider Scroll - Lingkaran Modern */
-        .provider-list {
-            display: flex; gap: 15px; overflow-x: auto; 
-            padding-bottom: 20px; scrollbar-width: none;
-        }
-        .provider-list::-webkit-scrollbar { display: none; }
-        
-        .p-card {
-            display: flex; flex-direction: column; align-items: center; min-width: 70px; cursor: pointer;
-        }
-        .p-avatar {
-            width: 60px; height: 60px; border-radius: 50%; padding: 3px;
-            border: 2px solid transparent; transition: 0.3s;
-        }
-        .p-card.active .p-avatar { border-color: #1e293b; }
-        .p-avatar img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; }
-        .p-name { font-size: 0.65rem; font-weight: 800; color: #94a3b8; margin-top: 8px; text-align: center; }
-        .p-card.active .p-name { color: #1e293b; }
-
-        /* List Jasa - Card Minimalis */
-        .jasa-grid { display: flex; flex-direction: column; gap: 15px; }
-        .card-jasa {
-            background: white; border-radius: 25px; padding: 20px;
-            border: 1px solid #f1f5f9; box-shadow: 0 4px 15px rgba(0,0,0,0.02);
-            position: relative;
-        }
-        
-        .badge-rating {
-            position: absolute; top: 20px; right: 20px;
-            background: #fffbeb; color: #fbbe24; padding: 4px 10px;
-            border-radius: 10px; font-size: 0.7rem; font-weight: 800;
-            display: flex; align-items: center; gap: 4px;
-        }
-
-        .jasa-cat { font-size: 0.6rem; color: #3b82f6; font-weight: 800; text-transform: uppercase; }
-        .jasa-title { font-size: 1rem; font-weight: 800; margin: 8px 0; color: #1e293b; }
-        
-        .seller-info { display: flex; align-items: center; gap: 6px; margin-bottom: 15px; }
-        .seller-info img { width: 18px; height: 18px; border-radius: 50%; }
-        .seller-info span { font-size: 0.7rem; font-weight: 600; color: #94a3b8; }
-
-        .jasa-footer {
+        .section-header { 
             display: flex; align-items: center; justify-content: space-between;
-            padding-top: 15px; border-top: 1px solid #f8fafc;
+            margin-bottom: 20px;
         }
-        .price { font-size: 1.1rem; font-weight: 900; color: #1e293b; }
-        .btn-order {
-            padding: 10px 22px; background: #1e293b; color: white; border: none;
-            border-radius: 12px; font-weight: 800; font-size: 0.75rem; cursor: pointer;
+        .label-text { 
+            font-size: 0.7rem; font-weight: 900; color: #94a3b8; 
+            text-transform: uppercase; letter-spacing: 1.2px; 
         }
 
-        #loading-state { text-align: center; padding: 30px; color: #cbd5e1; }
+        /* Provider Circle List */
+        .provider-scroll {
+            display: flex; gap: 18px; overflow-x: auto; 
+            padding: 5px 0 25px; scrollbar-width: none;
+        }
+        .provider-scroll::-webkit-scrollbar { display: none; }
+        
+        .provider-item {
+            display: flex; flex-direction: column; align-items: center;
+            gap: 10px; cursor: pointer; transition: 0.3s; min-width: 70px;
+        }
+        .provider-img-wrapper {
+            width: 65px; height: 65px; border-radius: 22px;
+            padding: 3px; border: 2px solid transparent; transition: 0.3s;
+        }
+        .provider-item.active .provider-img-wrapper { border-color: #0f172a; }
+        .provider-item img { 
+            width: 100%; height: 100%; border-radius: 18px; 
+            object-fit: cover; background: #f8fafc;
+        }
+        .provider-name { 
+            font-size: 0.65rem; font-weight: 800; color: #64748b;
+            max-width: 75px; text-align: center; white-space: nowrap; 
+            overflow: hidden; text-overflow: ellipsis; 
+        }
+        .provider-item.active .provider-name { color: #0f172a; }
+
+        /* Jasa Card Luxury Wide */
+        .jasa-grid { display: flex; flex-direction: column; gap: 16px; }
+        .card-jasa {
+            background: white; border-radius: 28px; padding: 22px;
+            border: 1px solid #f1f5f9; box-shadow: 0 10px 25px rgba(0,0,0,0.02);
+            transition: 0.3s; position: relative;
+        }
+        
+        .top-badge {
+            position: absolute; top: 22px; right: 22px;
+            background: #fffbeb; color: #fbbe24; padding: 5px 10px;
+            border-radius: 12px; font-size: 0.65rem; font-weight: 800;
+            display: flex; align-items: center; gap: 4px; border: 1px solid #fef3c7;
+        }
+
+        .jasa-category { 
+            font-size: 0.6rem; color: #6366f1; font-weight: 900; 
+            text-transform: uppercase; letter-spacing: 0.5px;
+        }
+        .jasa-title { 
+            font-size: 1.1rem; font-weight: 800; margin: 8px 0 12px; 
+            color: #0f172a; line-height: 1.4;
+        }
+        
+        .seller-info-small {
+            display: flex; align-items: center; gap: 8px; margin-bottom: 20px;
+        }
+        .seller-avatar-s { width: 22px; height: 22px; border-radius: 6px; object-fit: cover; }
+        .seller-name-s { font-size: 0.7rem; font-weight: 700; color: #94a3b8; }
+
+        .footer-price-area {
+            display: flex; align-items: center; justify-content: space-between;
+            background: #f8fafc; padding: 14px 20px; border-radius: 20px;
+        }
+        .price-text { font-size: 1.2rem; font-weight: 900; color: #0f172a; }
+        .btn-buy {
+            padding: 12px 24px; background: #0f172a; color: white; 
+            border: none; border-radius: 14px; font-weight: 800; 
+            font-size: 0.75rem; cursor: pointer; transition: 0.2s;
+        }
+        .btn-buy:active { transform: scale(0.95); }
+
+        #empty-state { text-align: center; padding: 50px 20px; display: none; }
     </style>
 </head>
 <body>
 
 <div class="header-nav">
     <a href="dashboard.html" class="btn-back"><i class="fa-solid fa-arrow-left"></i></a>
-    <h2 style="font-size: 0.9rem; margin: 0; font-weight: 800;">layanan market</h2>
-    <div style="width: 40px;"></div>
+    <h2 style="font-size: 0.95rem; margin: 0; font-weight: 800;">layanan market</h2>
+    <div style="width: 42px;"></div>
 </div>
 
 <div id="slider-container" class="slider-container">
@@ -125,16 +156,27 @@
 </div>
 
 <div class="container">
-    <div class="provider-list" id="list-provider">
-        <div class="p-card active" onclick="filterJasa('all', this)">
-            <div class="p-avatar" style="display:flex; align-items:center; justify-content:center; background:#f1f5f9;">
-                <i class="fa-solid fa-grid-2" style="font-size:1.2rem;"></i>
+    <div class="section-header">
+        <span class="label-text">top providers</span>
+    </div>
+    <div class="provider-scroll" id="list-provider">
+        <div class="provider-item active" onclick="filterJasa('all', this)">
+            <div class="provider-img-wrapper" style="display:flex; align-items:center; justify-content:center; background:#f1f5f9;">
+                <i class="fa-solid fa-bolt-lightning" style="font-size:1.2rem;"></i>
             </div>
-            <span class="p-name">semua</span>
+            <span class="provider-name">all service</span>
         </div>
     </div>
 
-    <div id="loading-state"><i class="fa-solid fa-spinner fa-spin"></i></div>
+    <div class="section-header" style="margin-top: 10px;">
+        <span class="label-text" id="label-jasa">recommended for you</span>
+    </div>
+
+    <div id="empty-state">
+        <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #e2e8f0; margin-bottom: 10px;"></i>
+        <p style="color:#94a3b8; font-size: 0.8rem;">layanan belum tersedia.</p>
+    </div>
+
     <div class="jasa-grid" id="container-jasa"></div>
 </div>
 
@@ -151,7 +193,7 @@
     const db = firebase.database();
 
     let allJasa = [];
-    let sellers = {};
+    let sellerData = {};
     let currentSlide = 0;
 
     function initBanner() {
@@ -165,12 +207,12 @@
             let html = '', dotHtml = '', i = 0;
             snap.forEach(child => {
                 const d = child.val();
-                html += `<div class="slide"><img src="${d.image_url}"><div class="slide-overlay"><h3 class="slide-title">${d.title || 'promo hari ini'}</h3></div></div>`;
+                html += `<div class="slide"><img src="${d.image_url}"><div class="slide-overlay"><h3 class="slide-title">${d.title || ''}</h3></div></div>`;
                 dotHtml += `<div class="dot ${i === 0 ? 'active' : ''}" onclick="goToSlide(${i})"></div>`;
                 i++;
             });
             wrapper.innerHTML = html; dots.innerHTML = dotHtml;
-            setInterval(() => { currentSlide++; goToSlide(currentSlide); }, 4500);
+            setInterval(() => { currentSlide++; goToSlide(currentSlide); }, 5000);
         });
     }
 
@@ -183,40 +225,52 @@
         dots.forEach((d, i) => d.classList.toggle('active', i === currentSlide));
     }
 
-    async function loadData() {
+    async function loadContent() {
+        const container = document.getElementById('container-jasa');
+        const providerCont = document.getElementById('list-provider');
+        
         db.ref('services').on('value', async (snap) => {
-            document.getElementById('loading-state').style.display = 'none';
-            if(!snap.exists()) return;
+            if(!snap.exists()) { document.getElementById('empty-state').style.display = 'block'; return; }
             
             allJasa = [];
-            let pIds = new Set();
+            let providerIds = new Set();
             snap.forEach(c => {
-                const d = c.val();
-                allJasa.push({ id: c.key, ...d });
-                pIds.add(d.ownerToken);
+                const data = c.val();
+                allJasa.push({ id: c.key, ...data });
+                providerIds.add(data.ownerToken);
             });
 
-            const providerCont = document.getElementById('list-provider');
-            for (let token of pIds) {
+            // Ambil data Seller & Sorting Jasa berdasarkan Rating
+            sellerData = {};
+            for (let token of providerIds) {
                 const uSnap = await db.ref('users/' + token).get();
                 if (uSnap.exists()) {
                     const u = uSnap.val();
-                    sellers[token] = {
-                        name: u.fullname,
+                    sellerData[token] = {
+                        name: u.fullname || "store",
                         photo: u.foto || `https://ui-avatars.com/api/?name=${u.fullname}&background=random`,
                         rating: parseFloat(u.ratingJasa || 0)
                     };
                     
-                    const pItem = document.createElement('div');
-                    pItem.className = 'p-card';
-                    pItem.onclick = () => filterJasa(token, pItem);
-                    pItem.innerHTML = `<div class="p-avatar"><img src="${sellers[token].photo}"></div><span class="p-name">${sellers[token].name}</span>`;
-                    providerCont.appendChild(pItem);
+                    // Render Provider Circle
+                    const item = document.createElement('div');
+                    item.className = 'provider-item';
+                    item.onclick = () => filterJasa(token, item);
+                    item.innerHTML = `<div class="provider-img-wrapper"><img src="${sellerData[token].photo}"></div><span class="provider-name">${sellerData[token].name}</span>`;
+                    providerCont.appendChild(item);
                 }
             }
 
-            // Sorting otomatis berdasarkan rating tertinggi
-            allJasa.sort((a, b) => (sellers[b.ownerToken]?.rating || 0) - (sellers[a.ownerToken]?.rating || 0));
+            // Gabungkan Rating Seller ke Jasa untuk Sorting
+            allJasa.forEach(j => {
+                j.sellerRating = sellerData[j.ownerToken] ? sellerData[j.ownerToken].rating : 0;
+                j.sellerName = sellerData[j.ownerToken] ? sellerData[j.ownerToken].name : "store";
+                j.sellerPhoto = sellerData[j.ownerToken] ? sellerData[j.ownerToken].photo : "";
+            });
+
+            // SORTING: Rating Tertinggi di Atas
+            allJasa.sort((a, b) => b.sellerRating - a.sellerRating);
+
             renderJasa(allJasa);
         });
     }
@@ -224,59 +278,95 @@
     function renderJasa(data) {
         const container = document.getElementById('container-jasa');
         container.innerHTML = "";
+        if(data.length === 0) { document.getElementById('empty-state').style.display = 'block'; return; }
+        document.getElementById('empty-state').style.display = 'none';
+
         data.forEach(j => {
-            const s = sellers[j.ownerToken];
             container.innerHTML += `
                 <div class="card-jasa">
-                    ${s.rating > 0 ? `<div class="badge-rating"><i class="fa-solid fa-star"></i> ${s.rating.toFixed(1)}</div>` : ''}
-                    <span class="jasa-cat">${j.kategori}</span>
+                    ${j.sellerRating > 0 ? `<div class="top-badge"><i class="fa-solid fa-star"></i> ${j.sellerRating.toFixed(1)}</div>` : ''}
+                    <span class="jasa-category">${j.kategori}</span>
                     <h3 class="jasa-title">${j.nama}</h3>
-                    <div class="seller-info">
-                        <img src="${s.photo}">
-                        <span>${s.name}</span>
+                    <div class="seller-info-small">
+                        <img src="${j.sellerPhoto}" class="seller-avatar-s">
+                        <span class="seller-name-s">by ${j.sellerName}</span>
                     </div>
-                    <div class="jasa-footer">
-                        <span class="price">rp ${j.harga.toLocaleString('id-ID')}</span>
-                        <button class="btn-order" onclick="orderJasa('${j.id}', ${j.harga})">pesan</button>
+                    <div class="footer-price-area">
+                        <span class="price-text">rp ${j.harga.toLocaleString('id-ID')}</span>
+                        <button class="btn-buy" onclick="orderJasa('${j.id}', ${j.harga})">order</button>
                     </div>
                 </div>`;
         });
     }
 
     function filterJasa(token, el) {
-        document.querySelectorAll('.p-card').forEach(c => c.classList.remove('active'));
+        document.querySelectorAll('.provider-item').forEach(c => c.classList.remove('active'));
         el.classList.add('active');
-        if(token === 'all') renderJasa(allJasa);
-        else renderJasa(allJasa.filter(j => j.ownerToken === token));
+        if(token === 'all') {
+            document.getElementById('label-jasa').innerText = "recommended for you";
+            renderJasa(allJasa);
+        } else {
+            const filtered = allJasa.filter(j => j.ownerToken === token);
+            document.getElementById('label-jasa').innerText = "services by " + sellerData[token].name;
+            renderJasa(filtered);
+        }
     }
 
+    // FUNGSI PEMBELIAN (Terintegrasi langsung di sini)
     async function orderJasa(id, harga) {
         const token = localStorage.getItem('sessionToken');
-        if (!token) return alert("silakan login.");
-        if (!confirm("lanjut ke pembayaran?")) return;
+        if (!token) {
+            alert("silakan login terlebih dahulu.");
+            window.location.href = 'login.html';
+            return;
+        }
+        
+        const konfirmasi = confirm(`lanjutkan pemesanan seharga rp ${harga.toLocaleString('id-ID')}?`);
+        if (!konfirmasi) return;
 
         try {
-            const uRef = db.ref('users/' + token);
-            const uSnap = await uRef.get();
+            const uSnap = await db.ref('users/' + token).get();
             const saldo = parseInt(uSnap.val().balance || 0);
+            
+            if (saldo < harga) return alert("saldo anda tidak cukup untuk transaksi ini.");
 
-            if (saldo < harga) return alert("saldo tidak cukup.");
+            const jSnap = await db.ref('services/' + id).get();
+            const jData = jSnap.val();
+            const sSnap = await db.ref('users/' + jData.ownerToken).get();
 
-            const jData = (await db.ref('services/' + id).get()).val();
             const orderId = "order-js-" + Date.now();
-            const updates = {};
-            updates['users/' + token + '/balance'] = saldo - harga;
-            updates['pembelian/' + orderId] = {
-                orderId, userToken: token, namaPembeli: uSnap.val().fullname,
-                productId: id, nama: jData.nama, total: harga, status: "sukses", 
-                type: "jasa", ownerToken: jData.ownerToken, timestamp: Date.now()
+            const upd = {};
+            
+            // Potong saldo
+            upd['users/' + token + '/balance'] = saldo - harga;
+            
+            // Catat transaksi
+            upd['pembelian/' + orderId] = {
+                orderId: orderId, 
+                userToken: token, 
+                namaPembeli: uSnap.val().fullname,
+                productId: id, 
+                nama: jData.nama, 
+                kategori: jData.kategori,
+                total: harga, 
+                status: "sukses", 
+                type: "jasa", 
+                ownerToken: jData.ownerToken, 
+                namaToko: sSnap.val().fullname || "store",
+                timestamp: Date.now()
             };
-            await db.ref().update(updates);
+            
+            // Eksekusi
+            await db.ref().update(upd);
+            alert("pesanan berhasil dibuat!");
             location.href = 'riwayat-user.html';
-        } catch (e) { alert(e.message); }
+
+        } catch (e) { 
+            alert("terjadi kesalahan: " + e.message); 
+        }
     }
 
-    window.onload = () => { initBanner(); loadData(); };
+    window.onload = () => { initBanner(); loadContent(); };
 </script>
 </body>
 </html>
