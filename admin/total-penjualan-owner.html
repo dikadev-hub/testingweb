@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>admin | total penjualan owner 😼</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        body { 
+            background: #f0f4f8; color: #1a1a1a; font-family: 'inter', sans-serif; 
+            margin: 0; padding: 20px; text-transform: lowercase;
+        }
+        .container { max-width: 550px; margin: 0 auto; }
+        .header { display: flex; align-items: center; gap: 15px; margin-bottom: 25px; }
+        .btn-back { width: 40px; height: 40px; border-radius: 12px; border: 1px solid #e2e8f0; display: flex; align-items: center; justify-content: center; color: #1a1a1a; text-decoration: none; background: white; }
+        
+        .summary-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 25px; }
+        .summary-card { background: #1a1a1a; color: white; padding: 20px; border-radius: 20px; }
+        .summary-card h3 { margin: 0; font-size: 1.2rem; font-weight: 900; }
+        .summary-card p { margin: 5px 0 0; font-size: 0.65rem; font-weight: 700; opacity: 0.7; text-transform: uppercase; }
+
+        .owner-row {
+            background: white; padding: 18px; border-radius: 22px;
+            margin-bottom: 12px; display: flex; align-items: center; gap: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.02); border: 1px solid #fff;
+        }
+        .owner-avatar { width: 45px; height: 45px; background: #f1f5f9; border-radius: 12px; display: flex; align-items: center; justify-content: center; color: #007bff; font-size: 1.2rem; }
+        
+        .owner-info { flex: 1; }
+        .owner-info h4 { margin: 0; font-size: 0.85rem; font-weight: 800; color: #1e293b; }
+        .owner-info p { margin: 2px 0 0; font-size: 0.65rem; font-weight: 700; color: #94a3b8; }
+
+        .owner-finance { text-align: right; }
+        .owner-finance .total-sales { font-size: 0.85rem; font-weight: 900; color: #15803d; }
+        .owner-finance .count-orders { font-size: 0.6rem; font-weight: 800; color: #64748b; background: #f1f5f9; padding: 2px 6px; border-radius: 5px; display: inline-block; margin-top: 4px; }
+
+        #loader { text-align: center; padding: 50px; color: #007bff; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="header">
+        <a href="dashboard.html" class="btn-back"><i class="fa-solid fa-arrow-left"></i></a>
+        <h2 style="font-size: 1rem; margin: 0; font-weight: 900;">total penjualan per owner 😼</h2>
+    </div>
+
+    <div class="summary-grid">
+        <div class="summary-card" style="background: #007bff;">
+            <h3 id="grand-total">rp 0</h3>
+            <p>total omset owner</p>
+        </div>
+        <div class="summary-card">
+            <h3 id="total-owner-count">0</h3>
+            <p>owner aktif</p>
+        </div>
+    </div>
+
+    <div id="loader"><i class="fa-solid fa-circle-notch fa-spin fa-2x"></i></div>
+    <div id="list-penjualan"></div>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
+
+<script>
+    const firebaseconfig = {
+        apiKey: "AIzaSyDGRsCcT-7Bv_nOAybjXyuIT6Ca0IT4YTg",
+        databaseURL: "https://market-d978f-default-rtdb.asia-southeast1.firebasedatabase.app",
+        projectId: "market-d978f",
+    };
+    if (!firebase.apps.length) firebase.initializeApp(firebaseconfig);
+    const db = firebase.database();
+
+    async function loadSalesStats() {
+        try {
+            // Ambil data transaksi yang statusnya success
+            const transSnap = await db.ref('transactions').orderByChild('status').equalTo('success').once('value');
+            const listContainer = document.getElementById('list-penjualan');
+            document.getElementById('loader').style.display = 'none';
+
+            let ownerStats = {};
+            let totalOmset = 0;
+
+            if (transSnap.exists()) {
+                transSnap.forEach(child => {
+                    const data = child.val();
+                    const owner = data.ownerName || "unknown";
+                    const total = parseInt(data.totalHarga || 0);
+
+                    // Skip jika owner adalah admin pusat (jika ingin dipisah)
+                    if (owner === "TERTINGGI DI WEBSITE INI 😼") return;
+
+                    if (!ownerStats[owner]) {
+                        ownerStats[owner] = {
+                            totalDuit: 0,
+                            totalOrder: 0
+                        };
+                    }
+
+                    ownerStats[owner].totalDuit += total;
+                    ownerStats[owner].totalOrder += 1;
+                    totalOmset += total;
+                });
+
+                // Tampilkan data
+                const sortedOwners = Object.keys(ownerStats).sort((a, b) => ownerStats[b].totalDuit - ownerStats[a].totalDuit);
+                
+                document.getElementById('grand-total').innerText = `rp ${totalOmset.toLocaleString('id-ID')}`;
+                document.getElementById('total-owner-count').innerText = sortedOwners.length;
+
+                listContainer.innerHTML = "";
+                sortedOwners.forEach(name => {
+                    listContainer.innerHTML += `
+                        <div class="owner-row">
+                            <div class="owner-avatar">
+                                <i class="fa-solid fa-user-tie"></i>
+                            </div>
+                            <div class="owner-info">
+                                <h4>${name}</h4>
+                                <p>pangkat: owner mitra 😼</p>
+                            </div>
+                            <div class="owner-finance">
+                                <div class="total-sales">rp ${ownerStats[name].totalDuit.toLocaleString('id-ID')}</div>
+                                <div class="count-orders">${ownerStats[name].totalOrder} pesanan sukses</div>
+                            </div>
+                        </div>
+                    `;
+                });
+
+            } else {
+                listContainer.innerHTML = '<p style="text-align:center; color:#94a3b8; font-weight:700;">belum ada penjualan sukses dari owner.</p>';
+            }
+        } catch (e) {
+            console.error(e);
+            document.getElementById('loader').innerHTML = "gagal memuat data.";
+        }
+    }
+
+    window.onload = loadSalesStats;
+</script>
+</body>
+</html>
