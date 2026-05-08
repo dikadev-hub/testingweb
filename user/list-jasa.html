@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>market jasa</title>
+    <title>market jasa and joki</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
         @keyframes fadein { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
@@ -124,7 +124,13 @@
             width: 100%; aspect-ratio: 1/1; border-radius: 18px;
             margin-bottom: 12px; background: #f8fafc;
             display: flex; align-items: center; justify-content: center;
-            font-size: 2.2rem; color: #e2e8f0; overflow: hidden;
+            overflow: hidden;
+        }
+        /* Styling untuk gambar di dalam img-box agar presisi */
+        .img-box img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover; /* atau 'contain' jika ingin seluruh gambar terlihat tanpa terpotong */
         }
 
         .p-tag { font-size: 0.55rem; font-weight: 900; color: #6366f1; text-transform: uppercase; display: block; margin-left: 4px; }
@@ -292,10 +298,17 @@
             }
 
             hasil.forEach(j => {
+                // LOGIKA LOGO OTOMATIS
+                // Jika j.foto ada (dari database), pakai itu.
+                // Jika kosong, pakai logo statis 'logo/joki.png'.
+                const imgUrl = j.foto ? j.foto : 'logo/joki.png';
+
                 grid.innerHTML += `
                     <div class="p-card" onclick="prosesOrder('${j.id}', ${j.harga})">
                         ${j.rating > 0 ? `<div class="p-rating"><i class="fa-solid fa-star"></i> ${j.rating.toFixed(1)}</div>` : ''}
-                        <div class="img-box"><i class="fa-solid fa-gamepad"></i></div>
+                        <div class="img-box">
+                            <img src="${imgUrl}" alt="logo joki">
+                        </div>
                         <div style="padding: 0 2px;">
                             <span class="p-tag">${j.kategori}</span>
                             <span class="p-title">${j.nama}</span>
