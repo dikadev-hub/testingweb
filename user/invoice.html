@@ -47,7 +47,7 @@
         .product-box img { 
             width: 110px; height: 110px; border-radius: 28px; 
             object-fit: cover; margin-bottom: 15px; box-shadow: 0 15px 30px rgba(0,0,0,0.08);
-            border: 2px solid #f1f5f9; /* Stroke tambahan pada foto */
+            border: 2px solid #f1f5f9;
         }
 
         .price-tag {
@@ -56,18 +56,15 @@
             margin-bottom: 25px; border: 1px dashed #e2e8f0;
         }
 
-        /* Styling Instruksi Joki */
+        /* Khusus Joki */
         .joki-instruction {
-            background: #eff6ff; border: 1.5px solid #bfdbfe;
+            background: #fffbeb; border: 1.5px solid #fef3c7;
             padding: 20px; border-radius: 24px; margin-bottom: 20px;
         }
-        .joki-instruction h4 { margin: 0 0 10px; font-size: 0.75rem; color: #1e40af; text-transform: uppercase; }
-        .joki-instruction p { font-size: 0.75rem; color: #1e40af; margin: 0 0 15px; line-height: 1.5; font-weight: 600; }
-        
-        .btn-mail {
+        .btn-copy-template {
             display: flex; align-items: center; justify-content: center; gap: 8px;
-            width: 100%; padding: 12px; background: #2563eb; color: white;
-            border-radius: 14px; text-decoration: none; font-size: 0.75rem; font-weight: 800;
+            width: 100%; padding: 12px; background: #92400e; color: white;
+            border-radius: 14px; cursor: pointer; font-size: 0.7rem; font-weight: 800; text-transform: uppercase;
         }
 
         .info-title { 
@@ -138,15 +135,17 @@
             <span id="inv-total" style="font-weight: 900; color: #2563eb; font-size: 1.25rem;">rp 0</span>
         </div>
 
-        <div class="joki-instruction">
-            <h4><i class="fa-solid fa-circle-info"></i> instruksi order joki</h4>
-            <p id="joki-text-info">silahkan kirim data akun anda ke email penjual sesuai format di bawah ini agar proses joki segera dikerjakan.</p>
-            <a id="btn-kirim-email" href="#" class="btn-mail">
-                <i class="fa-solid fa-envelope"></i> kirim data via email
-            </a>
+        <div id="joki-area" style="display: none;">
+            <div class="joki-instruction">
+                <h4 style="margin:0; font-size:0.75rem; color:#92400e; text-transform:uppercase; margin-bottom:8px;"><i class="fa-solid fa-pen-to-square"></i> formulir data akun</h4>
+                <p style="font-size: 0.7rem; color: #92400e; margin-bottom: 15px; line-height: 1.4; font-weight: 600;">salin template di bawah, isi datanya, lalu kirim ke satriahubdeals@gmail.com</p>
+                <div class="btn-copy-template" onclick="copyTemplate()">
+                    <i class="fa-solid fa-copy"></i> salin template joki
+                </div>
+            </div>
         </div>
 
-        <span class="info-title">rincian akun (jika ada)</span>
+        <span class="info-title">rincian akun</span>
         <div id="account-data-list"></div>
 
         <div id="note-box" style="background: #fffbeb; padding: 16px; border-radius: 18px; margin-top: 10px; border: 1px solid #fef3c7; display: none;">
@@ -156,7 +155,7 @@
     </div>
 
     <div class="rating-card" id="rating-area">
-        <h4 id="rating-title" style="margin:0; font-size:0.9rem; font-weight: 800;">bagaimana pengalaman belanja kamu?</h4>
+        <h4 id="rating-title" style="margin:0; font-size:0.9rem; font-weight: 800;">beri rating untuk toko ini</h4>
         <div class="stars-input" id="star-container">
             <i class="fa-solid fa-star" onclick="setStar(1)"></i>
             <i class="fa-solid fa-star" onclick="setStar(2)"></i>
@@ -164,7 +163,7 @@
             <i class="fa-solid fa-star" onclick="setStar(4)"></i>
             <i class="fa-solid fa-star" onclick="setStar(5)"></i>
         </div>
-        <textarea id="user-comment" class="comment-input" rows="3" placeholder="tulis pesan singkat..."></textarea>
+        <textarea id="user-comment" class="comment-input" rows="3" placeholder="tulis ulasan singkat..."></textarea>
         <button class="btn-post" id="btn-rating" onclick="postReview()">kirim ulasan</button>
     </div>
 </div>
@@ -186,6 +185,8 @@
     let selectedRating = 0;
     let currentProdId = "";
     let buyerName = "";
+    let ownerToken = ""; // Untuk identifikasi toko
+    let templateTeks = "";
 
     function loadInvoice() {
         if (!orderId) return window.location.href = 'riwayat-user.html';
@@ -195,7 +196,8 @@
             if (snap.exists()) {
                 const data = snap.val();
                 currentProdId = data.productId;
-                buyerName = data.namaPembeli;
+                buyerName = data.namaPembeli || 'user';
+                ownerToken = data.ownerToken; // Ambil token penjual
 
                 document.getElementById('inv-img').src = data.foto || '../logo/joki.jpg';
                 document.getElementById('inv-name').innerText = data.nama;
@@ -203,50 +205,35 @@
                 document.getElementById('inv-total').innerText = "rp " + data.total.toLocaleString('id-ID');
                 document.getElementById('inv-status').innerText = data.status || 'sukses';
                 
-                // SET LINK EMAIL OTOMATIS
-                const subject = encodeURIComponent(`Data Akun Joki - ${data.nama} - ${data.orderId}`);
-                const body = encodeURIComponent(
-                    `HAI, KAMU TELAH ORDER JASA ${data.nama.toUpperCase()} DI ${data.namaToko ? data.namaToko.toUpperCase() : 'STORE'}\n\n` +
-                    `Data akun :\n` +
-                    `Email : \n` +
-                    `Password: \n` +
-                    `Log via : \n` +
-                    `Rank now to rank target: \n\n` +
-                    `Lengkapi data di atas lalu kirim email ini.`
-                );
-                document.getElementById('btn-kirim-email').href = `mailto:satriahubdeals@gmail.com?subject=${subject}&body=${body}`;
+                // Set Template Joki jika tipenya jasa
+                if (data.type === 'jasa') {
+                    document.getElementById('joki-area').style.display = 'block';
+                    templateTeks = `HAI, SAYA ORDER JASA ${data.nama.toUpperCase()} DI ${data.namaToko ? data.namaToko.toUpperCase() : 'STORE'}\n\nData akun :\nEmail : \nPassword: \nLog via : \nRank: \n\nMohon segera diproses!`;
+                }
 
                 const listContainer = document.getElementById('account-data-list');
                 listContainer.innerHTML = "";
                 
                 if (data.dataAkun) {
-                    const acc = data.dataAkun;
-                    const fields = [
-                        { label: 'email / username', value: acc.email, id: 'c-email' },
-                        { label: 'password', value: acc.pass, id: 'c-pass' },
-                        { label: 'keamanan a2f', value: acc.a2f, id: 'c-a2f' }
-                    ];
-
-                    fields.forEach(f => {
-                        if (f.value) {
+                    Object.entries(data.dataAkun).forEach(([key, val]) => {
+                        if (val && key !== 'tambahan') {
+                            const uniqueId = 'val-' + Math.random().toString(36).substr(2, 9);
                             listContainer.innerHTML += `
                                 <div class="data-tile">
-                                    <span class="tile-label">${f.label}</span>
+                                    <span class="tile-label">${key}</span>
                                     <div class="tile-content">
-                                        <span id="${f.id}">${f.value}</span>
-                                        <div class="btn-copy" onclick="copyText('${f.id}')"><i class="fa-regular fa-copy"></i></div>
+                                        <span id="${uniqueId}">${val}</span>
+                                        <div class="btn-copy" onclick="copyText('${uniqueId}')"><i class="fa-regular fa-copy"></i></div>
                                     </div>
                                 </div>
                             `;
                         }
                     });
 
-                    if(acc.tambahan) {
+                    if(data.dataAkun.tambahan) {
                         document.getElementById('note-box').style.display = 'block';
-                        document.getElementById('acc-note').innerText = acc.tambahan;
+                        document.getElementById('acc-note').innerText = data.dataAkun.tambahan;
                     }
-                } else {
-                    listContainer.innerHTML = `<p style="font-size:0.75rem; color:#94a3b8; text-align:center;">gunakan tombol di atas untuk mengirim data akun.</p>`;
                 }
 
                 if (data.rated) {
@@ -270,19 +257,45 @@
         btn.disabled = true;
 
         try {
+            // 1. Simpan Review
             await db.ref('reviews').push({
                 productId: currentProdId,
+                ownerToken: ownerToken,
                 rating: selectedRating,
                 komentar: comment,
                 user: buyerName,
                 timestamp: Date.now()
             });
+
+            // 2. Hitung Ulang Rating Toko
+            if (ownerToken) {
+                const revSnap = await db.ref('reviews').orderByChild('ownerToken').equalTo(ownerToken).get();
+                let totalStar = 0;
+                let count = 0;
+                revSnap.forEach(child => {
+                    totalStar += child.val().rating;
+                    count++;
+                });
+                const newAvg = (totalStar / count).toFixed(1);
+                
+                // Update ke data user/toko
+                await db.ref('users/' + ownerToken).update({
+                    ratingJasa: parseFloat(newAvg)
+                });
+            }
+
             await db.ref('pembelian/' + orderId).update({ rated: true });
+            alert("terima kasih! rating toko telah diperbarui.");
             location.reload();
         } catch (e) {
             alert(e.message);
             btn.disabled = false;
         }
+    }
+
+    function copyTemplate() {
+        navigator.clipboard.writeText(templateTeks);
+        alert("template joki disalin!");
     }
 
     function copyText(id) {
