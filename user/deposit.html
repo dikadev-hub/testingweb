@@ -68,7 +68,7 @@
 
         const IMGBB_API_KEY = "50145b1eaa1385c3d9549ebe496eb5b5";
         
-        // TEKNIK PARTIAL API KEYS AGAR AMAN
+        // TEKNIK PARTIAL API KEYS
         const p1 = "gsk_ji3IChgCS"; const p1_ = "R3yH0CyXI78WGdyb3FYezpxD9G0zgzLnEpbzVQoFltl";
         const p2 = "gsk_B71OpeIS"; const p2_ = "m5H9HSI9x3uAWGdyb3FY5nAJNqaSeusVnPHZbjK3NyXK";
         const p3 = "gsk_i6V2S8Fc"; const p3_ = "qiR5hz0PdPggWGdyb3FYYm1bDPNxOOyqWtAiSZnekbOw";
@@ -114,15 +114,20 @@
                     });
 
                     const data = await response.json();
+                    
+                    // CEK APAKAH CHOICES ADA (UNTUK MENCEGAH ERROR READING '0')
                     if (data && data.choices && data.choices.length > 0) {
                         return JSON.parse(data.choices[0].message.content);
+                    } else {
+                        console.error("API Error atau limit:", data);
+                        continue; // Coba key berikutnya
                     }
                 } catch (e) {
-                    console.log("kunci limit, mencoba berikutnya...");
+                    console.error("Kunci bermasalah, mencoba berikutnya...");
                     continue;
                 }
             }
-            throw new Error("semua api key sedang bermasalah.");
+            throw new Error("maaf, semua server ai sedang sibuk/limit. coba lagi nanti.");
         }
 
         async function prosesDeposit() {
@@ -145,19 +150,19 @@
                 const uploadRes = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`, { method: "POST", body: formData });
                 const uploadData = await uploadRes.json();
                 
-                if(!uploadData.success) throw new Error("gagal upload bukti.");
+                if(!uploadData.success) throw new Error("gagal upload ke server gambar.");
                 const imageUrl = uploadData.data.url;
 
                 statusText.innerText = "ai memverifikasi...";
                 const resAI = await callGroqAI(imageUrl);
 
-                if (resAI.valid === true && resAI.nominal > 0 && resAI.ref) {
+                if (resAI && resAI.valid === true && resAI.nominal > 0 && resAI.ref) {
                     await updateSaldoDatabase(token, resAI.nominal, resAI.ref, imageUrl);
                 } else {
-                    alert("STRUK DITOLAK! Pastikan foto adalah struk asli ke SAT STORE.");
+                    alert("STRUK DITOLAK! pastikan struk asli & merchant SAT STORE.");
                 }
             } catch (err) {
-                alert("kesalahan: " + err.message);
+                alert(err.message);
             } finally {
                 btn.disabled = false;
                 statusBox.style.display = 'none';
