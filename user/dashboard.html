@@ -571,18 +571,23 @@
                     document.getElementById('running-text').innerText = `WELCOME ${data.fullname.toUpperCase()} TO ${namaTokoDB} KETIKA KAMU SUDAH MEMBELI JANGAN LUPA KASIH RATING YAAAA 🤩`;
                     
                     if (data.role === 'owner') {
-                        document.getElementById('owner-sidebar-section').style.display = 'block';
-                        document.getElementById('user-menu-area').style.display = 'none';
-                        document.getElementById('owner-area-1').style.display = 'grid';
-                        document.getElementById('owner-area-2').style.display = 'grid';
-                        document.getElementById('owner-menu-merchant').style.display = 'flex';
-                        document.getElementById('owner-menu-penarikan').style.display = 'flex';
-                       } else {
-                        document.getElementById('owner-sidebar-section').style.display = 'none';
-                        document.getElementById('user-menu-area').style.display = 'grid';
-                        document.getElementById('owner-area-1').style.display = 'none';
-                        document.getElementById('owner-area-2').style.display = 'none';
-                   }
+    document.getElementById('owner-sidebar-section').style.display = 'block';
+    document.getElementById('owner-menu-penarikan').style.display = 'flex';
+    document.getElementById('menu-merchant').style.display = 'flex';
+    
+    document.getElementById('user-menu-area').style.display = 'none';
+    document.getElementById('owner-area-1').style.display = 'grid';
+    document.getElementById('owner-area-2').style.display = 'grid';
+} else {
+    document.getElementById('owner-sidebar-section').style.display = 'none';
+    document.getElementById('owner-menu-penarikan').style.display = 'none';
+    document.getElementById('menu-merchant').style.display = 'none';
+    
+    document.getElementById('user-menu-area').style.display = 'grid';
+    document.getElementById('owner-area-1').style.display = 'none';
+    document.getElementById('owner-area-2').style.display = 'none';
+}
+
                 }
             });
             setTimeout(() => { loader.style.display = 'none'; }, 600);
