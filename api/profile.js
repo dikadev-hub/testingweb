@@ -19,30 +19,31 @@ if (!getApps().length) {
 const db = getDatabase();
 
 export default async function handler(req, res) {
-    if (req.method !== 'GET') {
-        return res.status(405).json({ status: false, message: "gunakan metode GET" });
-    }
-
-    const { key } = req.query;
-
-    if (!key) {
-        return res.status(400).json({ status: false, message: "parameter key kosong" });
-    }
-
+    // Gunakan try-catch global agar tidak 500
     try {
+        if (req.method !== 'GET') {
+            return res.status(405).json({ status: false, message: "gunakan metode GET" });
+        }
+
+        const { key } = req.query;
+
+        if (!key) {
+            return res.status(400).json({ status: false, message: "parameter key kosong" });
+        }
+
         const snapshot = await db.ref('users').orderByChild('apiKey').equalTo(key).once('value');
 
         if (!snapshot.exists()) {
             return res.status(404).json({ status: false, message: "api key tidak ditemukan" });
         }
 
-        let userData = null;
-        snapshot.forEach(child => { 
-            userData = child.val(); 
-        });
+        // Ambil data pertama yang cocok
+        const users = snapshot.val();
+        const firstKey = Object.keys(users)[0];
+        const userData = users[firstKey];
 
-        // CEK BLOKIR DISINI (Di luar loop forEach)
-        if (userData && userData.api_status === "blocked") {
+        // --- CEK BLOKIR ---
+        if (userData.api_status === "blocked") {
             return res.status(403).json({ 
                 status: false, 
                 message: "ERROR API KAMU DI BLOKIR ADMIN" 
@@ -52,14 +53,20 @@ export default async function handler(req, res) {
         return res.status(200).json({
             status: true,
             data: {
-                username: userData.fullname,
-                phone: userData.phone,
+                username: userData.fullname || "no name",
+                phone: userData.phone || "-",
                 role: userData.role || "user",
-                apiKey: userData.apiKey
+                apiKey: userData.apiKey,
+                api_status: userData.api_status || "active"
             }
         });
+
     } catch (error) {
-        console.error(error);
-        return res.status(500).json({ status: false, message: "database error" });
+        // Balikin error ke JSON supaya ketauan salahnya di mana
+        return res.status(500).json({ 
+            status: false, 
+            message: "Internal Server Error", 
+            error: error.message 
+        });
     }
 }
