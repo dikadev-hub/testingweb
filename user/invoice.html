@@ -73,7 +73,6 @@
             letter-spacing: 1px; padding-left: 5px;
         }
 
-        /* Group Rincian Akun */
         .account-group {
             background: #f8fafc; border: 1.5px solid #f1f5f9;
             border-radius: 24px; padding: 10px; margin-bottom: 15px;
@@ -100,7 +99,6 @@
             margin-top: 10px; border: 1.5px solid #fef3c7;
         }
 
-        /* Rating Section */
         .rating-card {
             background: white; border-radius: 30px; padding: 30px 25px; margin-top: 25px;
             box-shadow: 0 15px 35px rgba(0,0,0,0.02); text-align: center;
@@ -173,13 +171,12 @@
                 <span class="tile-label">status a2f</span>
                 <div class="tile-content">
                     <span id="acc-a2f">-</span>
-                    <div id="badge-a2f"></div>
                 </div>
             </div>
         </div>
 
         <div id="note-box" style="display: none;">
-            <span class="tile-label" style="color: #92400e;">informasi tambahan :</span>
+            <span class="tile-label" style="color: #92400e;">deskripsi tambahan / catatan :</span>
             <p id="acc-note" style="font-size: 0.85rem; color: #92400e; margin: 8px 0 0; line-height: 1.5; font-weight: 500;"></p>
         </div>
     </div>
@@ -225,23 +222,23 @@
             if (snap.exists()) {
                 const data = snap.val();
                 currentProdId = data.productId;
-                ownerToken = data.ownerToken || data.tokenOwner || "";
                 buyerName = data.namaPembeli || "pembeli";
+
+                // PERBAIKAN: Ambil ownerToken dari data pembelian
+                ownerToken = data.ownerToken || data.tokenOwner || "";
 
                 document.getElementById('inv-img').src = data.foto || '../logo/joki.jpg';
                 document.getElementById('inv-name').innerText = data.nama;
                 document.getElementById('inv-id').innerText = "#" + data.orderId;
                 document.getElementById('inv-total').innerText = "rp " + (data.total || 0).toLocaleString('id-ID');
                 
-                // MAPPING DATA AKUN (Sesuai Struktur Ajukan Produk)
-                // Kita cek di data.akun atau data.dataAkun
-                const akun = data.akun || data.dataAkun || {};
-                
+                // MAPPING DATA AKUN (Lengkap dengan tambahan)
+                const akun = data.akun || {};
                 document.getElementById('acc-email').innerText = akun.email || "-";
                 document.getElementById('acc-pass').innerText = akun.pass || "-";
                 document.getElementById('acc-a2f').innerText = akun.a2f || "off";
                 
-                if (akun.tambahan) {
+                if (akun.tambahan && akun.tambahan.trim() !== "") {
                     document.getElementById('note-box').style.display = 'block';
                     document.getElementById('acc-note').innerText = akun.tambahan;
                 }
@@ -262,30 +259,52 @@
 
     async function postReview() {
         if (selectedRating === 0) return alert("pilih bintang dulu");
-        if (!ownerToken) return alert("data owner tidak ditemukan");
+        
+        // CEK ULANG TOKEN SEBELUM PUSH
+        if (!ownerToken || ownerToken === "") {
+             return alert("gagal: data owner tidak ditemukan di riwayat pembelian ini.");
+        }
 
         const comment = document.getElementById('user-comment').value || "mantap!";
         const btn = document.getElementById('btn-rating');
         btn.disabled = true;
 
         try {
-            // Push ke koleksi reviews
+            // Gunakan ownerToken yang sudah divalidasi
             await db.ref('reviews/' + currentProdId).push({
                 productId: currentProdId,
-                ownerToken: ownerToken,
+                ownerToken: ownerToken, 
                 rating: selectedRating,
                 comment: comment,
                 userName: buyerName,
                 timestamp: Date.now()
             });
 
-            // Update status pesanan agar tidak bisa rating lagi
-            await db.ref('pembelian/' + orderId).update({ rated: true });
+            // Update status rata-rata rating penjual
+            const ownerKey = ownerToken.replace(/\./g, ',');
+            const allReviews = await db.ref('reviews').get();
+            let total = 0, count = 0;
             
-            alert("terima kasih atas ulasannya!");
+            allReviews.forEach(p => {
+                p.forEach(r => {
+                    if(r.val().ownerToken === ownerToken) {
+                        total += r.val().rating;
+                        count++;
+                    }
+                });
+            });
+
+            if(count > 0) {
+                await db.ref('users/' + ownerKey).update({
+                    ratingJasa: parseFloat((total / count).toFixed(1))
+                });
+            }
+
+            await db.ref('pembelian/' + orderId).update({ rated: true });
+            alert("terima kasih ulasannya!");
             location.reload();
         } catch (e) {
-            alert(e.message);
+            alert("error: " + e.message);
             btn.disabled = false;
         }
     }
@@ -294,7 +313,7 @@
         const text = document.getElementById(id).innerText;
         if(text === "-") return;
         navigator.clipboard.writeText(text);
-        alert("disalin: " + text);
+        alert("berhasil disalin");
     }
 
     window.onload = loadInvoice;
