@@ -4,149 +4,155 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>deposit - sat store</title>
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
-    <script src="../setting.js"></script>
-    
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
         body { background: #f0f4f8; font-family: 'inter', sans-serif; margin: 0; text-transform: lowercase; padding: 20px; }
-        .header-depo { display: flex; align-items: center; gap: 15px; margin-bottom: 20px; }
-        .btn-back { width: 40px; height: 40px; border-radius: 12px; background: white; display: flex; align-items: center; justify-content: center; color: #1a1a1a; text-decoration: none; border: 1px solid #e2e8f0; }
-        
         .depo-card { background: white; padding: 25px; border-radius: 25px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); max-width: 400px; margin: auto; text-align: center; }
-        
-        .qris-title { font-weight: 800; font-size: 0.9rem; margin-bottom: 10px; color: #1e293b; display: block; }
-        .qris-container { background: #fff; padding: 15px; border-radius: 20px; border: 1px solid #e2e8f0; margin-bottom: 20px; }
-        .qris-container img { width: 100%; border-radius: 10px; display: block; }
-        
-        input { width: 100%; padding: 15px; border-radius: 15px; border: 1.5px solid #e2e8f0; margin-bottom: 15px; text-align: center; font-weight: 800; box-sizing: border-box; font-family: 'inter'; }
-        
-        .upload-area { border: 2px dashed #cbd5e1; padding: 20px; border-radius: 20px; margin-bottom: 20px; cursor: pointer; position: relative; background: #f8fafc; }
-        .upload-area i { font-size: 2rem; color: #64748b; margin-bottom: 10px; }
-        .upload-area input { position: absolute; opacity: 0; top: 0; left: 0; width: 100%; height: 100%; cursor: pointer; }
-        #preview { width: 100%; border-radius: 15px; display: none; margin-top: 10px; border: 1px solid #ddd; }
-
-        .btn-submit { width: 100%; padding: 18px; border-radius: 15px; background: #1a1a1a; color: white; border: none; font-weight: 800; cursor: pointer; transition: 0.3s; font-size: 1rem; }
-        .btn-submit:disabled { background: #94a3b8; cursor: not-allowed; }
-        
-        .btn-wa { display: none; width: 100%; padding: 15px; border-radius: 15px; background: #22c55e; color: white; border: none; font-weight: 800; cursor: pointer; text-decoration: none; align-items: center; justify-content: center; gap: 10px; margin-top: 10px; box-sizing: border-box; }
-        
-        label { font-weight: 800; font-size: 0.75rem; color: #64748b; margin-bottom: 8px; display: block; text-align: left; }
+        input { width: 100%; padding: 15px; border-radius: 15px; border: 1.5px solid #e2e8f0; margin-bottom: 15px; text-align: center; font-weight: 800; font-family: 'inter'; }
+        .qris-box { display: none; margin-top: 10px; }
+        .qris-img { width: 100%; border-radius: 20px; border: 1px solid #ddd; margin-bottom: 10px; }
+        .upload-area { border: 2px dashed #cbd5e1; padding: 20px; border-radius: 20px; cursor: pointer; background: #f8fafc; margin-top: 15px; position: relative; }
+        #preview-img { width: 100%; border-radius: 15px; display: none; margin-top: 10px; }
+        .btn { width: 100%; padding: 15px; border-radius: 15px; border: none; background: #1a1a1a; color: white; font-weight: 800; cursor: pointer; margin-top: 15px; font-size: 1rem; }
+        .btn:disabled { background: #94a3b8; }
+        .btn-wa { background: #25d366; display: none; text-decoration: none; align-items: center; justify-content: center; gap: 10px; box-sizing: border-box; }
+        label { display: block; text-align: left; font-size: 0.75rem; font-weight: 800; color: #64748b; margin-bottom: 5px; }
     </style>
 </head>
 <body>
 
-    <div class="header-depo">
-        <a href="dashboard.html" class="btn-back"><i class="fa-solid fa-arrow-left"></i></a>
-        <h3 style="margin: 0;">isi saldo / deposit</h3>
+<div class="depo-card">
+    <h3 style="font-weight: 900; margin-bottom: 20px;">top up saldo</h3>
+    
+    <div id="step-1">
+        <label>masukkan nominal deposit</label>
+        <input type="number" id="nominal" placeholder="min. 10.000">
+        <button class="btn" onclick="showQRIS()">lanjut pembayaran</button>
     </div>
 
-    <div class="depo-card">
-        <span class="qris-title"><i class="fa-solid fa-qrcode"></i> scan qris untuk bayar</span>
+    <div id="step-2" class="qris-box">
+        <img src="https://i.ibb.co.com/0Rnz0P74/IMG-20260505-WA0059.jpg" class="qris-img">
+        <p style="font-size: 0.7rem; color: #ef4444; font-weight: 800; margin-bottom: 15px;">*silahkan transfer sesuai nominal</p>
         
-        <div class="qris-container">
-            <img src="https://i.ibb.co.com/0Rnz0P74/IMG-20260505-WA0059.jpg" alt="QRIS Pembayaran">
+        <label>upload bukti transfer</label>
+        <div class="upload-area" onclick="document.getElementById('file-input').click()">
+            <i class="fa-solid fa-camera" id="icon-camera"></i>
+            <p id="upload-text" style="font-size: 0.8rem; font-weight: 700; margin: 5px 0;">klik untuk pilih foto</p>
+            <img id="preview-img">
+            <input type="file" id="file-input" hidden accept="image/*" onchange="previewFile()">
         </div>
 
-        <label>1. masukkan nominal transfer</label>
-        <input type="number" id="nominal" placeholder="rp 0" required>
-
-        <label>2. upload bukti transfer</label>
-        <div class="upload-area">
-            <i class="fa-solid fa-cloud-arrow-up"></i>
-            <p id="file-name" style="margin: 0; font-weight: 600; font-size: 0.8rem;">klik untuk pilih foto</p>
-            <input type="file" id="file-input" accept="image/*" onchange="previewImage(this)">
-            <img id="preview">
-        </div>
-
-        <button class="btn-submit" id="btn-submit" onclick="kirimKonfirmasi()">kirim konfirmasi</button>
+        <button id="btn-submit" class="btn" onclick="kirimKonfirmasi()">kirim bukti ke admin</button>
         
-        <a href="#" id="btn-wa" class="btn-wa" target="_blank">
-            <i class="fa-brands fa-whatsapp"></i> chat admin (fast respon)
+        <a id="btn-wa" class="btn btn-wa" target="_blank">
+            <i class="fa-brands fa-whatsapp"></i> chat admin (konfirmasi)
         </a>
     </div>
+</div>
 
-    <script>
-        // Inisialisasi Firebase
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
+
+<script>
+    // 1. Inisialisasi Variabel Global
+    let db;
+    const firebaseConfig = {
+        apiKey: "AIzaSyDGRsCcT-7Bv_nOAybjXyuIT6Ca0IT4YTg",
+        databaseURL: "https://market-d978f-default-rtdb.asia-southeast1.firebasedatabase.app",
+        projectId: "market-d978f"
+    };
+
+    // 2. Fungsi Inisialisasi Firebase (Mencegah error 'db' before initialization)
+    function initFirebase() {
         if (!firebase.apps.length) {
             firebase.initializeApp(firebaseConfig);
         }
-        const db = firebase.database();
+        db = firebase.database();
+    }
 
-        // Preview Gambar sebelum upload
-        function previewImage(input) {
-            const file = input.files[0];
-            const preview = document.getElementById('preview');
-            const fileName = document.getElementById('file-name');
-            
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    preview.src = e.target.result;
-                    preview.style.display = 'block';
-                    fileName.innerText = file.name;
-                }
-                reader.readAsDataURL(file);
+    // Jalankan inisialisasi segera
+    initFirebase();
+
+    function showQRIS() {
+        const nom = document.getElementById('nominal').value;
+        if (!nom || nom < 10000) return alert("minimal deposit 10.000");
+        document.getElementById('step-1').style.display = 'none';
+        document.getElementById('step-2').style.display = 'block';
+    }
+
+    function previewFile() {
+        const file = document.getElementById('file-input').files[0];
+        const preview = document.getElementById('preview-img');
+        const icon = document.getElementById('icon-camera');
+        const text = document.getElementById('upload-text');
+        
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                preview.src = e.target.result;
+                preview.style.display = 'block';
+                icon.style.display = 'none';
+                text.style.display = 'none';
             }
+            reader.readAsDataURL(file);
         }
+    }
 
-        async function kirimKonfirmasi() {
-            const token = localStorage.getItem('sessionToken'); // Token user login
-            const nominal = document.getElementById('nominal').value;
-            const fileInput = document.getElementById('file-input');
-            const btn = document.getElementById('btn-submit');
+    async function kirimKonfirmasi() {
+        const token = localStorage.getItem('sessionToken');
+        const nominal = document.getElementById('nominal').value;
+        const file = document.getElementById('file-input').files[0];
+        const btn = document.getElementById('btn-submit');
+        
+        if (!token) return alert("sesi habis, silahkan login kembali");
+        if (!file) return alert("mohon upload bukti transfer!");
+        
+        btn.disabled = true;
+        btn.innerText = "sedang mengirim...";
+
+        try {
+            // Upload ke ImgBB
+            const formData = new FormData();
+            formData.append("image", file);
             
-            if (!token) return alert("silahkan login dulu!");
-            if (!nominal || nominal < 100) return alert("masukkan nominal yang benar!");
-            if (!fileInput.files[0]) return alert("upload bukti transfer!");
+            const res = await fetch("https://api.imgbb.com/1/upload?key=50145b1eaa1385c3d9549ebe496eb5b5", { 
+                method: "POST", 
+                body: formData 
+            });
+            
+            const dataImg = await res.json();
+            if (!dataImg.success) throw new Error("gagal upload gambar");
+            
+            const imageUrl = dataImg.data.url;
+            const depoId = "depo-" + Date.now();
 
-            btn.disabled = true;
-            btn.innerText = "mengupload bukti...";
+            // Pastikan 'db' sudah ada sebelum dipakai
+            if (!db) initFirebase();
 
-            try {
-                // 1. Upload ke ImgBB (Wajib agar admin bisa lihat foto)
-                const formData = new FormData();
-                formData.append("image", fileInput.files[0]);
-                
-                const apiKeyImgbb = "50145b1eaa1385c3d9549ebe496eb5b5"; 
-                const res = await fetch(`https://api.imgbb.com/1/upload?key=${apiKeyImgbb}`, {
-                    method: "POST",
-                    body: formData
-                });
-                
-                const dataRes = await res.json();
-                if (!dataRes.success) throw new Error("gagal upload ke server gambar");
+            await db.ref('pending_deposit/' + depoId).set({
+                depoId: depoId,
+                token: token,
+                nominal: parseInt(nominal),
+                imageUrl: imageUrl,
+                status: "pending",
+                time: new Date().toLocaleString()
+            });
 
-                const imageUrl = dataRes.data.url; // URL Gambar Permanen
-                const depoId = "depo-" + Date.now();
+            alert("bukti terkirim! saldo akan masuk setelah dicek admin.");
+            
+            // Tampilkan tombol WA
+            const pesan = `hallo admin, saya sudah deposit:\nid: ${depoId}\nnominal: rp ${nominal}\nbukti: ${imageUrl}`;
+            const btnWa = document.getElementById('btn-wa');
+            btnWa.href = `https://wa.me/628123456789?text=${encodeURIComponent(pesan)}`; // GANTI NOMOR WA DISINI
+            btnWa.style.display = 'flex';
+            btn.style.display = 'none';
 
-                // 2. Simpan ke Firebase
-                await db.ref('pending_deposit/' + depoId).set({
-                    depoId: depoId,
-                    token: token,
-                    nominal: parseInt(nominal),
-                    imageUrl: imageUrl,
-                    status: "pending",
-                    time: new Date().toLocaleString()
-                });
-
-                alert("konfirmasi terkirim! mohon tunggu admin mengecek.");
-
-                // 3. Siapkan Tombol WhatsApp
-                const pesan = `hallo admin, saya deposit saldo:\nid: ${depoId}\nnominal: rp ${nominal}\nbukti: ${imageUrl}`;
-                const btnWa = document.getElementById('btn-wa');
-                btnWa.href = `https://wa.me/628123456789?text=${encodeURIComponent(pesan)}`; // Ganti nomor admin Anda
-                btnWa.style.display = 'flex';
-                btn.style.display = 'none';
-
-            } catch (error) {
-                console.error(error);
-                alert("error: " + error.message);
-                btn.disabled = false;
-                btn.innerText = "kirim konfirmasi";
-            }
+        } catch (e) { 
+            alert("gagal mengirim: " + e.message); 
+            btn.disabled = false;
+            btn.innerText = "kirim bukti ke admin";
         }
-    </script>
+    }
+</script>
 </body>
 </html>
