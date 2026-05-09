@@ -3,108 +3,123 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>e-receipt</title>
+    <title>e-receipt premium</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
 
-        body { 
-            background: #f1f5f9; color: #1e293b; font-family: 'Plus Jakarta Sans', sans-serif; 
-            margin: 0; padding: 0; text-transform: lowercase;
+        :root {
+            --primary: #2563eb;
+            --secondary: #64748b;
+            --success: #16a34a;
+            --warning: #fbbe24;
+            --dark: #0f172a;
+            --bg: #f8fafc;
         }
 
-        .container { max-width: 450px; margin: 0 auto; padding: 20px 20px 80px; }
+        body { 
+            background: var(--bg); color: var(--dark); font-family: 'Plus Jakarta Sans', sans-serif; 
+            margin: 0; padding: 0; text-transform: lowercase; letter-spacing: -0.2px;
+        }
+
+        .container { max-width: 450px; margin: 0 auto; padding: 20px 20px 100px; }
 
         .header {
             display: flex; align-items: center; justify-content: space-between;
-            margin-bottom: 20px; padding: 10px 5px;
+            margin-bottom: 25px; padding: 10px 5px;
         }
 
         .btn-back {
             width: 45px; height: 45px; background: white; border-radius: 16px;
             display: flex; align-items: center; justify-content: center;
-            color: #1e293b; text-decoration: none; box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            color: var(--dark); text-decoration: none; box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+            border: 1px solid #f1f5f9;
         }
 
         .invoice-card {
-            background: white; border-radius: 35px; padding: 30px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.03); border: 1px solid rgba(255,255,255,1);
+            background: white; border-radius: 35px; padding: 35px 25px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.04); border: 1px solid #ffffff;
             position: relative; overflow: hidden;
         }
 
         .invoice-card::before {
-            content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 6px;
-            background: linear-gradient(90deg, #2563eb, #60a5fa);
+            content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 8px;
+            background: linear-gradient(90deg, var(--primary), #60a5fa);
         }
 
         .status-badge {
-            display: inline-block; padding: 8px 18px; background: #f0fdf4;
-            color: #16a34a; border-radius: 12px; font-size: 0.7rem;
-            font-weight: 800; text-transform: uppercase; margin-bottom: 25px;
+            display: inline-flex; align-items: center; gap: 6px;
+            padding: 8px 16px; background: #f0fdf4;
+            color: var(--success); border-radius: 100px; font-size: 0.65rem;
+            font-weight: 800; text-transform: uppercase; margin-bottom: 30px;
         }
 
         .product-box { text-align: center; margin-bottom: 30px; }
         .product-box img { 
-            width: 110px; height: 110px; border-radius: 28px; 
-            object-fit: cover; margin-bottom: 15px; box-shadow: 0 15px 30px rgba(0,0,0,0.08);
-            border: 2px solid #f1f5f9;
+            width: 120px; height: 120px; border-radius: 30px; 
+            object-fit: cover; margin-bottom: 15px; box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+            border: 3px solid #f8fafc;
         }
 
         .price-tag {
-            background: #f8fafc; padding: 20px; border-radius: 22px;
+            background: #f8fafc; padding: 22px; border-radius: 24px;
             display: flex; justify-content: space-between; align-items: center;
-            margin-bottom: 25px; border: 1px dashed #e2e8f0;
-        }
-
-        /* Khusus Joki */
-        .joki-instruction {
-            background: #fffbeb; border: 1.5px solid #fef3c7;
-            padding: 20px; border-radius: 24px; margin-bottom: 20px;
-        }
-        .btn-copy-template {
-            display: flex; align-items: center; justify-content: center; gap: 8px;
-            width: 100%; padding: 12px; background: #92400e; color: white;
-            border-radius: 14px; cursor: pointer; font-size: 0.7rem; font-weight: 800; text-transform: uppercase;
+            margin-bottom: 30px; border: 1.5px dashed #e2e8f0;
         }
 
         .info-title { 
-            font-size: 0.7rem; font-weight: 800; color: #94a3b8; 
-            text-transform: uppercase; margin-bottom: 15px; display: block;
-            letter-spacing: 1px;
+            font-size: 0.7rem; font-weight: 800; color: var(--secondary); 
+            text-transform: uppercase; margin: 25px 0 15px; display: block;
+            letter-spacing: 1px; padding-left: 5px;
+        }
+
+        /* Group Rincian Akun */
+        .account-group {
+            background: #f8fafc; border: 1.5px solid #f1f5f9;
+            border-radius: 24px; padding: 10px; margin-bottom: 15px;
         }
 
         .data-tile {
-            background: #ffffff; border: 1.5px solid #f1f5f9;
-            padding: 16px; border-radius: 20px; margin-bottom: 12px;
+            background: #ffffff; border-radius: 18px;
+            padding: 15px; margin-bottom: 8px;
+            border: 1px solid rgba(0,0,0,0.02);
         }
+        .data-tile:last-child { margin-bottom: 0; }
 
-        .tile-label { font-size: 0.6rem; font-weight: 800; color: #94a3b8; display: block; margin-bottom: 6px; }
-        .tile-content { display: flex; align-items: center; justify-content: space-between; font-weight: 700; font-size: 0.9rem; color: #0f172a; }
+        .tile-label { font-size: 0.6rem; font-weight: 800; color: var(--secondary); display: block; margin-bottom: 4px; text-transform: uppercase; }
+        .tile-content { display: flex; align-items: center; justify-content: space-between; font-weight: 700; font-size: 0.9rem; color: var(--dark); }
         
         .btn-copy { 
-            width: 32px; height: 32px; background: #eff6ff; color: #2563eb; 
+            width: 32px; height: 32px; background: #eff6ff; color: var(--primary); 
             display: flex; align-items: center; justify-content: center;
             border-radius: 10px; cursor: pointer; font-size: 0.8rem;
         }
 
-        .rating-card {
-            background: white; border-radius: 30px; padding: 25px; margin-top: 20px;
-            box-shadow: 0 15px 35px rgba(0,0,0,0.02); text-align: center;
+        #note-box {
+            background: #fffbeb; padding: 20px; border-radius: 22px; 
+            margin-top: 10px; border: 1.5px solid #fef3c7;
         }
-        .stars-input { display: flex; justify-content: center; gap: 12px; margin: 20px 0; }
-        .stars-input i { font-size: 2rem; color: #e2e8f0; cursor: pointer; transition: 0.3s; }
-        .stars-input i.active { color: #fbbe24; transform: scale(1.1); }
+
+        /* Rating Section */
+        .rating-card {
+            background: white; border-radius: 30px; padding: 30px 25px; margin-top: 25px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.02); text-align: center;
+            border: 1px solid #f1f5f9;
+        }
+        .stars-input { display: flex; justify-content: center; gap: 14px; margin: 20px 0; }
+        .stars-input i { font-size: 2.2rem; color: #e2e8f0; cursor: pointer; transition: 0.2s; }
+        .stars-input i.active { color: var(--warning); transform: scale(1.1); }
         
         .comment-input {
-            width: 100%; border: 1.5px solid #f1f5f9; border-radius: 18px; padding: 15px;
+            width: 100%; border: 1.5px solid #f1f5f9; border-radius: 20px; padding: 18px;
             font-family: inherit; font-size: 0.85rem; outline: none; box-sizing: border-box;
-            resize: none; margin-bottom: 15px;
+            resize: none; margin-bottom: 20px; background: #f8fafc;
         }
 
         .btn-post {
-            width: 100%; padding: 16px; background: #0f172a; color: white; border: none;
-            border-radius: 18px; font-weight: 800; cursor: pointer; text-transform: uppercase;
-            font-size: 0.75rem;
+            width: 100%; padding: 18px; background: var(--dark); color: white; border: none;
+            border-radius: 20px; font-weight: 800; cursor: pointer; text-transform: uppercase;
+            font-size: 0.8rem;
         }
 
         #loading-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: white; z-index: 1000; display: flex; align-items: center; justify-content: center; }
@@ -112,50 +127,65 @@
 </head>
 <body>
 
-<div id="loading-screen"><i class="fa-solid fa-circle-notch fa-spin" style="font-size: 2rem; color: #2563eb;"></i></div>
+<div id="loading-screen"><i class="fa-solid fa-circle-notch fa-spin" style="font-size: 2rem; color: var(--primary);"></i></div>
 
 <div class="container">
     <div class="header">
-        <a href="riwayat-user.html" class="btn-back"><i class="fa-solid fa-arrow-left"></i></a>
-        <span style="font-weight: 800; font-size: 0.9rem;">e-receipt</span>
+        <a href="riwayat-user.html" class="btn-back"><i class="fa-solid fa-chevron-left"></i></a>
+        <span style="font-weight: 800; font-size: 1rem; color: var(--dark);">e-receipt</span>
         <div style="width: 45px;"></div>
     </div>
 
     <div class="invoice-card">
-        <center><div id="inv-status" class="status-badge">loading...</div></center>
+        <center><div id="inv-status" class="status-badge"><i class="fa-solid fa-circle-check"></i> sukses</div></center>
         
         <div class="product-box">
             <img id="inv-img" src="">
-            <h3 id="inv-name" style="margin:0; font-size: 1.2rem; font-weight: 800;">nama produk</h3>
-            <p id="inv-id" style="color: #94a3b8; font-size: 0.75rem; margin-top: 6px;">inv-id</p>
+            <h3 id="inv-name" style="margin:0; font-size: 1.3rem; font-weight: 800;">nama produk</h3>
+            <p id="inv-id" style="color: var(--secondary); font-size: 0.75rem; margin-top: 8px;">#INV-ID</p>
         </div>
 
         <div class="price-tag">
-            <span style="font-weight: 700; color: #64748b; font-size: 0.8rem;">total bayar</span>
-            <span id="inv-total" style="font-weight: 900; color: #2563eb; font-size: 1.25rem;">rp 0</span>
+            <span style="font-weight: 700; color: var(--secondary); font-size: 0.8rem;">total bayar</span>
+            <span id="inv-total" style="font-weight: 900; color: var(--primary); font-size: 1.3rem;">rp 0</span>
         </div>
 
-        <div id="joki-area" style="display: none;">
-            <div class="joki-instruction">
-                <h4 style="margin:0; font-size:0.75rem; color:#92400e; text-transform:uppercase; margin-bottom:8px;"><i class="fa-solid fa-pen-to-square"></i> formulir data akun</h4>
-                <p style="font-size: 0.7rem; color: #92400e; margin-bottom: 15px; line-height: 1.4; font-weight: 600;">salin template di bawah, isi datanya, lalu kirim ke satriahubdeals@gmail.com</p>
-                <div class="btn-copy-template" onclick="copyTemplate()">
-                    <i class="fa-solid fa-copy"></i> salin template joki
+        <span class="info-title"><i class="fa-solid fa-lock"></i> rincian akun rahasia</span>
+        
+        <div class="account-group">
+            <div class="data-tile">
+                <span class="tile-label">email / username</span>
+                <div class="tile-content">
+                    <span id="acc-email">-</span>
+                    <div class="btn-copy" onclick="copyText('acc-email')"><i class="fa-regular fa-copy"></i></div>
+                </div>
+            </div>
+
+            <div class="data-tile">
+                <span class="tile-label">kata sandi</span>
+                <div class="tile-content">
+                    <span id="acc-pass">-</span>
+                    <div class="btn-copy" onclick="copyText('acc-pass')"><i class="fa-regular fa-copy"></i></div>
+                </div>
+            </div>
+
+            <div class="data-tile">
+                <span class="tile-label">status a2f</span>
+                <div class="tile-content">
+                    <span id="acc-a2f">-</span>
+                    <div id="badge-a2f"></div>
                 </div>
             </div>
         </div>
 
-        <span class="info-title">rincian akun</span>
-        <div id="account-data-list"></div>
-
-        <div id="note-box" style="background: #fffbeb; padding: 16px; border-radius: 18px; margin-top: 10px; border: 1px solid #fef3c7; display: none;">
-            <span class="tile-label" style="color: #92400e;">catatan:</span>
-            <p id="acc-note" style="font-size: 0.8rem; color: #92400e; margin: 5px 0 0; line-height: 1.4;"></p>
+        <div id="note-box" style="display: none;">
+            <span class="tile-label" style="color: #92400e;">informasi tambahan :</span>
+            <p id="acc-note" style="font-size: 0.85rem; color: #92400e; margin: 8px 0 0; line-height: 1.5; font-weight: 500;"></p>
         </div>
     </div>
 
     <div class="rating-card" id="rating-area">
-        <h4 id="rating-title" style="margin:0; font-size:0.9rem; font-weight: 800;">beri rating untuk toko ini</h4>
+        <h4 style="margin:0; font-size:1rem; font-weight: 800;">beri rating toko</h4>
         <div class="stars-input" id="star-container">
             <i class="fa-solid fa-star" onclick="setStar(1)"></i>
             <i class="fa-solid fa-star" onclick="setStar(2)"></i>
@@ -184,9 +214,8 @@
     const orderId = urlParams.get('id');
     let selectedRating = 0;
     let currentProdId = "";
+    let ownerToken = "";
     let buyerName = "";
-    let ownerToken = ""; // Untuk identifikasi toko
-    let templateTeks = "";
 
     function loadInvoice() {
         if (!orderId) return window.location.href = 'riwayat-user.html';
@@ -196,48 +225,29 @@
             if (snap.exists()) {
                 const data = snap.val();
                 currentProdId = data.productId;
-                buyerName = data.namaPembeli || 'user';
-                ownerToken = data.ownerToken; // Ambil token penjual
+                ownerToken = data.ownerToken || data.tokenOwner || "";
+                buyerName = data.namaPembeli || "pembeli";
 
                 document.getElementById('inv-img').src = data.foto || '../logo/joki.jpg';
                 document.getElementById('inv-name').innerText = data.nama;
-                document.getElementById('inv-id').innerText = data.orderId;
-                document.getElementById('inv-total').innerText = "rp " + data.total.toLocaleString('id-ID');
-                document.getElementById('inv-status').innerText = data.status || 'sukses';
+                document.getElementById('inv-id').innerText = "#" + data.orderId;
+                document.getElementById('inv-total').innerText = "rp " + (data.total || 0).toLocaleString('id-ID');
                 
-                // Set Template Joki jika tipenya jasa
-                if (data.type === 'jasa') {
-                    document.getElementById('joki-area').style.display = 'block';
-                    templateTeks = `HAI, SAYA ORDER JASA ${data.nama.toUpperCase()} DI ${data.namaToko ? data.namaToko.toUpperCase() : 'STORE'}\n\nData akun :\nEmail : \nPassword: \nLog via : \nRank: \n\nMohon segera diproses!`;
-                }
-
-                const listContainer = document.getElementById('account-data-list');
-                listContainer.innerHTML = "";
+                // MAPPING DATA AKUN (Sesuai Struktur Ajukan Produk)
+                // Kita cek di data.akun atau data.dataAkun
+                const akun = data.akun || data.dataAkun || {};
                 
-                if (data.dataAkun) {
-                    Object.entries(data.dataAkun).forEach(([key, val]) => {
-                        if (val && key !== 'tambahan') {
-                            const uniqueId = 'val-' + Math.random().toString(36).substr(2, 9);
-                            listContainer.innerHTML += `
-                                <div class="data-tile">
-                                    <span class="tile-label">${key}</span>
-                                    <div class="tile-content">
-                                        <span id="${uniqueId}">${val}</span>
-                                        <div class="btn-copy" onclick="copyText('${uniqueId}')"><i class="fa-regular fa-copy"></i></div>
-                                    </div>
-                                </div>
-                            `;
-                        }
-                    });
-
-                    if(data.dataAkun.tambahan) {
-                        document.getElementById('note-box').style.display = 'block';
-                        document.getElementById('acc-note').innerText = data.dataAkun.tambahan;
-                    }
+                document.getElementById('acc-email').innerText = akun.email || "-";
+                document.getElementById('acc-pass').innerText = akun.pass || "-";
+                document.getElementById('acc-a2f').innerText = akun.a2f || "off";
+                
+                if (akun.tambahan) {
+                    document.getElementById('note-box').style.display = 'block';
+                    document.getElementById('acc-note').innerText = akun.tambahan;
                 }
 
                 if (data.rated) {
-                    document.getElementById('rating-area').innerHTML = `<p style="color:#16a34a; font-weight:800; font-size:0.8rem; margin:10px 0;"><i class="fa-solid fa-circle-check"></i> ulasan telah diberikan</p>`;
+                    document.getElementById('rating-area').innerHTML = `<p style="color:var(--success); font-weight:800; font-size:0.9rem;"><i class="fa-solid fa-circle-check"></i> ulasan telah diberikan</p>`;
                 }
             }
         });
@@ -252,40 +262,27 @@
 
     async function postReview() {
         if (selectedRating === 0) return alert("pilih bintang dulu");
-        const comment = document.getElementById('user-comment').value;
+        if (!ownerToken) return alert("data owner tidak ditemukan");
+
+        const comment = document.getElementById('user-comment').value || "mantap!";
         const btn = document.getElementById('btn-rating');
         btn.disabled = true;
 
         try {
-            // 1. Simpan Review
-            await db.ref('reviews').push({
+            // Push ke koleksi reviews
+            await db.ref('reviews/' + currentProdId).push({
                 productId: currentProdId,
                 ownerToken: ownerToken,
                 rating: selectedRating,
-                komentar: comment,
-                user: buyerName,
+                comment: comment,
+                userName: buyerName,
                 timestamp: Date.now()
             });
 
-            // 2. Hitung Ulang Rating Toko
-            if (ownerToken) {
-                const revSnap = await db.ref('reviews').orderByChild('ownerToken').equalTo(ownerToken).get();
-                let totalStar = 0;
-                let count = 0;
-                revSnap.forEach(child => {
-                    totalStar += child.val().rating;
-                    count++;
-                });
-                const newAvg = (totalStar / count).toFixed(1);
-                
-                // Update ke data user/toko
-                await db.ref('users/' + ownerToken).update({
-                    ratingJasa: parseFloat(newAvg)
-                });
-            }
-
+            // Update status pesanan agar tidak bisa rating lagi
             await db.ref('pembelian/' + orderId).update({ rated: true });
-            alert("terima kasih! rating toko telah diperbarui.");
+            
+            alert("terima kasih atas ulasannya!");
             location.reload();
         } catch (e) {
             alert(e.message);
@@ -293,15 +290,11 @@
         }
     }
 
-    function copyTemplate() {
-        navigator.clipboard.writeText(templateTeks);
-        alert("template joki disalin!");
-    }
-
     function copyText(id) {
         const text = document.getElementById(id).innerText;
+        if(text === "-") return;
         navigator.clipboard.writeText(text);
-        alert("berhasil disalin");
+        alert("disalin: " + text);
     }
 
     window.onload = loadInvoice;
