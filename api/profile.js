@@ -36,18 +36,18 @@ export default async function handler(req, res) {
             return res.status(404).json({ status: false, message: "api key tidak ditemukan" });
         }
 
-        let userData = {};
-        snapshot.forEach(child => { userData = child.val(); });
+        let userData = null;
+        snapshot.forEach(child => { 
+            userData = child.val(); 
+        });
 
-        // --- LOGIKA PENGECEKAN BLOKIR ADMIN ---
-        if (userData.api_status === "blocked") {
+        // CEK BLOKIR DISINI (Di luar loop forEach)
+        if (userData && userData.api_status === "blocked") {
             return res.status(403).json({ 
                 status: false, 
-                message: "ERROR API KAMU DI BLOKIR ADMIN",
-                error_code: "API_BLOCKED" 
+                message: "ERROR API KAMU DI BLOKIR ADMIN" 
             });
         }
-        // --------------------------------------
 
         return res.status(200).json({
             status: true,
@@ -55,8 +55,7 @@ export default async function handler(req, res) {
                 username: userData.fullname,
                 phone: userData.phone,
                 role: userData.role || "user",
-                apiKey: userData.apiKey,
-                status: userData.api_status || "active"
+                apiKey: userData.apiKey
             }
         });
     } catch (error) {
