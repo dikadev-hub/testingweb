@@ -13,7 +13,6 @@
         .container { max-width: 500px; margin: 0 auto; }
         .header { display: flex; align-items: center; gap: 15px; margin-bottom: 25px; }
         .btn-back { width: 40px; height: 40px; border-radius: 12px; border: 1px solid #e2e8f0; display: flex; align-items: center; justify-content: center; color: #1a1a1a; text-decoration: none; background: white; }
-        
         .list-rekap { display: flex; flex-direction: column; gap: 10px; }
         .card-rekap {
             background: white; padding: 18px 22px; border-radius: 20px;
@@ -23,9 +22,7 @@
         }
         .owner-name { font-weight: 800; color: #1e293b; font-size: 0.9rem; display: flex; align-items: center; gap: 10px; }
         .owner-name i { color: #007bff; font-size: 0.8rem; }
-        
         .total-amount { font-weight: 900; color: #15803d; font-size: 0.95rem; }
-        
         #loader { text-align: center; padding: 40px; color: #007bff; }
     </style>
 </head>
@@ -55,8 +52,7 @@
 
     async function hitungRekapOwner() {
         try {
-            // Ambil semua transaksi yang sukses
-            const snapshot = await db.ref('transactions').orderByChild('status').equalTo('success').once('value');
+            const snapshot = await db.ref('total_penjualan').once('value');
             const container = document.getElementById('rekap-container');
             document.getElementById('loader').style.display = 'none';
 
@@ -65,30 +61,26 @@
                 return;
             }
 
-            let rekap = {}; // Tempat nampung { "namaowner": total }
+            let rekap = {}; 
 
             snapshot.forEach(child => {
                 const data = child.val();
-                const nama = data.ownerName || "tanpa nama";
-                const nominal = parseInt(data.totalHarga || 0);
+                const idOwner = data.ownerToken || "owner_tidak_dikenal";
+                const nominal = parseInt(data.masukKeOwner || 0);
 
-                // Abaikan jika itu admin pusat
-                if (nama === "TERTINGGI DI WEBSITE INI 😼") return;
-
-                if (!rekap[nama]) {
-                    rekap[nama] = 0;
+                if (!rekap[idOwner]) {
+                    rekap[idOwner] = 0;
                 }
-                rekap[nama] += nominal;
+                rekap[idOwner] += nominal;
             });
 
-            // Render ke HTML
             container.innerHTML = "";
-            for (const [nama, total] of Object.entries(rekap)) {
+            for (const [id, total] of Object.entries(rekap)) {
                 container.innerHTML += `
                     <div class="card-rekap">
                         <div class="owner-name">
                             <i class="fa-solid fa-store"></i>
-                            ${nama}
+                            owner: ${id.substring(0, 8)}...
                         </div>
                         <div class="total-amount">rp ${total.toLocaleString('id-ID')}</div>
                     </div>
@@ -96,7 +88,6 @@
             }
 
         } catch (error) {
-            console.error(error);
             document.getElementById('loader').innerHTML = "error memuat data.";
         }
     }
