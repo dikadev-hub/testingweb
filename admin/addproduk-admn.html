@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>admin | tertinggi 😼</title>
+    <title>admin | petinggi web 😼</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
         body { 
@@ -22,15 +22,13 @@
             margin-bottom: 15px; font-weight: 600; font-size: 0.85rem; transition: 0.3s;
             text-transform: lowercase;
         }
-        input:focus, select:focus, textarea:focus { border-color: #007bff; background: white; }
         
         .merchant-badge {
-            background: #fff1f2; border: 1px solid #fecdd3; padding: 12px; border-radius: 15px;
+            background: #1a1a1a; border: 1px solid #334155; padding: 12px; border-radius: 15px;
             margin-bottom: 20px; display: flex; align-items: center; gap: 10px;
-            color: #be123c; font-size: 0.75rem; font-weight: 800;
+            color: #ffffff; font-size: 0.75rem; font-weight: 800;
         }
 
-        /* multi image style */
         .image-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 20px; }
         .img-slot { 
             aspect-ratio: 1/1; background: #f8fafc; border: 2px dashed #e2e8f0; 
@@ -38,12 +36,10 @@
             overflow: hidden; cursor: pointer; position: relative;
         }
         .img-slot img { width: 100%; height: 100%; object-fit: cover; }
-        .img-slot i { color: #007bff; font-size: 1.2rem; }
 
         .secret-box { background: #fff5f5; border: 1px solid #feb2b2; padding: 20px; border-radius: 20px; margin-top: 15px; margin-bottom: 20px; }
-        .secret-box h4 { margin: 0 0 15px 0; font-size: 0.75rem; color: #c53030; text-transform: lowercase; display: flex; align-items: center; gap: 8px; }
         .action-area { position: fixed; bottom: 0; left: 0; width: 100%; background: rgba(240, 244, 248, 0.9); backdrop-filter: blur(10px); padding: 15px 20px 20px; box-sizing: border-box; z-index: 100; }
-        .btn-submit { width: 100%; max-width: 460px; margin: 0 auto; display: block; padding: 18px; background: #1a1a1a; color: white; border: none; border-radius: 15px; font-weight: 800; cursor: pointer; transition: 0.3s; text-transform: lowercase; font-size: 0.85rem; }
+        .btn-submit { width: 100%; max-width: 460px; margin: 0 auto; display: block; padding: 18px; background: #1a1a1a; color: white; border: none; border-radius: 15px; font-weight: 800; cursor: pointer; text-transform: lowercase; }
         
         #loading-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
@@ -56,37 +52,36 @@
 
 <div id="loading-overlay">
     <i class="fa-solid fa-circle-notch fa-spin" style="font-size: 2rem; color: #007bff;"></i>
-    <p id="loading-text" style="margin-top: 15px; font-weight: 700; font-size: 0.8rem;">sedang mengunggah...</p>
+    <p id="loading-text" style="margin-top: 15px; font-weight: 700; font-size: 0.8rem;">sedang memproses...</p>
 </div>
 
 <div class="container">
     <div class="header">
         <a href="dashboard.html" class="btn-back"><i class="fa-solid fa-arrow-left"></i></a>
-        <h2 style="font-size: 1rem; margin: 0; font-weight: 900;">tambah produk tertinggi 😼</h2>
+        <h2 style="font-size: 1rem; margin: 0; font-weight: 900;">tambah produk petinggi 😼</h2>
     </div>
 
     <div class="card">
         <div class="merchant-badge">
-            <i class="fa-solid fa-crown"></i>
-            <span>pangkat: <b>TERTINGGI DI WEBSITE INI 😼</b></span>
+            <i class="fa-solid fa-crown" style="color: #fbbf24;"></i>
+            <span>pangkat: <b>PETINGGI WEB INI 😼</b></span>
         </div>
 
-        <label>foto produk (bisa banyak) :</label>
+        <label>foto produk :</label>
         <div class="image-grid" id="preview-container">
             <div class="img-slot" onclick="document.getElementById('file-input').click()">
-                <i class="fa-solid fa-plus"></i>
+                <i class="fa-solid fa-plus" style="color: #007bff;"></i>
             </div>
         </div>
         <input type="file" id="file-input" hidden multiple accept="image/*" onchange="prosesMultiFoto(this)">
 
         <label>nama produk :</label>
-        <input type="text" id="nama-produk" placeholder="nama produk">
+        <input type="text" id="nama-produk" placeholder="masukkan nama produk">
 
         <label>kategori :</label>
         <select id="kategori-produk">
             <option value="akun">akun</option>
             <option value="app prem">app prem</option>
-            <option value="e-book">e-book</option>
             <option value="produk digital">produk digital</option>
             <option value="lain nya">lain nya</option>
         </select>
@@ -97,47 +92,28 @@
                 <input type="number" id="stok-produk" value="999">
             </div>
             <div>
-                <label>id (otomatis) :</label>
-                <input type="text" id="id-produk" readonly style="background: #e2e8f0;">
+                <label>harga jual (rp) :</label>
+                <input type="number" id="harga-final" placeholder="7000">
             </div>
         </div>
-
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
-            <div>
-                <label>harga awal (rp) :</label>
-                <input type="number" id="harga-awal" oninput="hitunghargafinal()">
-            </div>
-            <div>
-                <label>diskon (%) :</label>
-                <input type="number" id="persen-diskon" value="0" oninput="hitunghargafinal()">
-            </div>
-        </div>
-
-        <label>harga jual akhir :</label>
-        <input type="number" id="harga-final" readonly style="background: #e2e8f0; color: #007bff; font-weight: 800;">
 
         <label>deskripsi produk :</label>
-        <textarea id="desc-produk" rows="4"></textarea>
+        <textarea id="desc-produk" rows="3" placeholder="deskripsi untuk pembeli..."></textarea>
 
         <div class="secret-box">
-            <h4><i class="fa-solid fa-lock"></i> data akun rahasia</h4>
-            <label>email / username :</label>
+            <h4 style="margin:0 0 15px 0; font-size:0.7rem; color:#c53030;"><i class="fa-solid fa-lock"></i> data untuk pembeli (otomatis kirim)</h4>
+            <label>email / user :</label>
             <input type="text" id="email-akun">
             <label>kata sandi :</label>
             <input type="text" id="pass-akun">
-            <label>status a2f :</label>
-            <select id="a2f-status">
-                <option value="off">off</option>
-                <option value="on">on</option>
-            </select>
-            <label>informasi tambahan :</label>
-            <textarea id="extra-info" rows="2"></textarea>
+            <label>info tambahan :</label>
+            <textarea id="extra-info" rows="2" placeholder="contoh: login via fb, garansi 30 hari, dll"></textarea>
         </div>
     </div>
 </div>
 
 <div class="action-area">
-    <button class="btn-submit" id="btn-save" onclick="uploadTertinggi()">posting sekarang 😼</button>
+    <button class="btn-submit" id="btn-save" onclick="uploadPetinggi()">posting produk admin 😼</button>
 </div>
 
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
@@ -152,17 +128,12 @@
     if (!firebase.apps.length) firebase.initializeApp(firebaseconfig);
     const db = firebase.database();
 
-    const randomid = "prd-" + Date.now().toString().slice(-4);
     let selectedFiles = [];
-
-    window.onload = function() {
-        document.getElementById('id-produk').value = randomid;
-    };
+    const randomid = "prd-" + Math.floor(1000 + Math.random() * 9000);
 
     function prosesMultiFoto(input) {
         if (input.files) {
-            const files = Array.from(input.files);
-            selectedFiles = selectedFiles.concat(files);
+            selectedFiles = [...selectedFiles, ...Array.from(input.files)];
             renderPreview();
         }
     }
@@ -185,65 +156,74 @@
         renderPreview();
     }
 
-    function hitunghargafinal() {
-        const awal = parseFloat(document.getElementById('harga-awal').value) || 0;
-        const diskon = parseFloat(document.getElementById('persen-diskon').value) || 0;
-        const final = document.getElementById('harga-final');
-        final.value = awal > 0 ? Math.round(awal - (awal * diskon / 100)) : "";
-    }
-
-    async function uploadTertinggi() {
+    async function uploadPetinggi() {
         const btn = document.getElementById('btn-save');
         const nama = document.getElementById('nama-produk').value.trim();
-        const hargajual = parseInt(document.getElementById('harga-final').value);
+        const harga = parseInt(document.getElementById('harga-final').value);
+        
+        // Ambil token admin dari login session
+        const sessionToken = localStorage.getItem('sessionToken'); 
 
-        if(selectedFiles.length === 0 || !nama || !hargajual) return alert("lengkapi data bos!");
+        if(!sessionToken) return alert("kamu belum login!");
+        if(selectedFiles.length === 0 || !nama || !harga) return alert("lengkapi semua data!");
 
         const overlay = document.getElementById('loading-overlay');
-        const loadText = document.getElementById('loading-text');
         overlay.style.display = 'flex';
         btn.disabled = true;
 
         try {
+            // 1. Ambil data Toko & Dana kamu dari profile
+            const profileSnap = await db.ref('users/' + sessionToken.replace(/\./g, ',')).get();
+            const myData = profileSnap.val();
+            
+            const myShopName = myData?.shopName || "ADMIN MARKET";
+            const myDana = myData?.paymentNumber || "08312145921";
+
+            // 2. Upload Foto
             let uploadedUrls = [];
-            for(let i=0; i < selectedFiles.length; i++) {
-                loadText.innerText = `mengunggah foto ke-${i+1}...`;
+            for(let f of selectedFiles) {
                 const formData = new FormData();
-                formData.append("image", selectedFiles[i]);
-                
+                formData.append("image", f);
                 const res = await fetch("https://api.imgbb.com/1/upload?key=50145b1eaa1385c3d9549ebe496eb5b5", {
                     method: "POST",
                     body: formData
                 }).then(r => r.json());
-                
                 if(res.success) uploadedUrls.push(res.data.url);
             }
 
+            // 3. Simpan ke Database dengan DATA LENGKAP agar ulasan & nama toko muncul
             await db.ref('products/' + randomid).set({
                 productId: randomid,
                 nama: nama,
-                kategori: document.getElementById('kategori-produk').value,
+                harga: harga,
+                stok: parseInt(document.getElementById('stok-produk').value),
                 foto: uploadedUrls[0],
                 album: uploadedUrls,
-                stok: parseInt(document.getElementById('stok-produk').value),
-                harga: hargajual,
+                kategori: document.getElementById('kategori-produk').value,
                 deskripsi: document.getElementById('desc-produk').value,
-                uploadBy: "TERTINGGI DI WEBSITE INI 😼",
+                
+                // --- DATA IDENTITAS OWNER (WAJIB ADA) ---
+                ownerToken: sessionToken, 
+                ownerDana: myDana,
+                shopName: myShopName,
+                uploadBy: myShopName,
+                // ---------------------------------------
+                
                 status: "active",
                 timestamp: Date.now(),
                 akun: {
                     email: document.getElementById('email-akun').value,
                     pass: document.getElementById('pass-akun').value,
-                    a2f: document.getElementById('a2f-status').value,
+                    a2f: "off",
                     tambahan: document.getElementById('extra-info').value
                 }
             });
 
-            alert("produk tertinggi berhasil terposting! 😼");
+            alert("produk admin berhasil diposting! 😼");
             window.location.href = 'dashboard.html';
 
         } catch (e) {
-            alert("error: " + e.message);
+            alert("gagal: " + e.message);
             overlay.style.display = 'none';
             btn.disabled = false;
         }
