@@ -283,6 +283,40 @@
     color: #475569;
     font-size: 0.9rem;
 }
+/* Tombol Melayang Chatbot AI */
+        .fab-ai {
+            position: fixed;
+            bottom: 25px;
+            right: 25px;
+            width: 60px;
+            height: 60px;
+            background: #1a1a1a; /* Warna hitam elegan */
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            cursor: pointer;
+            z-index: 1000;
+            text-decoration: none;
+            transition: 0.3s;
+            border: 2px solid rgba(255,255,255,0.1);
+            animation: pulse-ai 2s infinite;
+        }
+
+        .fab-ai:hover {
+            transform: scale(1.1) rotate(5deg);
+            background: #007bff; /* Berubah biru saat hover */
+        }
+
+        @keyframes pulse-ai {
+            0% { box-shadow: 0 0 0 0 rgba(0, 123, 255, 0.4); }
+            70% { box-shadow: 0 0 0 15px rgba(0, 123, 255, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(0, 123, 255, 0); }
+        }
+        
     </style>
 </head>
 <body> 
@@ -594,6 +628,10 @@
             });
             setTimeout(() => { loader.style.display = 'none'; }, 600);
         }
+
+            <a href="auto-ai.html" class="fab-ai">
+        <i class="fa-solid fa-robot"></i>
+    </a>
 
         function logout() { localStorage.clear(); location.href = "login.html"; }
         window.onload = loadData;
