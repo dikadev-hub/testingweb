@@ -3,50 +3,238 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>detail produk</title>
+    <title>Detail Produk - Premium</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=plus+jakarta+sans:wght@400;600;700;800&display=swap');
-        body { background: #f8fafc; color: #1e293b; font-family: 'plus jakarta sans', sans-serif; margin: 0; padding: 0; text-transform: lowercase; }
-        .header-nav { position: fixed; top: 0; left: 0; width: 100%; height: 70px; display: flex; align-items: center; padding: 0 20px; box-sizing: border-box; z-index: 100; }
-        .btn-back { width: 42px; height: 42px; background: rgba(255,255,255,0.9); backdrop-filter: blur(10px); border-radius: 14px; display: flex; align-items: center; justify-content: center; color: #1e293b; text-decoration: none; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
-        .image-viewport { width: 100%; aspect-ratio: 1/1; background: #e2e8f0; position: relative; overflow: hidden; }
-        .slider-wrapper { display: flex; width: 100%; height: 100%; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; }
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+
+        :root {
+            --primary: #2563eb;
+            --dark: #0f172a;
+            --text-light: #64748b;
+            --bg-soft: #f8fafc;
+            --glass: rgba(255, 255, 255, 0.8);
+        }
+
+        body { 
+            background: var(--bg-soft); 
+            color: var(--dark); 
+            font-family: 'Plus Jakarta Sans', sans-serif; 
+            margin: 0; padding: 0; 
+            text-transform: lowercase;
+            letter-spacing: -0.3px;
+        }
+
+        /* Navigasi Atas */
+        .header-nav { 
+            position: fixed; top: 0; width: 100%; height: 70px; 
+            display: flex; align-items: center; padding: 0 20px; 
+            box-sizing: border-box; z-index: 100;
+        }
+        .btn-back { 
+            width: 45px; height: 45px; background: var(--glass); 
+            backdrop-filter: blur(10px); border-radius: 16px; 
+            display: flex; align-items: center; justify-content: center; 
+            color: var(--dark); text-decoration: none; 
+            box-shadow: 0 8px 20px rgba(0,0,0,0.06);
+            border: 1px solid rgba(255,255,255,0.3);
+        }
+
+        /* Image Slider */
+        .image-viewport { 
+            width: 100%; aspect-ratio: 1/1; background: #e2e8f0; 
+            position: relative; overflow: hidden; 
+        }
+        .slider-wrapper { 
+            display: flex; width: 100%; height: 100%; 
+            overflow-x: auto; scroll-snap-type: x mandatory; 
+            scrollbar-width: none;
+        }
         .slider-wrapper::-webkit-scrollbar { display: none; }
-        .slide-item { min-width: 100%; height: 100%; scroll-snap-align: start; display: flex; align-items: center; justify-content: center; }
+        .slide-item { min-width: 100%; height: 100%; scroll-snap-align: start; }
         .slide-item img { width: 100%; height: 100%; object-fit: cover; }
-        .dot-nav { position: absolute; bottom: 50px; width: 100%; display: flex; justify-content: center; gap: 6px; z-index: 10; }
-        .dot { width: 6px; height: 6px; background: rgba(0,0,0,0.15); border-radius: 50%; transition: 0.3s; }
-        .dot.active { background: #2563eb; width: 18px; border-radius: 10px; }
-        .main-content { background: white; border-radius: 35px 35px 0 0; margin-top: -35px; position: relative; padding: 30px 24px 130px; min-height: 50vh; box-shadow: 0 -15px 40px rgba(0,0,0,0.04); }
-        .category-pill { display: inline-block; padding: 6px 14px; background: #eff6ff; color: #2563eb; border-radius: 12px; font-size: 0.65rem; font-weight: 800; text-transform: uppercase; margin-bottom: 15px; }
-        .price-final { font-size: 1.8rem; font-weight: 900; color: #2563eb; display: block; margin-top: 5px; }
-        .product-name { font-size: 1.4rem; font-weight: 800; color: #0f172a; margin: 15px 0 10px 0; line-height: 1.3; }
-        .stock-info { display: inline-flex; align-items: center; gap: 8px; font-size: 0.75rem; font-weight: 700; color: #64748b; background: #f1f5f9; padding: 8px 14px; border-radius: 10px; margin-bottom: 30px; }
-        .section-title { font-size: 0.75rem; font-weight: 800; color: #1e293b; text-transform: uppercase; margin-bottom: 12px; display: block; }
-        .description-box { font-size: 0.9rem; line-height: 1.7; color: #475569; white-space: pre-wrap; margin-bottom: 30px; }
-        .footer-nav { position: fixed; bottom: 0; left: 0; width: 100%; background: rgba(255, 255, 255, 0.9); backdrop-filter: blur(20px); padding: 15px 24px 35px; box-sizing: border-box; display: flex; gap: 12px; border-top: 1px solid #f1f5f9; box-shadow: 0 -10px 40px rgba(0,0,0,0.05); z-index: 100; }
-        .btn-buy { flex: 1; height: 55px; border-radius: 18px; border: none; background: #0f172a; color: white; font-weight: 800; font-size: 0.85rem; cursor: pointer; text-transform: uppercase; }
-        #loading-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: white; z-index: 1000; display: flex; align-items: center; justify-content: center; }
+        
+        .dot-nav { 
+            position: absolute; bottom: 55px; width: 100%; 
+            display: flex; justify-content: center; gap: 6px; z-index: 10; 
+        }
+        .dot { 
+            width: 6px; height: 6px; background: rgba(0,0,0,0.1); 
+            border-radius: 50%; transition: 0.3s; 
+        }
+        .dot.active { background: var(--primary); width: 20px; border-radius: 10px; }
+
+        /* Konten Utama */
+        .main-content { 
+            background: white; border-radius: 35px 35px 0 0; 
+            margin-top: -40px; position: relative; 
+            padding: 30px 24px 140px; min-height: 50vh; 
+            box-shadow: 0 -20px 40px rgba(0,0,0,0.03); 
+        }
+
+        .category-pill { 
+            display: inline-block; padding: 6px 12px; 
+            background: #eff6ff; color: var(--primary); 
+            border-radius: 10px; font-size: 0.65rem; 
+            font-weight: 800; text-transform: uppercase; 
+        }
+
+        .product-name { 
+            font-size: 1.5rem; font-weight: 800; color: var(--dark); 
+            margin: 15px 0 8px 0; line-height: 1.2; 
+        }
+
+        .rating-inline { 
+            display: flex; align-items: center; gap: 8px; 
+            font-size: 0.85rem; font-weight: 700; margin-bottom: 20px; 
+        }
+        .rating-inline i { color: #fbbe24; }
+
+        .price-section { 
+            display: flex; align-items: baseline; gap: 10px; 
+            margin-bottom: 25px; 
+        }
+        .price-final { font-size: 1.8rem; font-weight: 900; color: var(--primary); }
+
+        /* Store Card */
+        .store-card {
+            background: #f8fafc; border-radius: 20px; padding: 15px;
+            display: flex; align-items: center; gap: 15px; margin-bottom: 30px;
+            border: 1px solid #f1f5f9;
+        }
+        .store-img {
+            width: 50px; height: 50px; background: white; 
+            border-radius: 15px; display: flex; align-items: center; 
+            justify-content: center; font-size: 1.2rem; color: var(--primary);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.03);
+        }
+        .store-name { font-weight: 800; color: var(--dark); font-size: 0.95rem; }
+
+        /* Qty Selector */
+        .section-row { 
+            display: flex; justify-content: space-between; 
+            align-items: center; margin-bottom: 20px; 
+        }
+        .qty-control { 
+            display: flex; align-items: center; gap: 5px; 
+            background: #f1f5f9; padding: 5px; border-radius: 14px; 
+        }
+        .qty-btn { 
+            width: 35px; height: 35px; border: none; 
+            background: white; border-radius: 10px; 
+            font-weight: 800; cursor: pointer; color: var(--dark);
+        }
+        .qty-val { width: 30px; text-align: center; font-weight: 800; }
+
+        .description-text { 
+            font-size: 0.9rem; line-height: 1.6; color: var(--text-light); 
+            margin-bottom: 35px; 
+        }
+
+        /* Review Section */
+        .review-card {
+            background: white; border-radius: 18px; padding: 15px 0;
+            border-bottom: 1px solid #f1f5f9;
+        }
+        .review-user { font-weight: 800; font-size: 0.85rem; margin-bottom: 4px; display: block; }
+        .review-stars { color: #fbbe24; font-size: 0.65rem; margin-bottom: 8px; }
+        .review-desc { font-size: 0.85rem; color: var(--text-light); line-height: 1.5; }
+
+        /* Footer Nav */
+        .footer-nav { 
+            position: fixed; bottom: 0; left: 0; width: 100%; 
+            background: rgba(255, 255, 255, 0.9); backdrop-filter: blur(20px); 
+            padding: 15px 24px 35px; box-sizing: border-box; 
+            display: flex; gap: 15px; border-top: 1px solid #f1f5f9; z-index: 100; 
+        }
+        .btn-buy { 
+            flex: 1; height: 58px; border-radius: 20px; border: none; 
+            background: var(--dark); color: white; 
+            font-weight: 800; font-size: 0.9rem; cursor: pointer;
+            transition: 0.3s;
+        }
+        .btn-buy:disabled { background: #cbd5e1; cursor: not-allowed; }
+
+        #loading-screen { 
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
+            background: white; z-index: 1000; display: flex; 
+            align-items: center; justify-content: center; 
+        }
+
+        .section-label { 
+            font-size: 0.7rem; font-weight: 800; color: var(--text-light); 
+            text-transform: uppercase; margin-bottom: 10px; display: block;
+            letter-spacing: 1px;
+        }
     </style>
 </head>
 <body>
 
-<div id="loading-screen"><i class="fa-solid fa-circle-notch fa-spin" style="font-size: 2rem; color: #2563eb;"></i></div>
-<div class="header-nav"><a href="dashboard.html" class="btn-back"><i class="fa-solid fa-arrow-left"></i></a></div>
-<div class="image-viewport"><div class="slider-wrapper" id="image-slider"></div><div class="dot-nav" id="dot-nav"></div></div>
+<div id="loading-screen"><i class="fa-solid fa-circle-notch fa-spin" style="font-size: 2rem; color: var(--primary);"></i></div>
+
+<div class="header-nav">
+    <a href="dashboard.html" class="btn-back"><i class="fa-solid fa-chevron-left"></i></a>
+</div>
+
+<div class="image-viewport">
+    <div class="slider-wrapper" id="image-slider"></div>
+    <div class="dot-nav" id="dot-nav"></div>
+</div>
 
 <div class="main-content">
     <span id="det-cat" class="category-pill">kategori</span>
-    <h1 id="det-title" class="product-name">memuat...</h1>
-    <span id="det-price-new" class="price-final">rp 0</span>
-    <div style="margin: 25px 0;"><div class="stock-info"><i class="fa-solid fa-bolt" style="color: #fbbe24;"></i><span id="det-stock-text">stok: 0 tersedia</span></div></div>
-    <span class="section-title">deskripsi produk</span>
-    <div id="det-desc" class="description-box"></div>
+    <h1 id="det-title" class="product-name">memuat produk...</h1>
+    
+    <div class="rating-inline">
+        <i class="fa-solid fa-star"></i>
+        <span id="avg-rating">0.0</span>
+        <span style="color: var(--text-light); font-weight: 500;">• <span id="total-reviews">0</span> ulasan</span>
+    </div>
+
+    <div class="price-section">
+        <span id="det-price-new" class="price-final">rp 0</span>
+    </div>
+
+    <div class="store-card">
+        <div class="store-img"><i class="fa-solid fa-store"></i></div>
+        <div style="flex:1">
+            <span class="section-label" style="margin:0">penjual terverifikasi</span>
+            <div id="store-name" class="store-name">mengambil data...</div>
+        </div>
+        <i class="fa-solid fa-circle-check" style="color: var(--primary);"></i>
+    </div>
+
+    <div class="section-row">
+        <div style="display:flex; align-items:center; gap:10px;">
+            <div style="background:#fef3c7; color:#d97706; padding:8px; border-radius:10px; font-size:0.8rem;">
+                <i class="fa-solid fa-box-open"></i>
+            </div>
+            <span id="det-stock-text" style="font-size:0.85rem; font-weight:700;">stok: 0 tersedia</span>
+        </div>
+        <div class="qty-control">
+            <button class="qty-btn" onclick="changeQty(-1)"><i class="fa-solid fa-minus"></i></button>
+            <div class="qty-val" id="qty-val">1</div>
+            <button class="qty-btn" onclick="changeQty(1)"><i class="fa-solid fa-plus"></i></button>
+        </div>
+    </div>
+
+    <div style="margin-top:30px;">
+        <span class="section-label">deskripsi produk</span>
+        <div id="det-desc" class="description-text"></div>
+    </div>
+
+    <div style="margin-top:30px;">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
+            <span class="section-label" style="margin:0">ulasan pembeli</span>
+        </div>
+        <div id="comments-list">
+            <p style="font-size: 0.85rem; color: var(--text-light); text-align:center; padding:20px;">belum ada ulasan.</p>
+        </div>
+    </div>
 </div>
 
 <div class="footer-nav">
-    <button id="btn-buy" class="btn-buy" onclick="handleBuy()">beli sekarang</button>
+    <button id="btn-buy" class="btn-buy" onclick="handleBuy()">beli sekarang • rp 0</button>
 </div>
 
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
@@ -66,8 +254,24 @@
     const productId = urlParams.get('id');
 
     let currentStock = 0;
+    let basePrice = 0;
+    let currentQty = 1;
     let productFullData = null;
     let productFirebaseKey = null;
+
+    function changeQty(val) {
+        let next = currentQty + val;
+        if(next < 1) return;
+        if(next > currentStock) return alert("stok tidak mencukupi");
+        currentQty = next;
+        document.getElementById('qty-val').innerText = currentQty;
+        updateBuyButton();
+    }
+
+    function updateBuyButton() {
+        const total = basePrice * currentQty;
+        document.getElementById('btn-buy').innerText = `beli sekarang • rp ${total.toLocaleString('id-ID')}`;
+    }
 
     function renderSlider(album, singleFoto) {
         const slider = document.getElementById('image-slider');
@@ -94,27 +298,65 @@
                     productFirebaseKey = child.key;
                     productFullData = child.val();
                     currentStock = productFullData.stok || 0;
+                    basePrice = productFullData.harga || 0;
+                    
                     renderSlider(productFullData.album, productFullData.foto);
                     document.getElementById('det-title').innerText = productFullData.nama;
                     document.getElementById('det-cat').innerText = productFullData.kategori;
-                    document.getElementById('det-price-new').innerText = "rp " + (productFullData.harga || 0).toLocaleString('id-ID');
+                    document.getElementById('det-price-new').innerText = "rp " + basePrice.toLocaleString('id-ID');
                     document.getElementById('det-desc').innerText = productFullData.deskripsi;
                     document.getElementById('det-stock-text').innerText = "stok: " + currentStock + " tersedia";
+                    
+                    // Nama Toko (Owner)
+                    const ownerTok = (productFullData.ownerToken || productFullData.tokenOwner || "").replace(/\./g, ',');
+                    db.ref('users/' + ownerTok + '/fullname').once('value', s => {
+                        document.getElementById('store-name').innerText = s.val() || "toko resmi";
+                    });
+
+                    updateBuyButton();
+                    loadReviews();
+                    
                     const bb = document.getElementById('btn-buy');
                     bb.disabled = currentStock <= 0;
-                    bb.innerText = currentStock <= 0 ? "stok habis" : "beli sekarang";
+                    if(currentStock <= 0) bb.innerText = "stok habis";
                 });
             }
         });
     }
 
+    function loadReviews() {
+        db.ref('reviews/' + productId).on('value', snap => {
+            const container = document.getElementById('comments-list');
+            if(!snap.exists()) return;
+            
+            let html = "";
+            let totalRate = 0;
+            let count = 0;
+
+            snap.forEach(c => {
+                const data = c.val();
+                totalRate += data.rating;
+                count++;
+                html += `
+                    <div class="review-card">
+                        <span class="review-user">${data.userName}</span>
+                        <div class="review-stars">${'<i class="fa-solid fa-star"></i>'.repeat(data.rating)}</div>
+                        <p class="review-desc">${data.comment}</p>
+                    </div>`;
+            });
+            
+            document.getElementById('avg-rating').innerText = (totalRate / count).toFixed(1);
+            document.getElementById('total-reviews').innerText = count;
+            container.innerHTML = html;
+        });
+    }
+
     async function handleBuy() {
-        if (!currentUserToken) {
-            alert("silakan login dahulu.");
-            return;
-        }
-        if (currentStock <= 0) return alert("stok habis.");
-        if (!confirm(`beli produk ini seharga rp ${productFullData.harga.toLocaleString('id-ID')}?`)) return;
+        if (!currentUserToken) return alert("silakan login dahulu.");
+        if (currentStock < currentQty) return alert("stok tidak cukup.");
+        
+        const finalPrice = basePrice * currentQty;
+        if (!confirm(`beli ${currentQty} item seharga rp ${finalPrice.toLocaleString('id-ID')}?`)) return;
 
         const btn = document.getElementById('btn-buy');
         btn.disabled = true;
@@ -123,32 +365,27 @@
         try {
             const uSnap = await db.ref('users/' + currentUserToken).get();
             const saldoUser = parseInt(uSnap.val().balance || 0);
-            const harga = parseInt(productFullData.harga);
 
-            if (saldoUser < harga) {
+            if (saldoUser < finalPrice) {
                 alert("saldo tidak mencukupi.");
                 btn.disabled = false;
-                btn.innerText = "beli sekarang";
+                updateBuyButton();
                 return;
             }
 
-            const rawOwnerToken = productFullData.ownerToken || productFullData.ownerEmail || productFullData.tokenOwner;
-            if (!rawOwnerToken) throw new Error("data owner tidak ditemukan.");
-            
+            const rawOwnerToken = productFullData.ownerToken || productFullData.tokenOwner;
             const ownerToken = rawOwnerToken.replace(/\./g, ',');
             const ownerSnap = await db.ref('users/' + ownerToken).get();
-            if (!ownerSnap.exists()) throw new Error("owner tidak terdaftar.");
-
             const saldoOwnerSekarang = parseInt(ownerSnap.val().balance || 0);
+
+            const adminFee = (finalPrice * 5) / 100;
+            const netOwner = finalPrice - adminFee;
             const orderId = "inv-" + Date.now();
 
-            const nominalPotongan = (harga * 5) / 100;
-            const saldoBersihOwner = harga - nominalPotongan;
-
             const upd = {};
-            upd['users/' + currentUserToken + '/balance'] = saldoUser - harga;
-            upd['users/' + ownerToken + '/balance'] = saldoOwnerSekarang + saldoBersihOwner;
-            upd['products/' + productFirebaseKey + '/stok'] = currentStock - 1;
+            upd['users/' + currentUserToken + '/balance'] = saldoUser - finalPrice;
+            upd['users/' + ownerToken + '/balance'] = saldoOwnerSekarang + netOwner;
+            upd['products/' + productFirebaseKey + '/stok'] = currentStock - currentQty;
 
             upd['pembelian/' + orderId] = {
                 orderId: orderId,
@@ -156,22 +393,9 @@
                 namaPembeli: uSnap.val().fullname,
                 productId: productId,
                 nama: productFullData.nama,
-                total: harga,
-                potonganAdmin: nominalPotongan,
-                diterimaOwner: saldoBersihOwner,
+                qty: currentQty,
+                total: finalPrice,
                 status: "sukses",
-                ownerToken: rawOwnerToken,
-                timestamp: Date.now()
-            };
-
-            upd['total_penjualan/' + orderId] = {
-                orderId: orderId,
-                ownerToken: rawOwnerToken,
-                namaProduk: productFullData.nama,
-                hargaJual: harga,
-                pajak: nominalPotongan,
-                masukKeOwner: saldoBersihOwner,
-                pembeli: uSnap.val().fullname,
                 timestamp: Date.now()
             };
 
@@ -181,7 +405,7 @@
         } catch (e) {
             alert(e.message);
             btn.disabled = false;
-            btn.innerText = "beli sekarang";
+            updateBuyButton();
         }
     }
 
