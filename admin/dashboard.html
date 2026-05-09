@@ -167,6 +167,16 @@
             <span>login user</span>
         </div>
 
+        <div class="sidebar-title">manajemen api key</div>
+        <div class="menu-item" onclick="location.href='block-api.html'">
+            <i class="fa-solid fa-lock"></i>
+            <span>block api</span>
+        </div>
+        <div class="menu-item" onclick="location.href='unblock-api.html'">
+            <i class="fa-solid fa-unlock"></i>
+            <span>unblock api</span>
+        </div>
+
         <div class="sidebar-title">settings</div>
         <div class="menu-item" onclick="logout()" style="color: #ef4444;">
             <i class="fa-solid fa-power-off"></i>
@@ -339,11 +349,11 @@
                 document.querySelectorAll('.stat-card h3')[1].innerText = s.numChildren();
             });
 
-            db.ref('transactions').on('value', s => {
+            db.ref('total_penjualan').on('value', s => {
                 document.querySelectorAll('.stat-card h3')[3].innerText = s.numChildren();
             });
         }
-        function logout() { localStorage.clear(); location.href = "../login.html"; }
+        function logout() { localStorage.clear(); location.href = "../user/login.html"; }
         window.onload = listenStats;
     </script>
 </body>
