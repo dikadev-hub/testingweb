@@ -1,7 +1,6 @@
 import { initializeApp, getApps, cert } from 'firebase-admin/app';
 import { getDatabase } from 'firebase-admin/database';
 
-// Konfigurasi Service Account (Gunakan punya Anda yang tadi)
 const serviceAccount = {
   "type": "service_account",
   "project_id": "market-d978f",
@@ -20,46 +19,43 @@ if (!getApps().length) {
 const db = getDatabase();
 
 export default async function handler(req, res) {
-    if (req.method !== 'GET') {
-        return res.status(405).json({ status: false, message: "Gunakan metode GET" });
-    }
-
-    const { key } = req.query;
-
-    if (!key) {
-        return res.status(400).json({ status: false, message: "API Key diperlukan" });
-    }
-
     try {
-        // Cek API Key user
-        const userSnapshot = await db.ref('users').orderByChild('apiKey').equalTo(key).once('value');
-        if (!userSnapshot.exists()) {
+        const { key } = req.query;
+
+        // 1. Cek API Key
+        const userSnap = await db.ref('users').orderByChild('apiKey').equalTo(key).once('value');
+        if (!userSnap.exists()) {
             return res.status(401).json({ status: false, message: "API Key tidak valid" });
         }
 
-        // Ambil data produk
+        // 2. Ambil data produk
         const snapshot = await db.ref('products').once('value');
-        if (!snapshot.exists()) {
-            return res.status(200).json({ status: true, data: [] });
-        }
+        const categories = new Set();
 
-        const categories = new Set(); // Gunakan Set agar otomatis tidak duplikat
-        snapshot.forEach(child => {
-            const product = child.val();
-            if (product.kategori) {
-                // Simpan kategori dalam format UPPERCASE agar konsisten
-                categories.add(product.kategori.toUpperCase());
+        if (snapshot.exists()) {
+            const allData = snapshot.val();
+            
+            // Loop Pertama: Masuk ke folder Token (Owner)
+            for (let token in allData) {
+                const ownerProducts = allData[token];
+                
+                // Loop Kedua: Ambil produk di dalam token tersebut
+                for (let prodId in ownerProducts) {
+                    const p = ownerProducts[prodId];
+                    if (p && p.kategori) {
+                        categories.add(p.kategori.trim().toUpperCase());
+                    }
+                }
             }
-        });
+        }
 
         return res.status(200).json({
             status: true,
-            total_kategori: categories.size,
-            data: Array.from(categories).sort() // Ubah ke array dan urutkan A-Z
+            data: Array.from(categories).sort()
         });
 
     } catch (error) {
-        console.error(error);
-        return res.status(500).json({ status: false, message: "Internal server error" });
+        console.error("API Error:", error);
+        return res.status(500).json({ status: false, message: "Terjadi kesalahan pada server" });
     }
 }
