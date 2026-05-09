@@ -223,16 +223,14 @@
                 const data = snap.val();
                 currentProdId = data.productId;
                 buyerName = data.namaPembeli || "pembeli";
-
-                // PERBAIKAN: Ambil ownerToken dari data pembelian
                 ownerToken = data.ownerToken || data.tokenOwner || "";
 
-                document.getElementById('inv-img').src = data.foto || '../logo/joki.jpg';
+                document.getElementById('inv-img').src = data.foto || 'https://i.ibb.co/LXRMVzdS/15838.jpg';
                 document.getElementById('inv-name').innerText = data.nama;
                 document.getElementById('inv-id').innerText = "#" + data.orderId;
                 document.getElementById('inv-total').innerText = "rp " + (data.total || 0).toLocaleString('id-ID');
                 
-                // MAPPING DATA AKUN (Lengkap dengan tambahan)
+                // MAPPING DATA AKUN DARI DB
                 const akun = data.akun || {};
                 document.getElementById('acc-email').innerText = akun.email || "-";
                 document.getElementById('acc-pass').innerText = akun.pass || "-";
@@ -259,18 +257,13 @@
 
     async function postReview() {
         if (selectedRating === 0) return alert("pilih bintang dulu");
-        
-        // CEK ULANG TOKEN SEBELUM PUSH
-        if (!ownerToken || ownerToken === "") {
-             return alert("gagal: data owner tidak ditemukan di riwayat pembelian ini.");
-        }
+        if (!ownerToken) return alert("data toko tidak ditemukan.");
 
         const comment = document.getElementById('user-comment').value || "mantap!";
         const btn = document.getElementById('btn-rating');
         btn.disabled = true;
 
         try {
-            // Gunakan ownerToken yang sudah divalidasi
             await db.ref('reviews/' + currentProdId).push({
                 productId: currentProdId,
                 ownerToken: ownerToken, 
@@ -280,25 +273,18 @@
                 timestamp: Date.now()
             });
 
-            // Update status rata-rata rating penjual
+            // Update rating penjual di profil
             const ownerKey = ownerToken.replace(/\./g, ',');
-            const allReviews = await db.ref('reviews').get();
+            const reviewsSnap = await db.ref('reviews/' + currentProdId).get();
             let total = 0, count = 0;
-            
-            allReviews.forEach(p => {
-                p.forEach(r => {
-                    if(r.val().ownerToken === ownerToken) {
-                        total += r.val().rating;
-                        count++;
-                    }
-                });
+            reviewsSnap.forEach(r => {
+                total += r.val().rating;
+                count++;
             });
 
-            if(count > 0) {
-                await db.ref('users/' + ownerKey).update({
-                    ratingJasa: parseFloat((total / count).toFixed(1))
-                });
-            }
+            await db.ref('users/' + ownerKey).update({
+                ratingJasa: parseFloat((total / count).toFixed(1))
+            });
 
             await db.ref('pembelian/' + orderId).update({ rated: true });
             alert("terima kasih ulasannya!");
