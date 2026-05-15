@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>e-receipt</title>
+    <title>e-receipt premium</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
@@ -366,35 +366,45 @@
              * 4. field langsung di root order: d.email, d.pass
              */
 
-            const akunContent = document.getElementById('akun-content');
+                const akunContent = document.getElementById('akun-content');
             akunContent.innerHTML = '';
             allDataText = '';
 
             if (d.deliveredData && Array.isArray(d.deliveredData) && d.deliveredData.length > 0) {
-                // ── Format baru: array deliveredData ──
                 renderDeliveredData(d.deliveredData, d.variantNama, akunContent);
 
+            } else if (d.dataAkun) {
+                renderSingleAkun({
+                    label: d.variantNama || null,
+                    email: d.dataAkun.email || d.dataAkun.data || '-',
+                    pass:  d.dataAkun.pass  || '-',
+                    a2f:   d.dataAkun.a2f   || null,
+                    extra: d.dataAkun.tambahan || d.dataAkun.extra || null,
+                }, akunContent);
+
+            } else if (d.akun) {
+                renderSingleAkun({
+                    label: d.variantNama || null,
+                    email: d.akun.email || d.akun.data || '-',
+                    pass:  d.akun.pass  || '-',
+                    a2f:   d.akun.a2f   || null,
+                    extra: d.akun.tambahan || d.akun.extra || null,
+                }, akunContent);
+
             } else if (d.akunList && Array.isArray(d.akunList) && d.akunList.length > 0) {
-                // ── Format bulk lama ──
                 renderDeliveredData(d.akunList.map(a => ({
                     data: a.email || a.data || '-',
                     pass: a.pass  || '-',
                     extra: a.extra || a.tambahan || ''
                 })), d.variantNama, akunContent);
 
-            } else if (d.dataAkun || d.akun) {
-                // ── Format single object (Mendukung dataAkun atau akun) ──
-                const a = d.dataAkun || d.akun; 
+            } else if (d.email || d.pass) {
                 renderSingleAkun({
-                    label: d.variantNama || null,
-                    email: a.email || a.data || '-',
-                    pass:  a.pass  || '-',
-                    a2f:   a.a2f   || null,
-                    extra: a.tambahan || a.extra || null,
+                    email: d.email || '-',
+                    pass:  d.pass  || '-',
                 }, akunContent);
 
             } else {
-                // ── Tidak ada data sama sekali ──
                 akunContent.innerHTML = `
                     <div class="empty-note">
                         <i class="fa-solid fa-triangle-exclamation"></i>
