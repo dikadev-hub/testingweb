@@ -14,28 +14,33 @@
         .chat-header h3 { margin: 0; font-size: 1.1rem; font-weight: 800; }
         .status-dot { width: 10px; height: 10px; background: #22c55e; border-radius: 50%; box-shadow: 0 0 10px #22c55e; }
         #chat-container { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 15px; scroll-behavior: smooth; }
-        .msg { max-width: 80%; padding: 12px 16px; border-radius: 18px; font-size: 0.9rem; line-height: 1.5; }
+        .msg { max-width: 85%; padding: 12px 16px; border-radius: 18px; font-size: 0.9rem; line-height: 1.5; }
         .user-msg { align-self: flex-end; background: #3b82f6; color: white; border-bottom-right-radius: 4px; }
         .ai-msg { align-self: flex-start; background: #1e293b; color: #e2e8f0; border-bottom-left-radius: 4px; border: 1px solid #334155; }
         .input-area { padding: 20px; background: #1e293b; display: flex; gap: 10px; align-items: center; border-top: 1px solid #334155; }
-        input { flex: 1; background: #0f172a; border: 1px solid #475569; padding: 14px; border-radius: 12px; color: white; outline: none; }
+        input { flex: 1; background: #0f172a; border: 1px solid #475569; padding: 14px; border-radius: 12px; color: white; outline: none; transition: 0.3s; }
+        input:focus { border-color: #3b82f6; }
         button { background: #3b82f6; color: white; border: none; width: 50px; height: 50px; border-radius: 12px; cursor: pointer; }
         .loading-chat { font-style: italic; font-size: 0.75rem; color: #94a3b8; align-self: flex-start; margin-left: 5px; }
     </style>
 </head>
 <body>
+
 <div class="chat-header">
     <a href="dashboard.html" style="color: white; text-decoration: none;"><i class="fa-solid fa-arrow-left"></i></a>
     <div class="status-dot"></div>
     <h3>dexa elite market - ai assistant</h3>
 </div>
+
 <div id="chat-container">
-    <div class="msg ai-msg">hallo! ada yang bisa dibantu soal produk? 🚀</div>
+    <div class="msg ai-msg">halo kak! ada yang bisa dibantu soal stok atau harga produk hari ini? 🚀</div>
 </div>
+
 <div class="input-area">
     <input type="text" id="user-input" placeholder="tanya stok atau harga..." onkeypress="if(event.key === 'Enter') sendMessage()">
     <button id="send-btn" onclick="sendMessage()"><i class="fa-solid fa-paper-plane"></i></button>
 </div>
+
 <script>
     const p1 = "gsk_";
     const rawKeys = [
@@ -44,11 +49,13 @@
         p1 + "PCvVdMUthQbvwutBhR9BWGdyb3FYGbLtlNEIVXoXd76RSV7YzHa3"
     ];
     let keyIdx = 0;
+
     const firebaseConfig = {
         apiKey: "AIzaSyDGRsCcT-7Bv_nOAybjXyuIT6Ca0IT4YTg",
         databaseURL: "https://market-d978f-default-rtdb.asia-southeast1.firebasedatabase.app",
         projectId: "market-d978f",
     };
+
     if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
 
@@ -62,13 +69,17 @@
 
             Object.values(data).forEach(p => {
                 if (p.nama) {
-                    list += `produk: ${p.nama}, harga: rp${p.harga || 0}, stok: ${p.stok || 0}, kategori: ${p.kategori || 'umum'}\n`;
-                    if (p.variants) {
+                    list += `produk: ${p.nama}\n`;
+                    if (p.variants && p.variants.length > 0) {
                         p.variants.forEach(v => {
-                            list += `- varian: ${v.nama}, harga: rp${v.harga}, stok: ${v.totalStok}\n`;
+                            if (v.totalStok > 0) {
+                                list += `- varian: ${v.nama} | harga: rp${v.harga.toLocaleString()} | stok: ${v.totalStok}\n`;
+                            }
                         });
+                    } else if (p.stok > 0) {
+                        list += `- harga: rp${(p.harga || 0).toLocaleString()} | stok: ${p.stok}\n`;
                     }
-                    list += `---\n`;
+                    list += `kategori: ${p.kategori || 'umum'}\n---\n`;
                 }
             });
             return list || "kosong";
@@ -88,16 +99,25 @@
 
         const loading = document.createElement('div');
         loading.className = "loading-chat";
-        loading.innerHTML = "lagi cek stok...";
+        loading.innerHTML = "tunggu ya, lagi cek gudang...";
         container.appendChild(loading);
         container.scrollTop = container.scrollHeight;
 
         try {
             const products = await getProductData();
-            const sys = `kamu asisten dexa elite market. jawab santai, singkat, huruf kecil.
-            hanya gunakan data produk ini:
+            
+            const sys = `kamu adalah asisten ramah dari dexa elite market.
+            tugas: jawab pertanyaan user tentang stok dan harga secara jujur sesuai data.
+            gaya bahasa: santai, sopan, awali dengan salam (halo kak/siap kak), dan gunakan huruf kecil semua.
+            format: gunakan list/bullet point agar rapi jika menyebutkan produk.
+            
+            data produk asli (database):
             ${products}
-            kalau produk gak ada di list, bilang belum ready. jangan ngarang harga/stok.`;
+            
+            aturan ketat:
+            1. sebutkan nama produk, harga, dan stoknya dengan jelas.
+            2. jika produk tidak ada di data di atas, jawab "maaf banget kak, untuk produk itu sekarang lagi kosong stoknya".
+            3. jangan pernah mengarang harga sendiri.`;
 
             const res = await fetch("https://api.groq.com/openai/v1/chat/completions", {
                 method: "POST",
@@ -105,7 +125,7 @@
                 body: JSON.stringify({
                     model: "llama-3.1-8b-instant",
                     messages: [{role:"system", content:sys}, {role:"user", content:query}],
-                    temperature: 0
+                    temperature: 0.2
                 })
             });
 
@@ -118,7 +138,9 @@
 
             loading.remove();
             container.innerHTML += `<div class="msg ai-msg">${json.choices[0].message.content}</div>`;
-        } catch (e) { loading.innerHTML = "error koneksi."; }
+        } catch (e) { 
+            loading.innerHTML = "waduh, server lagi pusing nih kak."; 
+        }
         
         btn.disabled = false;
         container.scrollTop = container.scrollHeight;
