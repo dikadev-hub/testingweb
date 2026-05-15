@@ -30,7 +30,7 @@
     <h3>dexa elite market - ai assistant</h3>
 </div>
 <div id="chat-container">
-    <div class="msg ai-msg">hallo! tanya stok atau harga produk di sini ya 🚀</div>
+    <div class="msg ai-msg">hallo! ada yang bisa dibantu soal produk? 🚀</div>
 </div>
 <div class="input-area">
     <input type="text" id="user-input" placeholder="tanya stok atau harga..." onkeypress="if(event.key === 'Enter') sendMessage()">
@@ -51,44 +51,54 @@
     };
     if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
+
     async function getProductData() {
         try {
-            const snapshot = await db.ref('products').once('value');
-            if (!snapshot.exists()) return "kosong";
+            const snap = await db.ref('products').once('value');
+            if (!snap.exists()) return "kosong";
+            
             let list = "";
-            const data = snapshot.val();
-            Object.keys(data).forEach(id => {
-                const p = data[id];
-                if (p.variants) {
-                    p.variants.forEach(v => {
-                        if (v.totalStok > 0) list += `produk: ${p.nama}, varian: ${v.nama}, harga: rp${v.harga}, stok: ${v.totalStok}\n`;
-                    });
-                } else if (p.stok > 0) {
-                    list += `produk: ${p.nama}, harga: rp${p.harga}, stok: ${p.stok}\n`;
+            const data = snap.val();
+
+            Object.values(data).forEach(p => {
+                if (p.nama) {
+                    list += `produk: ${p.nama}, harga: rp${p.harga || 0}, stok: ${p.stok || 0}, kategori: ${p.kategori || 'umum'}\n`;
+                    if (p.variants) {
+                        p.variants.forEach(v => {
+                            list += `- varian: ${v.nama}, harga: rp${v.harga}, stok: ${v.totalStok}\n`;
+                        });
+                    }
+                    list += `---\n`;
                 }
             });
             return list || "kosong";
         } catch (e) { return "error"; }
     }
+
     async function sendMessage() {
         const input = document.getElementById('user-input');
         const container = document.getElementById('chat-container');
         const btn = document.getElementById('send-btn');
         const query = input.value.trim();
         if (!query) return;
+
         container.innerHTML += `<div class="msg user-msg">${query}</div>`;
         input.value = "";
         btn.disabled = true;
+
         const loading = document.createElement('div');
         loading.className = "loading-chat";
-        loading.innerHTML = "lagi cek data...";
+        loading.innerHTML = "lagi cek stok...";
         container.appendChild(loading);
         container.scrollTop = container.scrollHeight;
+
         try {
             const products = await getProductData();
-            const sys = `kamu asisten dexa elite market. jawab singkat, santai, huruf kecil semua. 
-            hanya gunakan data ini: ${products === "kosong" ? "stok habis" : products}. 
-            kalau tidak ada di data, bilang tidak ada. jangan mengarang harga/stok.`;
+            const sys = `kamu asisten dexa elite market. jawab santai, singkat, huruf kecil.
+            hanya gunakan data produk ini:
+            ${products}
+            kalau produk gak ada di list, bilang belum ready. jangan ngarang harga/stok.`;
+
             const res = await fetch("https://api.groq.com/openai/v1/chat/completions", {
                 method: "POST",
                 headers: { "Authorization": "Bearer " + rawKeys[keyIdx], "Content-Type": "application/json" },
@@ -98,15 +108,18 @@
                     temperature: 0
                 })
             });
+
             const json = await res.json();
             if (res.status === 429 && keyIdx < rawKeys.length - 1) {
                 keyIdx++;
                 loading.remove();
                 return sendMessage();
             }
+
             loading.remove();
             container.innerHTML += `<div class="msg ai-msg">${json.choices[0].message.content}</div>`;
-        } catch (e) { loading.innerHTML = "koneksi bermasalah."; }
+        } catch (e) { loading.innerHTML = "error koneksi."; }
+        
         btn.disabled = false;
         container.scrollTop = container.scrollHeight;
     }
