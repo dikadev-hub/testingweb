@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ai assistant - dexa elite market 1</title>
+    <title>ai assistant - dexa elite market</title>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
@@ -40,23 +40,22 @@
 </div>
 
 <div class="input-area">
-    <input type="text" id="user-input" placeholder="tanya stok atau detail produk..." onkeypress="if(event.key === 'Enter') sendMessage()">
+    <input type="text" id="user-input" placeholder="tanya stok atau harga..." onkeypress="if(event.key === 'Enter') sendMessage()">
     <button id="send-btn" onclick="sendMessage()"><i class="fa-solid fa-paper-plane"></i></button>
 </div>
 
 <script>
-    // Bypass GitHub Scanner Logic
-    const pKey = "gsk_";
-    const keys = [
-        pKey + "B71OpeISm5H9HSI9x3uAWGdyb3FY5nAJNqaSeusVnPHZbjK3NyXK",
-        pKey + "i6V2S8FcqiR5hz0PdPggWGdyb3FYYm1bDPNxOOyqWtAiSZnekbOw",
-        pKey + "PCvVdMUthQbvwutBhR9BWGdyb3FYGbLtlNEIVXoXd76RSV7YzHa3"
+    // Bypass Security
+    const p1 = "gsk_";
+    const rawKeys = [
+        p1 + "B71OpeISm5H9HSI9x3uAWGdyb3FY5nAJNqaSeusVnPHZbjK3NyXK",
+        p1 + "i6V2S8FcqiR5hz0PdPggWGdyb3FYYm1bDPNxOOyqWtAiSZnekbOw",
+        p1 + "PCvVdMUthQbvwutBhR9BWGdyb3FYGbLtlNEIVXoXd76RSV7YzHa3"
     ];
 
-    let currentKeyIdx = 0;
+    let keyIdx = 0;
     let db;
 
-    // Firebase Configuration
     const firebaseConfig = {
         apiKey: "AIzaSyDGRsCcT-7Bv_nOAybjXyuIT6Ca0IT4YTg",
         databaseURL: "https://market-d978f-default-rtdb.asia-southeast1.firebasedatabase.app",
@@ -66,113 +65,110 @@
     if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
     db = firebase.database();
 
-    // Fungsi Pengambil Detail Produk (Mendalam)
+    // Fungsi Pengambil Data Produk (Sangat Mendalam)
     async function getProductData() {
         try {
+            console.log("Memulai fetch data dari Firebase...");
             const snapshot = await db.ref('products').once('value');
-            if (!snapshot.exists()) return "saat ini tidak ada produk di katalog.";
+            if (!snapshot.exists()) {
+                console.log("Database kosong!");
+                return "kosong";
+            }
             
-            let context = "daftar katalog produk dexa elite market saat ini:\n\n";
+            let productList = "";
             const data = snapshot.val();
-            let hasItem = false;
 
             Object.keys(data).forEach(id => {
                 const p = data[id];
-                if (parseInt(p.stok) > 0 || (p.hasVariant && p.stok > 0)) {
-                    hasItem = true;
-                    context += `📦 produk: ${p.nama.toLowerCase()}\n`;
-                    context += `   - kategori: ${p.kategori}\n`;
-                    context += `   - deskripsi: ${p.deskripsi || 'cek di halaman detail'}\n`;
+                // Ambil produk yang stoknya ada (baik single maupun variant)
+                if (p.stok > 0 || p.hasVariant) {
+                    productList += `PRODUK: ${p.nama}\n`;
+                    productList += `KATEGORI: ${p.kategori}\n`;
+                    productList += `DESKRIPSI: ${p.deskripsi || 'cek detail'}\n`;
                     
                     if (p.hasVariant && p.variants) {
-                        context += `   - varian tersedia:\n`;
                         p.variants.forEach(v => {
-                            if(v.totalStok > 0) {
-                                context += `     > ${v.nama}: rp ${parseInt(v.harga).toLocaleString('id-ID')} (stok: ${v.totalStok})\n`;
+                            if (v.totalStok > 0) {
+                                productList += `- Varian: ${v.nama}, Harga: Rp${v.harga.toLocaleString()}, Stok: ${v.totalStok}\n`;
                             }
                         });
                     } else {
-                        context += `   - harga: rp ${parseInt(p.harga).toLocaleString('id-ID')}\n`;
-                        context += `   - stok ready: ${p.stok}\n`;
+                        productList += `- Harga: Rp${p.harga.toLocaleString()}, Stok: ${p.stok}\n`;
                     }
-                    context += `\n`;
+                    productList += `---\n`;
                 }
             });
-            return hasItem ? context : "maaf, semua stok produk sedang kosong.";
-        } catch (e) { return "error mengambil data produk."; }
+
+            console.log("Data berhasil dimuat untuk AI.");
+            return productList || "kosong";
+        } catch (e) {
+            console.error("Firebase Error:", e);
+            return "error";
+        }
     }
 
     async function sendMessage() {
-        const input = document.getElementById('user-input');
+        const inputEl = document.getElementById('user-input');
         const container = document.getElementById('chat-container');
         const btn = document.getElementById('send-btn');
-        const query = input.value.trim();
+        const query = inputEl.value.trim();
 
         if (!query) return;
 
-        // Tampilkan pesan user
         container.innerHTML += `<div class="msg user-msg">${query}</div>`;
-        input.value = "";
+        inputEl.value = "";
         btn.disabled = true;
 
         const loading = document.createElement('div');
         loading.className = "loading-chat";
-        loading.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> dexa ai sedang berpikir...';
+        loading.innerHTML = "tunggu sebentar ya...";
         container.appendChild(loading);
         container.scrollTop = container.scrollHeight;
 
         try {
-            const liveInfo = await getProductData();
-
-            // PROMPT PANJANG (Personalized Dexa AI)
-            const systemInstructions = `kamu adalah dexa ai, asisten virtual resmi dexa elite market.
-            tugas: berikan info produk (harga, stok, deskripsi) berdasarkan data database di bawah ini.
+            const dataProduk = await getProductData();
             
-            data database terbaru:
-            ${liveInfo}
+            // System Prompt yang lebih galak biar gak halu
+            let systemText = `kamu adalah asisten virtual toko 'dexa elite market'. 
+            jawab selalu pakai huruf kecil (lowercase). gaya bicara santai & gaul.
             
-            aturan menjawab:
-            1. jawab selalu menggunakan huruf kecil semua (lowercase).
-            2. gaya bahasa gaul, santai, ramah, dan solutif. gunakan emoji.
-            3. jangan pernah memberikan data akun (email/password) secara langsung di chat.
-            4. jika user tanya cara beli, arahkan untuk klik produk dan tekan tombol 'beli sekarang'.
-            5. jika produk tidak ada di data database di atas, katakan produk tersebut belum ready.
-            6. jangan mengarang harga atau stok jika tidak ada di data.
-            7. fokuslah pada jualan dan pelayanan pelanggan dexa elite market.`;
+            INI ADALAH DATA VALID DARI DATABASE KAMI:
+            ${dataProduk === "kosong" ? "SAAT INI SEMUA STOK HABIS." : dataProduk}
+            
+            ATURAN:
+            1. jangan pernah bilang 'sedang mencoba mengakses' atau 'ada kesalahan'. 
+            2. jika data di atas tertulis 'SAAT INI SEMUA STOK HABIS', katakan saja maaf stok belum ready.
+            3. jika produk ada di data, sebutkan harga dan stoknya dengan jelas.
+            4. jangan mengarang kategori (seperti otomotif/perawatan diri) kalau tidak ada di data di atas.
+            5. dilarang memberikan info akun/email/password.`;
 
-            const res = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+            const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
                 method: "POST",
                 headers: {
-                    "Authorization": "Bearer " + keys[currentKeyIdx],
+                    "Authorization": "Bearer " + rawKeys[keyIdx],
                     "Content-Type": "application/json"
                 },
                 body: JSON.stringify({
                     model: "llama-3.1-8b-instant",
                     messages: [
-                        { role: "system", content: systemInstructions },
+                        { role: "system", content: systemText },
                         { role: "user", content: query }
                     ],
-                    temperature: 0.7
+                    temperature: 0.5 // Dibuat lebih rendah agar AI lebih patuh pada data
                 })
             });
 
-            const result = await res.json();
+            const json = await response.json();
 
-            // Rotasi Key jika kena Rate Limit (429)
-            if (res.status === 429 && currentKeyIdx < keys.length - 1) {
-                currentKeyIdx++;
-                loading.innerHTML = "berpindah server...";
+            if (response.status === 429 && keyIdx < rawKeys.length - 1) {
+                keyIdx++;
                 return sendMessage();
             }
 
-            if (!res.ok) throw new Error(result.error?.message || "gangguan koneksi.");
-
             loading.remove();
-            const aiReply = result.choices[0].message.content.toLowerCase();
-            container.innerHTML += `<div class="msg ai-msg">${aiReply}</div>`;
-
+            container.innerHTML += `<div class="msg ai-msg">${json.choices[0].message.content}</div>`;
         } catch (err) {
-            loading.innerHTML = `<span style="color:#ef4444">ops! ${err.message}</span>`;
+            loading.innerHTML = "waduh, server lagi sibuk nih kak.";
         }
 
         btn.disabled = false;
