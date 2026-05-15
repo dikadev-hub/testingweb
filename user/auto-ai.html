@@ -45,7 +45,6 @@
 </div>
 
 <script>
-    // Bypass Security
     const p1 = "gsk_";
     const rawKeys = [
         p1 + "B71OpeISm5H9HSI9x3uAWGdyb3FY5nAJNqaSeusVnPHZbjK3NyXK",
@@ -65,44 +64,35 @@
     if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
     db = firebase.database();
 
-    // Fungsi Pengambil Data Produk (Sangat Mendalam)
     async function getProductData() {
         try {
-            console.log("Memulai fetch data dari Firebase...");
             const snapshot = await db.ref('products').once('value');
-            if (!snapshot.exists()) {
-                console.log("Database kosong!");
-                return "kosong";
-            }
+            if (!snapshot.exists()) return "kosong";
             
             let productList = "";
             const data = snapshot.val();
 
             Object.keys(data).forEach(id => {
                 const p = data[id];
-                // Ambil produk yang stoknya ada (baik single maupun variant)
-                if (p.stok > 0 || p.hasVariant) {
-                    productList += `PRODUK: ${p.nama}\n`;
-                    productList += `KATEGORI: ${p.kategori}\n`;
-                    productList += `DESKRIPSI: ${p.deskripsi || 'cek detail'}\n`;
-                    
-                    if (p.hasVariant && p.variants) {
-                        p.variants.forEach(v => {
-                            if (v.totalStok > 0) {
-                                productList += `- Varian: ${v.nama}, Harga: Rp${v.harga.toLocaleString()}, Stok: ${v.totalStok}\n`;
-                            }
-                        });
-                    } else {
-                        productList += `- Harga: Rp${p.harga.toLocaleString()}, Stok: ${p.stok}\n`;
+                if (p.variants && p.variants.length > 0) {
+                    let variantInfo = "";
+                    let hasStock = false;
+                    p.variants.forEach(v => {
+                        if (v.totalStok > 0) {
+                            variantInfo += `- varian: ${v.nama}, harga: rp${v.harga.toLocaleString()}, stok: ${v.totalStok}\n`;
+                            hasStock = true;
+                        }
+                    });
+                    if (hasStock) {
+                        productList += `produk: ${p.nama}\nkategori: ${p.kategori}\n${variantInfo}---\n`;
                     }
-                    productList += `---\n`;
+                } else if (p.stok > 0) {
+                    productList += `produk: ${p.nama}\nkategori: ${p.kategori}\n- harga: rp${p.harga.toLocaleString()}, stok: ${p.stok}\n---\n`;
                 }
             });
 
-            console.log("Data berhasil dimuat untuk AI.");
             return productList || "kosong";
         } catch (e) {
-            console.error("Firebase Error:", e);
             return "error";
         }
     }
@@ -128,19 +118,11 @@
         try {
             const dataProduk = await getProductData();
             
-            // System Prompt yang lebih galak biar gak halu
-            let systemText = `kamu adalah asisten virtual toko 'dexa elite market'. 
-            jawab selalu pakai huruf kecil (lowercase). gaya bicara santai & gaul.
-            
-            INI ADALAH DATA VALID DARI DATABASE KAMI:
-            ${dataProduk === "kosong" ? "SAAT INI SEMUA STOK HABIS." : dataProduk}
-            
-            ATURAN:
-            1. jangan pernah bilang 'sedang mencoba mengakses' atau 'ada kesalahan'. 
-            2. jika data di atas tertulis 'SAAT INI SEMUA STOK HABIS', katakan saja maaf stok belum ready.
-            3. jika produk ada di data, sebutkan harga dan stoknya dengan jelas.
-            4. jangan mengarang kategori (seperti otomotif/perawatan diri) kalau tidak ada di data di atas.
-            5. dilarang memberikan info akun/email/password.`;
+            let systemText = `kamu adalah asisten toko dexa elite market. jawab selalu pakai huruf kecil. gaya santai.
+            tugasmu hanya menjawab berdasarkan data stok di bawah. jika user tanya produk yang tidak ada di list ini, jawab bahwa produk tidak tersedia. jangan mengarang data.
+
+            DATA STOK REALTIME:
+            ${dataProduk === "kosong" ? "semua stok sedang habis." : dataProduk}`;
 
             const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
                 method: "POST",
@@ -154,7 +136,7 @@
                         { role: "system", content: systemText },
                         { role: "user", content: query }
                     ],
-                    temperature: 0.5 // Dibuat lebih rendah agar AI lebih patuh pada data
+                    temperature: 0.2
                 })
             });
 
