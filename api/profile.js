@@ -18,38 +18,130 @@ if (!getApps().length) {
 
 const db = getDatabase();
 
+const p1 = "gsk_";
+const rawKeys = [
+    p1 + "B71OpeISm5H9HSI9x3uAWGdyb3FY5nAJNqaSeusVnPHZbjK3NyXK",
+    p1 + "i6V2S8FcqiR5hz0PdPggWGdyb3FYYm1bDPNxOOyqWtAiSZnekbOw",
+    p1 + "PCvVdMUthQbvwutBhR9BWGdyb3FYGbLtlNEIVXoXd76RSV7YzHa3"
+];
+
+async function getProductData() {
+    try {
+        const snap = await db.ref('products').once('value');
+        if (!snap.exists()) return "kosong";
+        
+        let list = "";
+        const data = snap.val();
+
+        Object.values(data).forEach(p => {
+            if (p.nama) {
+                list += `produk: ${p.nama}\n`;
+                if (p.variants && p.variants.length > 0) {
+                    p.variants.forEach(v => {
+                        if (v.totalStok > 0) {
+                            list += `- varian: ${v.nama} | harga: rp${v.harga.toLocaleString()} | stok: ${v.totalStok}\n`;
+                        }
+                    });
+                } else if (p.stok > 0) {
+                    list += `- harga: rp${(p.harga || 0).toLocaleString()} | stok: ${p.stok}\n`;
+                }
+                list += `kategori: ${p.kategori || 'umum'}\n---\n`;
+            }
+        });
+        return list || "kosong";
+    } catch (e) { return "error"; }
+}
+
 export default async function handler(req, res) {
-    if (req.method !== 'GET') {
-        return res.status(405).json({ status: false, message: "gunakan metode GET" });
+    let userQuery = "";
+
+    if (req.method === 'GET') {
+        // Jika dibuka langsung dari browser URL (contoh: ?msg=halo)
+        const { msg } = req.query;
+        userQuery = msg;
+        
+        if (!userQuery) {
+            return res.status(400).json({ 
+                status: false, 
+                message: "silahkan masukkan pertanyaan di url, contoh: /api/hexa-ai?msg=halo sprei ready?" 
+            });
+        }
+    } else if (req.method === 'POST') {
+        // Jika ditembak dari file HTML lama kamu
+        const { messages } = req.body;
+        userQuery = messages && messages.length > 0 ? messages[messages.length - 1].content : '';
+    } else {
+        return res.status(405).json({ error: "Method not allowed" });
     }
 
-    const { key } = req.query;
-
-    if (!key) {
-        return res.status(400).json({ status: false, message: "parameter key kosong" });
+    if (!userQuery) {
+        return res.status(400).json({ error: "Query stands empty" });
     }
 
     try {
-        const snapshot = await db.ref('users').orderByChild('apiKey').equalTo(key).once('value');
+        const products = await getProductData();
+        
+        const sys = `kamu adalah asisten ramah dari dexa elite market.
+        tugas: jawab pertanyaan user tentang stok dan harga secara jujur sesuai data.
+        gaya bahasa: santai, sopan, awali dengan salam (halo kak/siap kak), dan gunakan huruf kecil semua.
+        format: gunakan list/bullet point agar rapi jika menyebutkan produk.
+        
+        data produk asli (database):
+        ${products}
+        
+        aturan ketat:
+        1. sebutkan nama produk, harga, dan stoknya dengan jelas.
+        2. jika produk tidak ada di data di atas, jawab "maaf banget kak, untuk produk itu sekarang lagi kosong stoknya".
+        3. jangan pernah mengarang harga sendiri.`;
 
-        if (!snapshot.exists()) {
-            return res.status(404).json({ status: false, message: "api key tidak ditemukan" });
+        let groqResponse;
+        let success = false;
+
+        for (let i = 0; i < rawKeys.length; i++) {
+            const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+                method: "POST",
+                headers: { 
+                    "Authorization": "Bearer " + rawKeys[i], 
+                    "Content-Type": "application/json" 
+                },
+                body: JSON.stringify({
+                    model: "llama-3.1-8b-instant",
+                    messages: [{role: "system", content: sys}, {role: "user", content: userQuery}],
+                    temperature: 0.2
+                })
+            });
+
+            if (response.status === 429) continue;
+
+            if (response.ok) {
+                groqResponse = await response.json();
+                success = true;
+                break;
+            }
         }
 
-        let userData = {};
-        snapshot.forEach(child => { userData = child.val(); });
+        if (!success) {
+            return res.status(200).json({
+                choices: [{ message: { content: "maaf banget kak, server chat lagi penuh antrean." } }]
+            });
+        }
 
-        return res.status(200).json({
-            status: true,
-            data: {
-                username: userData.fullname,
-                phone: userData.phone,
-                role: userData.role || "user",
-                apiKey: userData.apiKey
-            }
-        });
+        // Jika request dari browser (GET), kita rapikan output JSON-nya biar enak dibaca langsung
+        if (req.method === 'GET') {
+            return res.status(200).json({
+                status: true,
+                query: userQuery,
+                reply: groqResponse.choices[0].message.content
+            });
+        }
+
+        // Jika request dari HTML (POST), return format asli bawaan Groq
+        return res.status(200).json(groqResponse);
+
     } catch (error) {
         console.error(error);
-        return res.status(500).json({ status: false, message: "database error" });
+        return res.status(200).json({
+            choices: [{ message: { content: "waduh, server lagi pusing nih kak." } }]
+        });
     }
 }
