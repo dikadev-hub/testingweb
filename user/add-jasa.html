@@ -39,6 +39,10 @@
         <label>nama jasa :</label>
         <input type="text" id="nama-jasa" placeholder="nama jasa">
 
+        <!-- Input Baru: Email Penyedia Jasa -->
+        <label>email penyedia jasa :</label>
+        <input type="email" id="email-jasa" placeholder="email@contoh.com" style="text-transform: none;">
+
         <label>kategori jasa :</label>
         <select id="kategori-jasa">
             <option value="jasa push rank ml">jasa push rank ml</option>
@@ -72,17 +76,20 @@
 
     async function postJasa() {
         const nama = document.getElementById('nama-jasa').value.trim();
+        const email = document.getElementById('email-jasa').value.trim(); // Mengambil input email
         const harga = document.getElementById('harga-jasa').value;
         const kategori = document.getElementById('kategori-jasa').value;
         const desc = document.getElementById('desc-jasa').value.trim();
 
-        if(!nama || !harga || !desc) return alert("data tidak lengkap");
+        // Validasi agar email wajib diisi
+        if(!nama || !email || !harga || !desc) return alert("data tidak lengkap");
 
         const jasaId = "js-" + Date.now();
         try {
             await db.ref('services/' + jasaId).set({
                 jasaId: jasaId,
                 nama: nama,
+                emailPenyedia: email, 
                 harga: parseInt(harga),
                 kategori: kategori,
                 deskripsi: desc,
